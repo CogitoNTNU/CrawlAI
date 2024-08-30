@@ -1,0 +1,116 @@
+
+
+
+@startuml
+
+frame "Arrow definitions" {
+    note "creates: One or more classes in A creates some instance of class in B\nuses: One or more classes in A uses some instance/implementation of class in B\nimplements: One or more classes in A implements some interface(s) in B" as definitionNote
+}
+
+
+
+frame "core"{
+    package "agent" {
+
+    }
+    package "enviroment" {
+
+    }
+
+    package "clock" {
+
+    }
+
+    package "physics" {
+
+    }
+}
+
+
+
+
+
+package "genetic"{
+
+}
+
+
+package "launcher" {
+    
+}
+
+package "sound" {
+    
+}
+
+package "graphics" {
+    
+}
+
+
+
+package "input" {
+    
+}
+
+
+
+launcher --> input : uses
+launcher --> graphics : uses
+launcher --> sound : uses
+
+graphics --> agent : implements
+sound --> agent : implements
+
+graphics --> enviroment : implements
+sound --> enviroment : implements
+
+enviroment --> clock: uses
+
+agent <-- genetic: implements
+
+enviroment --> physics: uses
+
+launcher --> enviroment: creates
+
+launcher --> agent: creates
+
+' agent --> enviroment: uses
+' enviroment --> agent: uses
+
+
+
+
+@enduml
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
