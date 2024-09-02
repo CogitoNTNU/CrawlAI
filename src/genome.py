@@ -6,9 +6,11 @@
 
 from dataclasses import dataclass
 
+
 @dataclass
 class Genome:
     """Genome class for the AI"""
+    # placeholder for the genome attributes
     id: int
     fitness: float
     nodes: list
