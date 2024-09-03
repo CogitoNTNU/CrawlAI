@@ -19,6 +19,11 @@ class Creature():
         self.env = env
 
 
+class Limb():
+    length: float
+    
+    def __init__(self):
+        pass
 
 
 class Joint():
@@ -30,10 +35,5 @@ class Joint():
         pass
 
 
-class Limb():
-    length: float
-    
-    def __init__(self):
-        pass
 
     
