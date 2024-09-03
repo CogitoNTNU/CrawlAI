@@ -17,3 +17,23 @@ class Agent(Protocol):
 class Creature():
     def __init__(self, env):
         self.env = env
+
+
+
+
+class Joint():
+    angle: float
+    limb1: Limb
+    limb2: Limb
+    
+    def __init__(self):
+        pass
+
+
+class Limb():
+    length: float
+    
+    def __init__(self):
+        pass
+
+    

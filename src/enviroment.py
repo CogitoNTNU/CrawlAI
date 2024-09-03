@@ -1,5 +1,6 @@
 
-
+from src.graphics_facade import GraphicsFacade
+from src.agent import Agent
 
 class Enviroment:
     def __init__(self, state):
