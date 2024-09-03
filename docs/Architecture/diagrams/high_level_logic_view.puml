@@ -10,73 +10,53 @@ frame "Arrow definitions" {
 
 
 frame "core"{
-    package "agent" {
+    
+    package "Agent" {
 
     }
     package "enviroment" {
 
     }
 
-    package "clock" {
+    package "evolution" {
 
     }
 
-    package "physics" {
+    package "genetic_algorithm" {
 
     }
-}
 
 
-
-
-
-package "genetic"{
-
-}
-
-
-package "launcher" {
     
 }
 
-package "sound" {
-    
+package "agent_storage" {
+
 }
 
-package "graphics" {
-    
+package "physics" {
+
 }
 
+package "clock" {
 
-
-package "input" {
-    
 }
 
+package "pygame" {
+
+}
+
+agent --> enviroment
+evolution --> agent
+evolution --> enviroment
+evolution --> genetic_algorithm
+enviroment --> clock
+enviroment --> pygame
+enviroment --> physics
+agent_storage --> agent
 
 
-launcher --> input : uses
-launcher --> graphics : uses
-launcher --> sound : uses
 
-graphics --> agent : implements
-sound --> agent : implements
-
-graphics --> enviroment : implements
-sound --> enviroment : implements
-
-enviroment --> clock: uses
-
-agent <-- genetic: implements
-
-enviroment --> physics: uses
-
-launcher --> enviroment: creates
-
-launcher --> agent: creates
-
-' agent --> enviroment: uses
-' enviroment --> agent: uses
 
 
 
