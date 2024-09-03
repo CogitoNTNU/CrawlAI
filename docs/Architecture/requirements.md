@@ -111,7 +111,7 @@ _Quality attributes are the system's non-functional requirements that specify th
 
 | ID  | Requirement Description                                                                 | Priority |
 | --- | --------------------------------------------------------------------------------------- | -------- |
-| Sa1 | The system should not display any harmfull ideas or language, nor upset creationalists. | Low      |
+| Sa1 | The system should not display any harmfull ideas or language, nor intentionallyu upset creationalists. | Low      |
 
 ## **Business Requirements**
 
