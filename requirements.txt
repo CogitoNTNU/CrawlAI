@@ -1,0 +1,10 @@
+colorama==0.4.6
+flake8==7.1.1
+iniconfig==2.0.0
+mccabe==0.7.0
+packaging==24.1
+pluggy==1.5.0
+pycodestyle==2.12.1
+pyflakes==3.2.0
+pygame==2.6.0
+pytest==8.3.2
