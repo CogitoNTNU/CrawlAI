@@ -1,8 +1,7 @@
 from src.enviroment import Enviroment
 
 def test_create_enviroment():
-    env = Enviroment()
-    env.set_state("initial_state")
+    env = Enviroment(state="Env")
     assert env is not None
 
 
