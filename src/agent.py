@@ -1,4 +1,3 @@
-
 from typing import Protocol
 
 class Agent(Protocol):
@@ -18,6 +17,8 @@ class Creature():
     def __init__(self, env):
         self.env = env
 
+def creature_factory(env):
+    return Creature(env)
 
 class Limb():
     length: float
@@ -36,4 +37,20 @@ class Joint():
 
 
 
+if __name__ =="__main__":
+    import pygame
+
+    aurelius = creature_factory(None)
+    
+    pygame.init()
+    window = pygame.display.set_mode((800, 600))
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                break
+        pygame.display.flip()
+        pygame.time.delay(10)
+
+    
     
