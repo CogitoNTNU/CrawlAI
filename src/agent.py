@@ -1,4 +1,5 @@
 from typing import Protocol
+from enviroment import Enviroment
 
 class Agent(Protocol):
     def act(self, env) -> int:
@@ -16,15 +17,29 @@ class Agent(Protocol):
 class Creature():
     def __init__(self, env):
         self.env = env
+    
+    def render(self):
+        pass
 
-def creature_factory(env):
+
+def creature_factory(env: Enviroment) -> Creature:
+    """
+    Factory function for creating a creature object.
+    """
     return Creature(env)
 
 class Limb():
     length: float
+    width: float
     
     def __init__(self):
         pass
+
+def limb_factory(lenght: float, width: float) -> Limb:
+    """
+    Factory function for creating a limb object.
+    """
+    return Limb()
 
 
 class Joint():
@@ -35,6 +50,11 @@ class Joint():
     def __init__(self):
         pass
 
+def joint_factory() -> Joint:
+    """
+    Factory function for creating a joint object.
+    """
+    return Joint()
 
 
 if __name__ =="__main__":
