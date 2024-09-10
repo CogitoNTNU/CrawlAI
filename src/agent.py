@@ -1,6 +1,9 @@
 from typing import Protocol
 from enviroment import Enviroment
 
+
+
+
 class Agent(Protocol):
     def act(self, env) -> int:
         pass
@@ -28,6 +31,8 @@ def creature_factory(env: Enviroment) -> Creature:
     """
     return Creature(env)
 
+
+
 class Limb():
     length: float
     width: float
@@ -41,11 +46,10 @@ def limb_factory(lenght: float, width: float) -> Limb:
     """
     return Limb()
 
-
 class Joint():
     angle: float
-    limb1: Limb
-    limb2: Limb
+    node1: Node
+    node2: Node
     
     def __init__(self):
         pass
@@ -55,7 +59,6 @@ def joint_factory() -> Joint:
     Factory function for creating a joint object.
     """
     return Joint()
-
 
 if __name__ =="__main__":
     import pygame
