@@ -12,8 +12,8 @@ class Creature():
     def render(self):
         pass
 
-def creature_factory(env: Enviroment, limblist: list, jointlist: list) -> Creature:
-    """
-    Factory function for creating a creature object.
-    """
-    return Creature(env)
+    def creature_factory(env: Enviroment, limblist: list, jointlist: list) -> Creature:
+        """
+        Factory function for creating a creature object.
+        """
+        return Creature(env)

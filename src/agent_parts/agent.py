@@ -1,4 +1,5 @@
 from typing import Protocol
+from CrawlAI.src.agent_parts.creature import Creature
 from enviroment import Enviroment
 from renderObject import RenderObject
 
@@ -21,7 +22,7 @@ class Agent(Protocol):
 if __name__ =="__main__":
     import pygame
 
-    aurelius = creature_factory(None)
+    aurelius = Creature.creature_factory(None)
     
     pygame.init()
     window = pygame.display.set_mode((800, 600))
