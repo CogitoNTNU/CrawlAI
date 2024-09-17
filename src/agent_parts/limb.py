@@ -35,8 +35,12 @@ class Limb(RenderObject):
     
     def getAngle():
         #Returns a limbs angle in radians 
+        pass
 
     def setAngle():
+        pass
+    
+        
 
     
     
