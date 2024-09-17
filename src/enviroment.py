@@ -52,9 +52,17 @@ class Enviroment(RenderObject):
             terrain_segments.append(generate_floor_segment(last_x))
 
     def reset(self):
+       
         screen.fill((135, 206, 250))  # Sky blue background
 
     def render(self,terrain_segments, scroll_offset):
+        """Render screen objects
+
+        Args:
+            terrain_segments (_type_): _description_
+            scroll_offset (_type_): _description_
+        """
+        
         for segment in terrain_segments:
             shifted_points = [(x - scroll_offset, y) for (x, y) in segment]
             # Add points to close the polygon and fill the bottom of the screen
