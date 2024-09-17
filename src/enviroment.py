@@ -2,7 +2,7 @@ import pygame as pg
 import random
 import math
 
-from src.renderObject import RenderObject
+from renderObject import RenderObject
 # from src.graphics_facade import GraphicsFacade
 # from src.agent import Agent
 
@@ -78,22 +78,22 @@ class Ground(RenderObject):
         self.draw()
 
 
-active = True
-while active:
-    clock = pg.time.Clock()
-    clock.tick(60)
-    # Sjekker om brukeren har lukket vinduet
-    for event in pg.event.get():
-        if event.type == pg.QUIT:
-            active = False
-    # Farger bakgrunnen lyseblå
-    screen.fill((135, 206, 235))
+# active = True
+# while active:
+#     clock = pg.time.Clock()
+#     clock.tick(60)
+#     # Sjekker om brukeren har lukket vinduet
+#     for event in pg.event.get():
+#         if event.type == pg.QUIT:
+#             active = False
+#     # Farger bakgrunnen lyseblå
+#     screen.fill((135, 206, 235))
 
-    # Oppdaterer alt innholdet i vinduet
-    pg.display.flip()
+#     # Oppdaterer alt innholdet i vinduet
+#     pg.display.flip()
 
-# Avslutter pg
-pg.quit()
+# # Avslutter pg
+# pg.quit()
 
 
 
