@@ -1,19 +1,24 @@
-from enviroment import Enviroment
+from environment import Environment
 from renderObject import RenderObject
-from limb import Limb
+from agent_parts.limb import Limb
 
-class Joint():
-    _angle: float
-    _limb1: Limb
-    _limb2: Limb
-    
-    
-    def __init__(self):
-        pass
+class Joint(RenderObject):
+    angle: float
+    limb1: Limb
+    limb2: Limb
+    position1: list[float, float]
+    position2: list[float, float]
+
+    def __init__(self, angle: float, limb1: Limb, limb2: Limb, position1: list[float, float], position2: list[float, float]):
+        self.angle = angle
+        self.limb1 = limb1
+        self.limb2 = limb2
+        self.position1 = position1
+        self.position2 = position2
     
     def render(self):
         pass
-    
+
     def rotate(self, angle: float):
         self.angle += angle
         

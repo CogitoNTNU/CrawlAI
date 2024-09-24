@@ -1,8 +1,9 @@
-from enviroment import Enviroment
+from environment import Environment
 from renderObject import RenderObject
-from creature import Creature
-from rectangle import Rectangle
+from agent_parts.rectangle import Rectangle
 from enum import Enum
+import numpy
+import pygame
 
 
 class LimbType(Enum):
@@ -10,16 +11,10 @@ class LimbType(Enum):
     HEAD = 2     
     FOOT = 3
 
-
 class Limb(RenderObject):
-    length: float
-    width: float
+    rect: Rectangle
     damage_scale: float 
     orientation: float
-    
-    def __init__(self, rect: Rectangle, damage_scale: float):
-        self.rect = rect
-        self.damage_scale = damage_scale
     
     def rotate(self, angle: float):
         self.orientation += angle
@@ -27,21 +22,22 @@ class Limb(RenderObject):
     def inherit_orientation(self, parent_orientation: float, limb_oreientation: float):
         self.orientation= parent_orientation  + limb_oreientation
         
-        
-        
-    def render(self):
-        #TODO: Implement render method
-        pass
-    
-    def getAngle():
-        #Returns a limbs angle in radians 
-        pass
+    def __init__(self, rect: Rectangle, damage_scale: float, limbType: LimbType):
+        self.rect = rect
+        self.damage_scale = damage_scale
+        self.limbType = limbType
 
-    def setAngle():
-        pass
-    
-        
+    def updatePosition(self, x: float, y: float):
+        self.rect.updatePosition(x, y)     
 
+    def render(self,window):
+        self.rect.render(window)
+    
+    def getAngle(self):
+        return self.orientation
+
+    def setAngle(self, angle: float):
+        self.orientation = angle
     
     
 
@@ -50,6 +46,7 @@ def limb_factory(rect: Rectangle, limbType: LimbType, orientation: float) -> Lim
     """
     Factory function for creating a limb object.
     """
+    print()
     damage_scale: float = 0
     match limbType:
         case 1: damage_scale = 0.1
@@ -58,10 +55,7 @@ def limb_factory(rect: Rectangle, limbType: LimbType, orientation: float) -> Lim
         case _:
             return "Invalid LimbType"
     
-    
-    
-    limb = Limb(rect, damage_scale, orientation)
-    return Limb()
+    return Limb(rect, damage_scale, orientation)
 
 
 
