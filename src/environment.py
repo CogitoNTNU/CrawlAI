@@ -122,7 +122,26 @@ class Ground(RenderObject, AbstractGround):
 
         self.terrain_segments.append(self.generate_floor_segment(0))
 
+    def get_segment(self, x: int) -> list:
+        """_summary_ Get the segment that contains the x-coordinate
 
+        Args:
+            x (int): _description_ The x-coordinate
+
+        Returns:
+            list: _description_ The segment that contains the x-coordinate
+        """
+        for segment in self.terrain_segments:
+            if segment[0][0] <= x <= segment[-1][0]:
+                return segment
+    
+    
+            
+    
+        
+        
+            
+            
     def generate_floor_segment(self, start_x : float) -> list:
         """
         Generates a segment of the floor
