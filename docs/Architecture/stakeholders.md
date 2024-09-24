@@ -2,7 +2,7 @@
 
 Stakeholders in the CrawlAI project are individuals and groups with an interest or investment in the development, deployment, and outcome of the system. They play crucial roles in shaping the project, providing resources, and defining requirements and constraints.
 
-## Stakeholders and Architectural Concerns for TutorAI
+## Stakeholders and Architectural Concerns for Crawl AI
 
 | Stakeholder              | Role                                                                                                                  | Architectural Concerns                                                        |
 | ------------------------ | --------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |

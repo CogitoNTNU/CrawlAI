@@ -7,7 +7,7 @@
 
 A virtual environment in Python is a self-contained directory that contains a Python installation for a particular version of Python, plus a number of additional packages. Using a virtual environment for your project ensures that the project's dependencies are isolated from the system-wide Python and other Python projects. This is especially useful when working on multiple projects with differing dependencies, as it prevents potential conflicts between packages and allows for easy management of requirements.
 
-1.  **To set up and use a virtual environment for TutorAI:**
+1.  **To set up and use a virtual environment for CrawlAI:**
     First, install the virtualenv package using pip. This tool helps create isolated Python environments.
 
     ```bash
@@ -42,9 +42,14 @@ With the virtual environment activated, install the project dependencies:
 pip install -r requirements.txt
 ```
 
-The requirements.txt file contains a list of packages necessary to run TutorAI. Installing them in an activated virtual environment ensures they are available to the project without affecting other Python projects or system settings.
+The requirements.txt file contains a list of packages necessary to run CrawlAI. Installing them in an activated virtual environment ensures they are available to the project without affecting other Python projects or system settings.
 
 
+
+
+python -m venv venv
+source venv/bin/activate
+pip install -r "requirements.txt" 
 
 
 
