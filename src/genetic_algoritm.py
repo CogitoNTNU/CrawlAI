@@ -24,6 +24,11 @@ class GeneticAlgorithm:
         - elitism_count (int): The number of top-performing genomes that are directly carried over to the next generation.
         """
         
+        self.population_size = population_size
+        self.mutation_rate = mutation_rate
+        self.crossover_rate = crossover_rate
+        self.elitism_count = elitism_count
+        
 
     def init_population(self, genome_length: int) -> List[Genome]:
         """
@@ -35,6 +40,8 @@ class GeneticAlgorithm:
         Returns:
         - List[genome]: A list of genome objects representing the initial population.
         """
+
+        self.genome_length = genome_length
         
 
     def calc_fitness(self, genome: Genome) -> float:
@@ -86,7 +93,7 @@ class GeneticAlgorithm:
         """
         
 
-    def mutate(self, genome: Genome) -> Genome:
+    def mutate(genome: Genome, innovation_tracker):
         """
         Mutates a genome based on the mutation rate. Each gene has a probability of being flipped.
 
@@ -96,7 +103,46 @@ class GeneticAlgorithm:
         Returns:
         - genome: The mutated genome.
         """
+
+
+        #Filters the connections to only be the ones with inout then outputnode connected
+        valid_connections = [connection for connection in Genome.connections 
+                            if genome.nodes[conn.in_node].node_type == 'input' and 
+                            genome.nodes[conn.out_node].node_type == 'output']
+
+        connection_to_split = random.choice(valid_connections)
         
+        # Create a new node
+        new_node_id = len(genome.nodes)  # Assign the next available node ID
+        new_node = Node(id=new_node_id, node_type='hidden')  # New node is a hidden node
+        genome.nodes.append(new_node)
+
+
+        # Create two new connections:
+        # 1. Connection from the input node to the new node (with weight 1)
+        innovation_number1 = innovation_tracker.get_innovation_number(connection_to_split.in_node, new_node_id)
+        new_connection1 = Connection(
+            in_node=connection_to_split.in_node,
+            out_node=new_node_id,
+            weight=1.0,  # Pass signal unchanged
+            innovation_number=innovation_number1
+        )
+
+        # 2. Connection from the new node to the output node (with the original weight)
+        innovation_number2 = innovation_tracker.get_innovation_number(new_node_id, connection_to_split.out_node)
+        new_connection2 = Connection(
+            in_node=new_node_id,
+            out_node=connection_to_split.out_node,
+            weight=connection_to_split.weight,  # Keep the original connection weight
+            innovation_number=innovation_number2
+        )
+
+        # Add the new connections to the genome
+        genome.connections.append(new_connection1)
+        genome.connections.append(new_connection2)
+
+
+
 
     def evolve(self, population: List[Genome]) -> List[Genome]:
         """

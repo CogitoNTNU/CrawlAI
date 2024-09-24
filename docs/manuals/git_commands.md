@@ -26,3 +26,6 @@
     - “git push -u origin name”
 - Merge branch name into current branch
     - “git merge branch-name”
+
+
+    
