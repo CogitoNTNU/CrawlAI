@@ -31,6 +31,8 @@
 ## Description 
 <!-- TODO: Provide a brief overview of what this project does and its key features. Please add pictures or videos of the application -->
 
+CrawlAI is a project where the developers can get a hands-on experience with genetic algorithms and neural network. The objection is to let agents learn to walk in a 2D enviroment, by evolving. 
+
 
 ## Getting started
 <!-- TODO: In this Section you describe how to install this project in its intended environment.(i.e. how to get it to run)  

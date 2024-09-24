@@ -1,17 +1,50 @@
 from typing import Protocol
-from enviroment import Enviroment
+from CrawlAI.src.genome import Genome
+from environment import Environment
 from renderObject import RenderObject
 from enum import Enum
-import pybox2d
-
-class LimbType(Enum):  
-    FOOT = 1
-    LEG = 2
-    LIMB = 3
+from agent_parts.limb import Limb, LimbType, limb_factory
+from agent_parts.creature import Creature, creature_factory
+from agent_parts.rectangle import Rectangle, rectangle_factory
+import numpy
 
 
-class Agent(Protocol):
-    def act(self, env) -> int:
+
+
+
+GRAVITY = 9.81
+
+
+
+class Agent():
+    genome: Genome
+    creature: Creature
+    
+    def __init__(self, genome: Genome, creature: Creature):
+        self.genome = genome
+        self.creature = creature
+        
+    def get_inputs_from_env(self, env) -> list:
+        vision = env.get_vision()
+        # TODO: Implement the rest of the inputs, they are the joint angles, health and the position of the limbs.
+        pass
+    
+    def do_inference(self, inputs: list) -> list:
+        """_summary_ Do inference on the inputs and return the output.
+
+        Args:
+            inputs (list): _description_
+
+        Returns:
+            list: outputs
+        """
+        pass
+    
+    
+    
+    
+    def act(self, env) -> None:
+        self.creature.act(self.do_inference(self.get_inputs_from_env(env)))
         pass
 
     def save(self, path) -> None:
@@ -24,70 +57,12 @@ class Agent(Protocol):
         pass
 
 
-
-class Limb():
-    
-    def __init__(self, length: float, width: float, limbType: LimbType):
-        self.length = length
-        self.width = width
-        self.limbType = limbType
-
-    def render(self,window, x, y):
-        pygame.draw.polygon(window, (255, 255, 255), ((x,y), (x+self.length,y), (x+self.length, y+self.width), (x, y+self.width)))
-
-def limb_factory(length: float, width: float, limbType: LimbType) -> Limb:
-    """
-    Factory function for creating a limb object.
-    """
-
-    return Limb(length, width, limbType)
-
-class Joint():
-    angle: float
-    limb1: Limb
-    limb2: Limb
-    position1: list[float, float]
-    position2: list[float, float]
-
-    def __init__(self, angle: float, limb1: Limb, limb2: Limb, position1: list[float, float], position2: list[float, float]):
-        self.angle = angle
-        self.limb1 = limb1
-        self.limb2 = limb2
-        self.position1 = position1
-        self.position2 = position2
-
-def joint_factory() -> Joint:
-    """
-    Factory function for creating a joint object.
-    """
-    return Joint()
-
-class Creature():
-    env: Enviroment
-    limblist: list[Limb]
-    jointlist: list[Joint]
-    position: list[float, float]
-
-    def __init__(self, env, limblist: list[Limb], jointlist: list[Joint]):
-        self.env = env
-        self.limblist = limblist
-        self.jointlist = jointlist
-        self.position = [200, 200]
-    
-    def render(self, window):
-        self.limblist[0].render(window, self.position[0], self.position[1])
-
-def creature_factory(env: Enviroment, limblist: list[Limb], jointlist: list[Joint]) -> Agent:
-    """
-    Factory function for creating a creature object.
-    """
-
-    return Creature(env, limblist, jointlist)
-
 if __name__ =="__main__":
     import pygame
 
-    limb = limb_factory(100, 70, LimbType.FOOT)
+
+    rect = rectangle_factory(100, 100, 50, 50)
+    limb = limb_factory(rect, 3, 2)
 
     aurelius = creature_factory(None, [limb], [])
     
@@ -101,6 +76,7 @@ if __name__ =="__main__":
         window.fill((0, 0, 0))
         pygame.draw.rect(window, (255, 0, 0), (0, 0, 800, 600))
         aurelius.render(window)
+        aurelius.updatePosition(0, -GRAVITY)
         pygame.display.flip()
         pygame.time.delay(10)
         
