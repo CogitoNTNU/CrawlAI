@@ -1,6 +1,6 @@
-from environment import Environment
-from renderObject import RenderObject
-from agent_parts.limb import Limb
+from src.environment import Environment
+from src.renderObject import RenderObject
+from src.agent_parts.limb import Limb
 
 class Joint(RenderObject):
     """

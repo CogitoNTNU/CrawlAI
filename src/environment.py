@@ -2,10 +2,10 @@ import pygame as pg
 import random
 import math
 import time 
-       
 from abc import ABC, abstractmethod
 
-from renderObject import RenderObject
+from src.agent_parts.rectangle import Point
+from src.renderObject import RenderObject
 # from src.graphics_facade import GraphicsFacade
 # from src.agent import Agent
 
@@ -74,6 +74,8 @@ class Environment(RenderObject):
 
 
 class Vision:
+    alpha = 0.5
+    intersection: Point
     
 
     def __init__(self):

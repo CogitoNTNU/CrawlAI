@@ -1,9 +1,9 @@
-from environment import Environment
-from renderObject import RenderObject
-from agent_parts.rectangle import Rectangle
 from enum import Enum
 import numpy
 import pygame
+from src.environment import Environment
+from src.renderObject import RenderObject
+from src.agent_parts.rectangle import Rectangle
 
 class LimbType(Enum):
     """

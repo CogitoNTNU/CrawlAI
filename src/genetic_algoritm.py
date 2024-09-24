@@ -1,8 +1,8 @@
 
 
 from typing import List
-from src.genome import Genome
 import random
+from src.genome import Genome
 
 
 
