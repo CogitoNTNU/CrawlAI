@@ -16,6 +16,15 @@ class Creature():
         self.limblist = limblist
         self.jointlist = jointlist
         self.position = [200, 200]
+        
+    def act(self, actions: list) -> None:
+        """_summary_ Act on the environment based on the actions. This will rotate the joints. Creature physics must handle the rest.
+
+        Args:
+            actions (list): list of rotations for each joint.
+        """
+        for i in range(len(actions)):
+            self.jointlist[i].rotate(actions[i])
     
     def render(self, window):
         for limb in self.limblist:
