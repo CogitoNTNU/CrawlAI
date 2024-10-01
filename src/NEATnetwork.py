@@ -1,11 +1,11 @@
-import torch
-import torch.nn as nn
 from genome import Genome
 from collections import defaultdict, deque
+import numpy as np
 
-class NEATNetwork(nn.Module):
+
+
+class NEATNetwork():
     def __init__(self, genome: Genome):
-        super(NEATNetwork, self).__init__()
         
         # Store genome information
         self.genome = genome
@@ -14,14 +14,14 @@ class NEATNetwork(nn.Module):
         self.node_dict = {node.id: node for node in genome.nodes}
         self.connection_dict = {conn.innovation_number: conn for conn in genome.connections if conn.enabled}
 
-        # Create parameter lists for weights
-        self.connections = nn.ParameterDict({
-            f"{conn.in_node}->{conn.out_node}": nn.Parameter(torch.tensor(conn.weight, dtype=torch.float32))
-            for conn in genome.connections if conn.enabled
-        })
-
         # Topologically sort nodes based on connections
         self.topological_order = self._topological_sort()
+
+    def sigmoid(x):
+        return 1 / (1 + np.exp(-x))
+
+    def ReLU(x):
+        return np.maximum(0, x)
 
     def _topological_sort(self):
         """Performs topological sorting on the nodes based on their connections."""
@@ -78,10 +78,10 @@ class NEATNetwork(nn.Module):
                 node_sum += node_outputs[in_node] * weight
 
             # Apply activation (sigmoid for hidden and output nodes)
-            node_outputs[node_id] = torch.sigmoid(node_sum)
+            node_outputs[node_id] = self.ReLU(node_sum)
 
         # Collect the outputs for final output nodes
-        output = torch.stack([node_outputs[node.id] for node in output_nodes], dim=1)
+        output = np.stack([node_outputs[node.id] for node in output_nodes], axis=1)
         return output
 
 # Example usage:
