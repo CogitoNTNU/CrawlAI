@@ -3,6 +3,8 @@ import pygame
 import math 
 
 class Point:
+    x: float
+    y: float
     """
     A class representing a 2D point in space.
 

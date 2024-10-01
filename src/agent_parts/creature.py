@@ -1,8 +1,9 @@
 from typing import List
-from environment import Environment
 from renderObject import RenderObject
-from agent_parts.limb import Limb
-from agent_parts.joint import Joint
+
+from src.environment import Environment
+from src.agent_parts.limb import Limb
+from src.agent_parts.joint import Joint
 # from joint import Joint
 
 class Creature:
