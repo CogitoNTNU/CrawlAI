@@ -70,6 +70,10 @@ class Environment(RenderObject):
         self.offset_speed=1
 
         
+    def render(self):
+        pass
+        
+        
     def run(self):
         self.ground.generate_floor_segment(0)
         active = True
@@ -104,7 +108,6 @@ class Environment(RenderObject):
 
     def draw_mark(surface, color, coord):
         pg.draw.circle(surface, color, coord, 3)
-
         
     def perlinUpdate(self):
         # interp_inform = '(I) Interpolation: ' + get_interp_name(self.noise.interp)
@@ -139,6 +142,7 @@ class Environment(RenderObject):
         # move Perlin noise
         self.offset += self.offset_speed
 
+
         
     
     random.seed(time.time())
@@ -154,7 +158,26 @@ class Ground(RenderObject):
 
         self.terrain_segments.append(self.generate_floor_segment(0))
 
+    def get_segment(self, x: int) -> list:
+        """_summary_ Get the segment that contains the x-coordinate
 
+        Args:
+            x (int): _description_ The x-coordinate
+
+        Returns:
+            list: _description_ The segment that contains the x-coordinate
+        """
+        for segment in self.terrain_segments:
+            if segment[0][0] <= x <= segment[-1][0]:
+                return segment
+    
+    
+            
+    
+        
+        
+            
+            
     def generate_floor_segment(self, start_x : float) -> list:
         """
         Generates a segment of the floor
@@ -230,6 +253,58 @@ class AbstractGround(ABC):
 
     
 
+class Vision:
+    eye_position: Point
+    alpha = 0.5
+    sight_widht = 0.5
+    beta = alpha + sight_widht
+    lower_periphery: Point 
+    upper_periphery: Point
+    angle_speed = 0.1
+    
+    def __init__(self, eye_position: Point):
+        self.lower_periphery = None
+        self.upper_periphery = None
+        
+    def move_eye(self) -> None:
+        """_summary_ Move the eye by increasing the alpha and beta angles by the angle_speed.
+        """
+        self.alpha += self.angle_speed
+        self.beta += self.angle_speed
+        
+        
+    def update(self, eye_position: Point, ground: Ground) -> None:
+        """_summary_ Update the vision based on the eye position and the environment.
+
+        Args:
+            eye_position (Point): _description_
+            environment (Environment): _description_
+        """
+        self.eye_position = eye_position
+        self.move_eye()
+        
+        # LA STÅ!!!!
+        # self.lower_periphery.x = intersection mellom linje og bakken                      
+        # self.upper_periphery = intersection mellom linje og bakken
+        
+    
+    def get_alpha(self):
+        return self.alpha
+    def get_beta(self):
+        return self.beta
+    def get_lower_periphery(self):
+        return self.lower_periphery
+    def get_upper_periphery(self):
+        return self.upper_periphery
+    def get_eye_position(self):
+        return self.eye_position
+    def get_angle_speed(self):
+        return self.angle_speed
+    def get_sight_width(self):
+        return self.sight_widht
+        
+        
+    
 
 class PerlinNoise():
 
