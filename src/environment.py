@@ -8,33 +8,54 @@ from enum import Enum
 
 from abc import ABC, abstractmethod
 
-from src.agent_parts.rectangle import Point
-from src.renderObject import RenderObject
-from src.graphics_facade import GraphicsFacade
-from src.agent import Agent
+# from src.agent_parts.rectangle import Point
+from renderObject import RenderObject
+# from src.graphics_facade import GraphicsFacade
+# from src.agent import Agent
 
 BLACK = (0,0,0)
 BLUE = (0,0,255)
 RED = (255, 0, 0)
 YELLOW = (255, 255, 0)
+WHITE = (255,255,255)
 
 pg.init()
 
 
-
+FONT_SIZE = 14
 SCREEN_WIDTH = 700
 SCREEN_HEIGHT = 500
 FLOOR_HEIGHT = 100
+font = pg.font.Font(pg.font.get_default_font(), FONT_SIZE)
+Instance=0
+
 
 # Create the screen
 screen = pg.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
-# Constants for terrain generation
-AMPLITUDE_MIN = 30  # Minimum height of hills
-AMPLITUDE_MAX = 40 # Max height of hills
-FREQUENCY_MIN = 0.01  # Minimum frequency of hills
-FREQUENCY_MAX = 0.05 # Max frequency of hills
-SEGMENT_WIDTH = 700  # Width of each terrain segment
+# Constants for Ground terrain generation
+AMPLITUDE = 40 # Max height of hills
+FREQUENCY = 0.05 # Max frequency of hills
+SEGMENT_WIDTH = 200  # Width of each terrain segment
+
+
+class Interp(Enum):
+    LINEAR = 1
+    COSINE = 2
+    CUBIC = 3
+
+
+# set initial parametrs Perlinground generation
+seed = random.randint(0, 2**32)
+perlinAmplitude = 50
+perlinFrequency = 0.2
+octaves = 2
+# number of integer values on screen
+# (implicit frequency)
+perlinSegments = 40
+interpolation = Interp.COSINE
+interp_iter = itertools.cycle((Interp.LINEAR, Interp.CUBIC, Interp.COSINE))
+show_marks = False
 
     
 
@@ -44,6 +65,10 @@ class Environment(RenderObject):
         self.screen = screen
         self.ground = Ground(screen, SEGMENT_WIDTH)
         self.scroll_offset = 0
+        self.noise = PerlinNoise(seed, perlinAmplitude, perlinFrequency, octaves, interpolation)
+        self.offset=0
+        self.offset_speed=1
+
         
     def run(self):
         self.ground.generate_floor_segment(0)
@@ -59,31 +84,134 @@ class Environment(RenderObject):
             screen.fill((135, 206, 235))
 
             
-            
+            if Instance==0:
             # Move the terrain to the left to simulate movement
-
-            self.update()
+                self.groundUpdate()
+            else:
+                self.perlinUpdate()
             # Oppdaterer alt innholdet i vinduet
             pg.display.flip()
 
         # Avslutter pg
         pg.quit()
 
-
-    def update(self):
+    
+    def groundUpdate(self):
         self.ground.generate_new_floor_segment(self.scroll_offset)
         self.ground.remove_old_floor_segment(self.scroll_offset)
         self.scroll_offset +=1
         self.ground.render(self.scroll_offset)
 
+    def draw_mark(surface, color, coord):
+        pg.draw.circle(surface, color, coord, 3)
 
-class Vision:
-    alpha = 0.5
-    intersection: Point
+        
+    def perlinUpdate(self):
+        # interp_inform = '(I) Interpolation: ' + get_interp_name(self.noise.interp)
+        # text_surface = font.render(interp_inform, True, BLACK)
+        # screen.blit(text_surface, dest=(SCREEN_WIDTH - text_surface.get_width() - 5, 0))
+        # seed_inform = '(S) Seed: ' + str(seed)
+        # text_surface = font.render(seed_inform, True, BLACK)
+        # screen.blit(text_surface, dest=(SCREEN_WIDTH - text_surface.get_width() - 5, SCREEN_HEIGHT - FONT_SIZE))
+
+        points = list()
+        norma = SCREEN_WIDTH / perlinSegments
+        for pix_x in range(SCREEN_WIDTH):
+            # convert pixel position to real value
+            x = (pix_x + self.offset) / norma
+            # get perlin noise
+            y = self.noise.get(x)
+
+            # convert perlin noise to pixel height value
+            pix_y = SCREEN_HEIGHT / 2 + y
+
+            # check is x value integer in Perlin noise coordinates
+            real_x = x * self.noise.frequency
+            if show_marks and math.isclose(real_x, int(real_x), rel_tol=0.001):
+                self.draw_mark(screen, RED, (pix_x, pix_y))
+
+            points.append((pix_x, pix_y))
+
+        # draw lines and update display
+        pg.draw.lines(screen, (34,139,34), False, points,4)
+        pg.display.flip()
+
+        # move Perlin noise
+        self.offset += self.offset_speed
+
+        
+    
+    random.seed(time.time())
+
+
+
+class Ground(RenderObject):
+    def __init__(self, screen, segment_width):
+        self.screen = screen
+       
+        self.segment_width = segment_width
+        self.terrain_segments = []
+
+        self.terrain_segments.append(self.generate_floor_segment(0))
+
+
+    def generate_floor_segment(self, start_x : float) -> list:
+        """
+        Generates a segment of the floor
+        
+        Args:
+            start_x (float): The x-coordinate of the starting point of the segment
+        returns:
+            list: A list of points representing the floor segment 
+        """
+
+        floor= []
+        for x in range(start_x, start_x + self.segment_width + 1, 1):
+            y = int(SCREEN_HEIGHT - FLOOR_HEIGHT + AMPLITUDE * math.sin(FREQUENCY * x))
+            floor.append((x, y))
+        return floor
     
 
-    def __init__(self):
-        pass
+    def generate_new_floor_segment(self, scroll_offset: int):
+    # Generate new segments if needed
+        
+        if self.terrain_segments[-1][-1][0] - scroll_offset < SCREEN_WIDTH:
+            # Generate a new segment at the rightmost part of the terrain
+            last_x = self.terrain_segments[-1][-1][0]
+            self.terrain_segments.append(self.generate_floor_segment(last_x))
+
+    def remove_old_floor_segment(self, scroll_offset: float):
+        # Remove old segments that are off-screen
+            if self.terrain_segments[0][-1][0] - scroll_offset < -SEGMENT_WIDTH:
+                self.terrain_segments.pop(0)
+    
+    
+    def render(self,scroll_offset: float):    
+        
+        """Render screen objects
+
+        Args:
+            terrain_segments (_type_): _description_
+            scroll_offset (_type_): _description_
+        """
+        
+
+        for segment in self.terrain_segments:
+            shifted_points = [(x - scroll_offset, y) for (x, y) in segment]
+            # Add points to close the polygon and fill the bottom of the screen
+            shifted_points.append((shifted_points[-1][0], SCREEN_HEIGHT))
+            shifted_points.append((shifted_points[0][0], SCREEN_HEIGHT))
+            pg.draw.polygon(screen, (34, 139, 34), shifted_points)  # Green hills
+
+
+
+# class Vision:
+#     alpha = 0.5
+#     intersection: Point
+    
+
+#     def __init__(self):
+#         pass
         
 
 
@@ -102,10 +230,6 @@ class AbstractGround(ABC):
 
     
 
-class Interp(Enum):
-    LINEAR = 1
-    COSINE = 2
-    CUBIC = 3
 
 class PerlinNoise():
 
@@ -177,193 +301,6 @@ class PerlinNoise():
         return a * (1 - x2) + b * x2
 
 
-   
-def draw_mark(surface, color, coord):
-    pg.draw.circle(surface, color, coord, 3)
-
-
-def get_interp_name(interp):
-    if interp is Interp.LINEAR:
-        return 'Linear'
-    elif interp is Interp.COSINE:
-        return 'Cosine'
-    else:
-        return 'Cubic'
-
-
-random.seed(time.time())
-
-# define constants
-WIDTH, HEIGHT = (700, 500)
-FONT_SIZE = 14
-BLACK = (0, 0, 0)
-WHITE = (255, 255, 255)
-RED = (255, 0, 0)
-
-# init pygame
-pg.init()
-screen = pg.display.set_mode((WIDTH, HEIGHT))
-pg.display.set_caption('1D Perlin Noise') 
-font = pg.font.Font(pg.font.get_default_font(), FONT_SIZE)
-
-# set initial parametrs for program
-seed = random.randint(0, 2**32)
-amplitude = 50
-frequency = 0.2
-octaves = 2
-# number of integer values on screen
-# (implicit frequency)
-segments = 40
-interpolation = Interp.COSINE
-interp_iter = itertools.cycle((Interp.LINEAR, Interp.CUBIC, Interp.COSINE))
-offset = 0
-offset_speed = 1
-show_marks = False
-
-running = True
-while running:
-    for event in pg.event.get():
-        if event.type == pg.QUIT:
-            running = False
-        
-    # create PerlinNoise object
-    noise = PerlinNoise(seed, amplitude, frequency, octaves, interpolation)
-
-    screen.fill(WHITE)
-
-    # print information about program parametrs
-    # text_surfaces = {
-    #     (5, FONT_SIZE * 0): 
-    #         font.render('(A/Z) Amplitude: ' + str(amplitude), True, BLACK),
-    #     (5, FONT_SIZE * 1): 
-    #         font.render('(F/V) Frequency: ' + str(frequency), True, BLACK),
-    #     (5, FONT_SIZE * 2): 
-    #         font.render('(O/L) Octaves: ' + str(octaves), True, BLACK),
-    #     (5, HEIGHT - FONT_SIZE * 1): 
-    #         font.render('(LEFT/RIGHT) Speed: ' + str(offset_speed), True, BLACK),
-    #     (5, HEIGHT - FONT_SIZE * 2): 
-    #         font.render('(UP/DOWN) Segments: ' + str(segments), True, BLACK),
-    #     (5, HEIGHT - FONT_SIZE * 3): 
-    #         font.render('(M) Marks: ' + str(show_marks), True, BLACK),
-    #     }
-    # for dest, text_surface in text_surfaces.items():
-    #     screen.blit(text_surface, dest=dest)
-
-    # and two another parametrs on the right side of the screen
-    interp_inform = '(I) Interpolation: ' + get_interp_name(noise.interp)
-    text_surface = font.render(interp_inform, True, BLACK)
-    screen.blit(text_surface, dest=(WIDTH - text_surface.get_width() - 5, 0))
-    seed_inform = '(S) Seed: ' + str(seed)
-    text_surface = font.render(seed_inform, True, BLACK)
-    screen.blit(text_surface, dest=(WIDTH - text_surface.get_width() - 5, HEIGHT - FONT_SIZE))
-
-    points = list()
-    norma = WIDTH / segments
-    for pix_x in range(WIDTH):
-        # convert pixel position to real value
-        x = (pix_x + offset) / norma
-        # get perlin noise
-        y = noise.get(x)
-
-        # convert perlin noise to pixel height value
-        pix_y = HEIGHT / 2 + y
-
-        # check is x value integer in Perlin noise coordinates
-        real_x = x * noise.frequency
-        if show_marks and math.isclose(real_x, int(real_x), rel_tol=0.001):
-            draw_mark(screen, RED, (pix_x, pix_y))
-
-        points.append((pix_x, pix_y))
-
-    # draw lines and update display
-    pg.draw.lines(screen, (34,139,34), False, points,4)
-    pg.display.flip()
-
-    # move Perlin noise
-    offset += offset_speed
-
-pg.quit()
-   
-
-
-
-
-
-
-
-
-    
-class Ground(RenderObject, AbstractGround):
-    def __init__(self, screen, segment_width):
-        self.screen = screen
-       
-        self.segment_width = segment_width
-        self.terrain_segments = []
-
-        self.terrain_segments.append(self.generate_floor_segment(0))
-
-
-    def generate_floor_segment(self, start_x : float) -> list:
-        """
-        Generates a segment of the floor
-        
-        Args:
-            start_x (float): The x-coordinate of the starting point of the segment
-        returns:
-            list: A list of points representing the floor segment 
-        """
-        amplitude = random.randint(AMPLITUDE_MIN, AMPLITUDE_MAX)
-        frequency = random.uniform(FREQUENCY_MIN, FREQUENCY_MAX)
-
-        floor= []
-        for x in range(start_x, start_x + self.segment_width + 1, 1):
-            y = int(SCREEN_HEIGHT - FLOOR_HEIGHT + AMPLITUDE_MAX * math.sin(frequency * x))
-            floor.append((x, y))
-        return floor
-    
-
-    def generate_new_floor_segment(self, scroll_offset: int):
-    # Generate new segments if needed
-        
-        if self.terrain_segments[-1][-1][0] - scroll_offset < SCREEN_WIDTH:
-            # Generate a new segment at the rightmost part of the terrain
-            last_x = self.terrain_segments[-1][-1][0]
-            self.terrain_segments.append(self.generate_floor_segment(last_x))
-
-    def remove_old_floor_segment(self, scroll_offset: float):
-        # Remove old segments that are off-screen
-            if self.terrain_segments[0][-1][0] - scroll_offset < -SEGMENT_WIDTH:
-                self.terrain_segments.pop(0)
-    
-    
-    def render(self,scroll_offset: float):    
-        
-        """Render screen objects
-
-        Args:
-            terrain_segments (_type_): _description_
-            scroll_offset (_type_): _description_
-        """
-        
-
-        for segment in self.terrain_segments:
-            shifted_points = [(x - scroll_offset, y) for (x, y) in segment]
-            # Add points to close the polygon and fill the bottom of the screen
-            shifted_points.append((shifted_points[-1][0], SCREEN_HEIGHT))
-            shifted_points.append((shifted_points[0][0], SCREEN_HEIGHT))
-            pg.draw.polygon(screen, (34, 139, 34), shifted_points)  # Green hills
-
-    
-
-
-
-
-
-
-
-
-
-
 
 if __name__ == "__main__":
    # Initialize the floor and environment
@@ -372,12 +309,3 @@ if __name__ == "__main__":
     
     # Start the main loop
     environment.run()
-
-       
-        
-
-
-
-            
-            
-
