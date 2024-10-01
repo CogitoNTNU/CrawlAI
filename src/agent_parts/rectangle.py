@@ -1,5 +1,6 @@
-import numpy
+import numpy as np 
 import pygame
+import math 
 
 class Point:
     """
@@ -49,8 +50,8 @@ class Rectangle:
         The width of the rectangle.
     height : float
         The height of the rectangle.
-    poPoints : numpy.ndarray
-        A numpy array representing the four corner points of the rectangle.
+    poPoints : np.ndarray
+        A np array representing the four corner points of the rectangle.
     """
 
     def __init__(self, x: float, y: float, width: float, height: float):
@@ -68,15 +69,15 @@ class Rectangle:
         height : float
             The height of the rectangle.
 
-        The rectangle is represented by four points using numpy arrays.
+        The rectangle is represented by four points using np arrays.
         """
         self.width = width
         self.height = height
-        self.poPoints = numpy.array([   
-                                        numpy.array([x, y]),
-                                        numpy.array([x + height, y]),
-                                        numpy.array([x + height, y + width]),
-                                        numpy.array([x, y + width])
+        self.poPoints = np.array([   
+                                        np.array([x, y]),
+                                        np.array([x + height, y]),
+                                        np.array([x + height, y + width]),
+                                        np.array([x, y + width])
                                     ])
 
     def contains(self, point: Point) -> bool:
@@ -161,8 +162,18 @@ class Rectangle:
         y : float
             The amount to translate the rectangle in the y direction.
         """
-        translation = numpy.array([x, y])
+        translation = np.array([x, y])
         self.poPoints = self.poPoints + translation
+
+    def rotateRectangle(self, angle: float):
+        widthVector = np.array([self.width * math.cos(angle), self.width * math.sin(angle)])
+        heightVector = np.array([-self.height *math.sin(angle), self.height * math.cos(angle)])
+        x0, y0 = self.x , self.y
+        x1, y1 = x0 + widthVector[0] , y0 + widthVector[1]
+        x2, y2 = x0 + heightVector[0] , y0 + heightVector[1]
+        x3, y3 = x0 + widthVector[0] + heightVector[0], y0 + widthVector[1] + heightVector[1]
+
+        return x0, y0, x1, y1, x2, y2, x3, y3
 
 
 def rectangle_factory(x: float, y: float, width: float, height: float) -> Rectangle:
