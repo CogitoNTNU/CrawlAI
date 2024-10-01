@@ -83,6 +83,46 @@ def initialize_population(pop_size: int, num_inputs: int, num_outputs: int) -> L
         population.append(genome)
     return population
 
+def translate_genome_to_network(genome: Genome):
+    
+    input_nodes = []
+    hidden_nodes = []
+    output_nodes = []
+    connections = []
+
+
+    for node in genome.nodes:
+        if node.node_type == "input":
+            input_nodes.append(node)
+        elif node.node_type == "hidden":
+            hidden_nodes.append(node)
+        elif node.node_type == "output":
+            output_nodes.append(node)
+
+
+    for connection in genome.connections:
+        if connection.enabled:
+            connections.append((connection.in_node,connection.out_node,connection.weight))
+
+    
+
+
+    network = {
+    'input_nodes': input_nodes,
+    'hidden_nodes': hidden_nodes,
+    'output_nodes': output_nodes,
+    'connections': connections
+    
+    }
+    
+    return network
+
+        
+
+
+
+
+
 
 # Example usage:
 if __name__ == "__main__":
