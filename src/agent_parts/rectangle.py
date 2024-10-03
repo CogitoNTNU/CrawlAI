@@ -43,6 +43,14 @@ class Point:
 
 
 class Rectangle:
+
+    class anchor: 
+        x: float 
+        y : float
+
+        def __init__(self, x: float, y: float):
+            self.x = x
+            self.y = y
     """
     A class representing a 2D rectangle using its position, width, and height.
 
@@ -75,12 +83,19 @@ class Rectangle:
         """
         self.width = width
         self.height = height
-        self.poPoints = np.array([   
+        """self.poPoints = np.array([   
                                         np.array([x, y]),
                                         np.array([x + height, y]),
                                         np.array([x + height, y + width]),
                                         np.array([x, y + width])
-                                    ])
+                                    ])"""
+        self.poPoints = np.array([ 
+                                        np.array([x,y]),
+                                        np.array([x + width, y]),
+                                        np.array([x + width, y + height]), 
+                                        np.array([x, y + height])
+
+        ])
 
     def contains(self, point: Point) -> bool:
         """
@@ -164,10 +179,23 @@ class Rectangle:
         y : float
             The amount to translate the rectangle in the y direction.
         """
-        translation = np.array([x, y])
-        self.poPoints = self.poPoints + translation
+        self.poPoints[0][0] += x
+        self.poPoints[0][1] += y
+        
+        self.poPoints[1][0] += x
+        self.poPoints[1][1] += y
+
+        self.poPoints[2][0] += x
+        self.poPoints[2][1] += y
+
+        self.poPoints[3][0] += x
+        self.poPoints[3][1] += y
+
+        """translation = np.array([x, y])
+        self.poPoints = self.poPoints + translation"""
 
     def rotateRectangle(self, angle: float):
+        """Returns the coordinates of the edges of the rectangle after rotation"""
         widthVector = np.array([self.width * math.cos(angle), self.width * math.sin(angle)])
         heightVector = np.array([-self.height *math.sin(angle), self.height * math.cos(angle)])
         x0, y0 = self.x , self.y
@@ -176,7 +204,16 @@ class Rectangle:
         x3, y3 = x0 + widthVector[0] + heightVector[0], y0 + widthVector[1] + heightVector[1]
 
         return x0, y0, x1, y1, x2, y2, x3, y3
+    
+    
+    def rotateAnchor(self, angle:float):
+        anchorVector = np.array([self.anchor.x - self.x, self.anchor.y - self.y])
+        x_rotated = anchorVector[0]*math.cos(angle) - anchorVector[1]*math.sin(angle)
+        y_rotated = anchorVector[0]*math.sin(angle) - anchorVector[1]*math.cos(angle)
 
+        
+
+        
 
 def rectangle_factory(x: float, y: float, width: float, height: float) -> Rectangle:
     """
