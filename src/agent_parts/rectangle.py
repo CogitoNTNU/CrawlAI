@@ -198,21 +198,29 @@ class Rectangle:
         """Returns the coordinates of the edges of the rectangle after rotation"""
         widthVector = np.array([self.width * math.cos(angle), self.width * math.sin(angle)])
         heightVector = np.array([-self.height *math.sin(angle), self.height * math.cos(angle)])
-        x0, y0 = self.x , self.y
-        x1, y1 = x0 + widthVector[0] , y0 + widthVector[1]
-        x2, y2 = x0 + heightVector[0] , y0 + heightVector[1]
-        x3, y3 = x0 + widthVector[0] + heightVector[0], y0 + widthVector[1] + heightVector[1]
-
-        return x0, y0, x1, y1, x2, y2, x3, y3
+        self.poPoints[0][0], self.poPoints[0][1] = self.x , self.y
+        self.poPoints[1][0], self.poPoints[1][1] = self.poPoints[0][0] + widthVector[0] , self.poPoints[0][1] + widthVector[1]
+        self.poPoints[2][0], self.poPoints[2][1] = self.poPoints[0][0] + heightVector[0] , self.poPoints[0][1] + heightVector[1]
+        self.poPoints[3][0], self.poPoints[3][1] = self.poPoints[0][0] + widthVector[0] + heightVector[0], self.poPoints[0][1] + widthVector[1] + heightVector[1]
     
     
     def rotateAnchor(self, angle:float):
+        """Rotates the special point in the rectangle with a given angle"""
         anchorVector = np.array([self.anchor.x - self.x, self.anchor.y - self.y])
         x_rotated = anchorVector[0]*math.cos(angle) - anchorVector[1]*math.sin(angle)
         y_rotated = anchorVector[0]*math.sin(angle) - anchorVector[1]*math.cos(angle)
 
-        
+        self.anchor.x = x_rotated
+        self.anchor.y = y_rotated
 
+    def rotateAroundPoint(self, angle: float , x: float, y: float): 
+        """Rotates the rectangle around a point with a given coordinate"""
+        for i in range(4):
+            pointVector = np.array([self.poPoints[i][0] - x, self.poPoints[i][1] - y])
+            x_rotated = pointVector[0]*math.cos(angle) - pointVector[1]*math.sin(angle)
+            y_rotated = pointVector[0]*math.sin(angle) - pointVector[1]*math.cos(angle)
+            self.poPoints[i][0] = x_rotated
+            self.poPoints[i][1] = y_rotated
         
 
 def rectangle_factory(x: float, y: float, width: float, height: float) -> Rectangle:
