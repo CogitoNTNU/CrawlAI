@@ -9,7 +9,8 @@ from enum import Enum
 from abc import ABC, abstractmethod
 
 # from src.agent_parts.rectangle import Point
-from renderObject import RenderObject
+from src.renderObject import RenderObject
+from src.agent_parts.rectangle import Point
 # from src.graphics_facade import GraphicsFacade
 # from src.agent import Agent
 
