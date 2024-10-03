@@ -83,12 +83,6 @@ class Rectangle:
         """
         self.width = width
         self.height = height
-        """self.poPoints = np.array([   
-                                        np.array([x, y]),
-                                        np.array([x + height, y]),
-                                        np.array([x + height, y + width]),
-                                        np.array([x, y + width])
-                                    ])"""
         self.poPoints = np.array([ 
                                         np.array([x,y]),
                                         np.array([x + width, y]),

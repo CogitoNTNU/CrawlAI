@@ -1,5 +1,4 @@
 from typing import List
-from renderObject import RenderObject
 
 from src.environment import Environment
 from src.agent_parts.limb import Limb
@@ -69,7 +68,6 @@ class Creature:
         The function iterates through all the creature's limbs and joints and calls their respective render method.
         """
         for limb in self.limblist:
-            print(limb)
             limb.render(window)
         for joint in self.jointlist:
             joint.render(window)
