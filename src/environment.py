@@ -30,6 +30,7 @@ SCREEN_HEIGHT = 500
 FLOOR_HEIGHT = 100
 font = pg.font.Font(pg.font.get_default_font(), FONT_SIZE)
 Instance=0
+perlinSegments = 40
 
 
 # Create the screen
@@ -48,28 +49,42 @@ class InterpolationType(Enum):
 
 
 # set initial parametrs Perlinground generation
-seed = random.randint(0, 2**32)
-perlinAmplitude = 50
-perlinFrequency = 0.2
-octaves = 2
-# number of integer values on screen
-# (implicit frequency)
-perlinSegments = 40
-interpolation = InterpolationType.COSINE
+
 interp_iter = itertools.cycle((InterpolationType.LINEAR, InterpolationType.CUBIC, InterpolationType.COSINE))
 show_marks = False
 
+
+class GroundType(Enum):
+    GROUND = 1
+    PERLIN = 2
+
     
 
+    
 
 class Environment(RenderObject):
     def __init__(self,  screen):
         self.screen = screen
-        self.ground = Ground(screen, SEGMENT_WIDTH)
+        self.ground: BaseGround = self.ground_factory(GroundType.PERLIN)
+        # TODO: change all references to noise to ground
         self.scroll_offset = 0
-        self.noise = PerlinNoise(seed, perlinAmplitude, perlinFrequency, octaves, interpolation)
         self.offset=0
         self.offset_speed=1
+        
+        
+    def ground_factory(self, ground_type: GroundType) -> BaseGround:
+        if ground_type == GroundType.GROUND:
+            return Ground(self.screen, SEGMENT_WIDTH)
+        elif ground_type == GroundType.PERLIN:
+            seed = random.randint(0, 2**32)
+            perlinAmplitude = 50
+            perlinFrequency = 0.2
+            octaves = 2
+            perlinSegments = 40
+            interpolation = InterpolationType.COSINE
+            return PerlinNoise(seed, perlinAmplitude, perlinFrequency, octaves, interpolation)
+        else:
+            raise ValueError("Invalid ground type")
 
         
     def render(self):
