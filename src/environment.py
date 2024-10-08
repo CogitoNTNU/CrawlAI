@@ -10,8 +10,8 @@ from enum import Enum
 from abc import ABC, abstractmethod
 
 # from src.agent_parts.rectangle import Point
-from src.renderObject import RenderObject
-from src.agent_parts.rectangle import Point
+from renderObject import RenderObject
+from agent_parts.rectangle import Point
 # from src.graphics_facade import GraphicsFacade
 # from src.agent import Agent
 
@@ -118,6 +118,7 @@ class Environment(RenderObject):
 
     
     def groundUpdate(self):
+        pass
         self.ground.generate_new_floor_segment(self.scroll_offset)
         self.ground.remove_old_floor_segment(self.scroll_offset)
         self.scroll_offset +=1
@@ -125,6 +126,7 @@ class Environment(RenderObject):
 
     def draw_mark(surface, color, coord):
         pg.draw.circle(surface, color, coord, 3)
+
         
     def perlinUpdate(self):
         # interp_inform = '(I) Interpolation: ' + get_interp_name(self.noise.interp)
@@ -133,35 +135,25 @@ class Environment(RenderObject):
         # seed_inform = '(S) Seed: ' + str(seed)
         # text_surface = font.render(seed_inform, True, BLACK)
         # screen.blit(text_surface, dest=(SCREEN_WIDTH - text_surface.get_width() - 5, SCREEN_HEIGHT - FONT_SIZE))
-
         points = list()
         norma = SCREEN_WIDTH / perlinSegments
         for pix_x in range(SCREEN_WIDTH):
             # convert pixel position to real value
             x = (pix_x + self.offset) / norma
             # get perlin noise
-            y = self.noise.get(x)
-
+            y = self.noise.calculate_y(x)
             # convert perlin noise to pixel height value
             pix_y = SCREEN_HEIGHT / 2 + y
-
             # check is x value integer in Perlin noise coordinates
             real_x = x * self.noise.frequency
             if show_marks and math.isclose(real_x, int(real_x), rel_tol=0.001):
                 self.draw_mark(screen, RED, (pix_x, pix_y))
-
             points.append((pix_x, pix_y))
-
         # draw lines and update display
         pg.draw.lines(screen, (34,139,34), False, points,4)
         pg.display.flip()
-
         # move Perlin noise
         self.offset += self.offset_speed
-
-
-        
-    
     random.seed(time.time())
 
 
@@ -333,27 +325,57 @@ class Vision:
 
 class PerlinNoise():
 
-   def __init__(self, 
+    def __init__(self, 
             seed, amplitude=1, frequency=0.002,
             octaves=1, interp=InterpolationType.COSINE, use_fade=False):
+
+        
+
         self.seed = random.Random(seed).random()
         self.amplitude = amplitude
         self.frequency = frequency
         self.octaves = octaves
         self.interp = interp
         self.use_fade = use_fade
-
+        self.points = list()
+        self.norma = SCREEN_WIDTH / perlinSegments
+        
         self.mem_x = dict()
+    
+
+    def generate_floor_segment(self, offset: int):
+        for pix_x in range(SCREEN_WIDTH):
+            # convert pixel position to real value
+            x = (pix_x + offset) / self.norma
+            # get perlin noise
+            y = self.calculate_y(x)
+
+            # convert perlin noise to pixel height value
+            pix_y = SCREEN_HEIGHT / 2 + y
+
+            # check is x value integer in Perlin noise coordinates
+            real_x = x * self.frequency
+            if show_marks and math.isclose(real_x, int(real_x), rel_tol=0.001):
+                self.draw_mark(screen, RED, (pix_x, pix_y))
+
+            self.points.append((pix_x, pix_y))
+
+    def render(self):
+        # draw lines and update display
+        pg.draw.lines(screen, (34,139,34), False, self.points,4)
+        pg.display.flip()
 
 
-   def __noise(self, x):
+    def __noise(self, x):
         # made for improve performance
         if x not in self.mem_x:
             self.mem_x[x] = random.Random(self.seed + x).uniform(-1, 1)
         return self.mem_x[x]
 
+    def draw_mark(surface, color, coord):
+        pg.draw.circle(surface, color, coord, 3)
 
-   def __interpolated_noise(self, x):
+    def __interpolated_noise(self, x):
         prev_x = int(x) # previous integer
         next_x = prev_x + 1 # next integer
         frac_x = x - prev_x # fractional of x
@@ -383,7 +405,7 @@ class PerlinNoise():
         return res
 
 
-   def get(self, x):
+    def calculate_y(self, x):
         frequency = self.frequency
         amplitude = self.amplitude
         result = 0
@@ -396,7 +418,7 @@ class PerlinNoise():
 
 
 
-   def __cosine_interp(self, a, b, x):
+    def __cosine_interp(self, a, b, x):
         x2 = (1 - math.cos(x * math.pi)) / 2
         return a * (1 - x2) + b * x2
 
