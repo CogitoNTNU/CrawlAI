@@ -1,3 +1,4 @@
+from typing import Protocol
 import pygame as pg
 import random
 import math
@@ -40,7 +41,7 @@ FREQUENCY = 0.05 # Max frequency of hills
 SEGMENT_WIDTH = 200  # Width of each terrain segment
 
 
-class Interp(Enum):
+class InterpolationType(Enum):
     LINEAR = 1
     COSINE = 2
     CUBIC = 3
@@ -54,8 +55,8 @@ octaves = 2
 # number of integer values on screen
 # (implicit frequency)
 perlinSegments = 40
-interpolation = Interp.COSINE
-interp_iter = itertools.cycle((Interp.LINEAR, Interp.CUBIC, Interp.COSINE))
+interpolation = InterpolationType.COSINE
+interp_iter = itertools.cycle((InterpolationType.LINEAR, InterpolationType.CUBIC, InterpolationType.COSINE))
 show_marks = False
 
     
@@ -149,8 +150,25 @@ class Environment(RenderObject):
     random.seed(time.time())
 
 
+class BaseGround(Protocol):
+    @property
+    def generate_floor_segment(self, start_x: float) -> list:
+        pass
 
-class Ground(RenderObject):
+    @property
+    def generate_new_floor_segment(self, scroll_offset: int):
+        pass
+
+    @property
+    def remove_old_floor_segment(self, scroll_offset: float):
+        pass
+
+    @property
+    def get_y(self, x: int) -> int:
+        pass
+
+
+class Ground(RenderObject, BaseGround):
     def __init__(self, screen, segment_width):
         self.screen = screen
        
@@ -158,20 +176,36 @@ class Ground(RenderObject):
         self.terrain_segments = []
 
         self.terrain_segments.append(self.generate_floor_segment(0))
-
-    def get_segment(self, x: int) -> list:
-        """_summary_ Get the segment that contains the x-coordinate
+        
+    def get_current_segment(x: int) -> int:
+        """_summary_ Get the index of the segment that contains the x-coordinate
 
         Args:
             x (int): _description_ The x-coordinate
 
         Returns:
-            list: _description_ The segment that contains the x-coordinate
+            int: _description_ The index of the segment that contains the x-coordinate
         """
-        for segment in self.terrain_segments:
-            if segment[0][0] <= x <= segment[-1][0]:
-                return segment
-    
+        return x // SEGMENT_WIDTH
+        
+    def get_y(self, x: int) -> int:
+        """_summary_ Get the y-coordinate of the terrain at the x-coordinate
+
+        Args:
+            x (int): _description_ The x-coordinate
+
+        Returns:
+            int: _description_ The y-coordinate of the terrain at the x-coordinate
+        """
+        points = self.terrain_segments[self.get_current_segment(x)]
+        
+        for point in points:
+            if point[0] == x:
+                return point[1]
+            
+        raise ValueError("The x-coordinate is not in the terrain segment")
+        
+
     
             
     
@@ -229,52 +263,25 @@ class Ground(RenderObject):
 
 
 
-# class Vision:
-#     alpha = 0.5
-#     intersection: Point
-    
 
-#     def __init__(self):
-#         pass
-        
-
-
-class AbstractGround(ABC):
-    @abstractmethod
-    def generate_floor_segment(self, start_x: float) -> list:
-        pass
-
-    @abstractmethod
-    def generate_new_floor_segment(self, scroll_offset: int):
-        pass
-
-    @abstractmethod
-    def remove_old_floor_segment(self, scroll_offset: float):
-        pass
 
     
 
 class Vision:
     eye_position: Point
-    alpha = 0.5
-    sight_widht = 0.5
-    beta = alpha + sight_widht
-    lower_periphery: Point 
-    upper_periphery: Point
-    angle_speed = 0.1
+    sight_width = 10
+    x_offset = 10
+    near_periphery: Point 
+    far_periphery: Point
+    
+
     
     def __init__(self, eye_position: Point):
-        self.lower_periphery = None
-        self.upper_periphery = None
+        self.near_periphery = None
+        self.far_periphery = None
         
-    def move_eye(self) -> None:
-        """_summary_ Move the eye by increasing the alpha and beta angles by the angle_speed.
-        """
-        self.alpha += self.angle_speed
-        self.beta += self.angle_speed
-        
-        
-    def update(self, eye_position: Point, ground: Ground) -> None:
+    
+    def update(self, eye_position: Point, ground: BaseGround) -> None:
         """_summary_ Update the vision based on the eye position and the environment.
 
         Args:
@@ -282,11 +289,13 @@ class Vision:
             environment (Environment): _description_
         """
         self.eye_position = eye_position
-        self.move_eye()
         
-        # LA STÅ!!!!
-        # self.lower_periphery.x = intersection mellom linje og bakken                      
-        # self.upper_periphery = intersection mellom linje og bakken
+        x1 = eye_position.x + self.x_offset
+        x2 = x1 + self.sight_width
+        
+        self.near_periphery = Point(x1, ground.get_y(x1))
+        self.far_periphery = Point(x2, ground.get_y(x2))
+        
         
     
     def get_alpha(self):
@@ -294,15 +303,15 @@ class Vision:
     def get_beta(self):
         return self.beta
     def get_lower_periphery(self):
-        return self.lower_periphery
+        return self.near_periphery
     def get_upper_periphery(self):
-        return self.upper_periphery
+        return self.far_periphery
     def get_eye_position(self):
         return self.eye_position
     def get_angle_speed(self):
         return self.angle_speed
     def get_sight_width(self):
-        return self.sight_widht
+        return self.sight_width
         
         
     
@@ -311,7 +320,7 @@ class PerlinNoise():
 
    def __init__(self, 
             seed, amplitude=1, frequency=0.002,
-            octaves=1, interp=Interp.COSINE, use_fade=False):
+            octaves=1, interp=InterpolationType.COSINE, use_fade=False):
         self.seed = random.Random(seed).random()
         self.amplitude = amplitude
         self.frequency = frequency
@@ -338,12 +347,12 @@ class PerlinNoise():
             frac_x = self.__fade(frac_x)
 
         # intepolate x
-        if self.interp is Interp.LINEAR:
+        if self.interp is InterpolationType.LINEAR:
             res = self.__linear_interp(
                 self.__noise(prev_x), 
                 self.__noise(next_x),
                 frac_x)
-        elif self.interp is Interp.COSINE:
+        elif self.interp is InterpolationType.COSINE:
             res = self.__cosine_interp(
                 self.__noise(prev_x), 
                 self.__noise(next_x),
