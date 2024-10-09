@@ -1,5 +1,4 @@
 from typing import List
-from renderObject import RenderObject
 
 from src.environment import Environment
 from src.agent_parts.limb import Limb
@@ -24,10 +23,11 @@ class Creature:
     
     env: Environment
     limblist: list[Limb]
-    jointlist: list[Joint]
+    #jointlist: list[Joint]
     position: list[float, float]
 
-    def __init__(self, env: Environment, limblist: list[Limb], jointlist: list[Joint]):
+    def __init__(self, env: Environment, limblist: list[Limb]):
+        #takes jointList as input
         """
         Initializes the Creature object.
 
@@ -44,17 +44,17 @@ class Creature:
         """
         self.env = env
         self.limblist = limblist
-        self.jointlist = jointlist
+        #self.jointlist = jointlist
         self.position = [200, 200]
         
-    def act(self, actions: list) -> None:
-        """_summary_ Act on the environment based on the actions. This will rotate the joints. Creature physics must handle the rest.
+    # def act(self, actions: list) -> None:
+    #     """_summary_ Act on the environment based on the actions. This will rotate the joints. Creature physics must handle the rest.
 
-        Args:
-            actions (list): list of rotations for each joint.
-        """
-        for i in range(len(actions)):
-            self.jointlist[i].rotate(actions[i])
+    #     Args:
+    #         actions (list): list of rotations for each joint.
+    #     """
+    #     for i in range(len(actions)):
+    #         self.jointlist[i].rotate(actions[i])
     
     def render(self, window):
         """
@@ -69,10 +69,9 @@ class Creature:
         The function iterates through all the creature's limbs and joints and calls their respective render method.
         """
         for limb in self.limblist:
-            print(limb)
             limb.render(window)
-        for joint in self.jointlist:
-            joint.render(window)
+        # for joint in self.jointlist:
+        #     joint.render(window)
     
     def updatePosition(self, x: float, y: float):
         """
@@ -91,7 +90,8 @@ class Creature:
         for limb in self.limblist:
             limb.updatePosition(x, y)
 
-def creature_factory(env: Environment, limblist: list[Limb], jointlist: list[Joint]) -> Creature:
+def creature_factory(env: Environment, limblist: list[Limb]) -> Creature:
+    #, jointlist: list[Joint]
     """
     Factory function for creating a Creature object.
 
@@ -109,4 +109,4 @@ def creature_factory(env: Environment, limblist: list[Limb], jointlist: list[Joi
     Creature:
         A new instance of the Creature class.
     """
-    return Creature(env, limblist, jointlist)
+    return Creature(env, limblist)

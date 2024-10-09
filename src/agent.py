@@ -14,10 +14,6 @@ from src.agent_parts.rectangle import Rectangle, rectangle_factory
 
 
 
-GRAVITY = 9.81
-
-
-
 class Agent():
     genome: Genome
     creature: Creature
@@ -59,32 +55,7 @@ class Agent():
         pass
 
 
-if __name__ =="__main__":
-    import pygame
 
-
-    rect = rectangle_factory(100, 100, 50, 50)
-    limb = limb_factory(rect, 3, 2)
-
-    aurelius = creature_factory(None, [limb], [])
-    
-    pygame.init()
-    window = pygame.display.set_mode((800, 600))
-    active = True
-    while active:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                active = False
-        window.fill((0, 0, 0))
-        pygame.draw.rect(window, (255, 0, 0), (0, 0, 800, 600))
-        aurelius.render(window)
-        aurelius.updatePosition(0, -GRAVITY)
-        pygame.display.flip()
-        pygame.time.delay(10)
-        
-        
-    
-    pygame.quit()
 
     
     
