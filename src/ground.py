@@ -233,7 +233,7 @@ class PerlinNoise():
             # convert perlin noise to pixel height value
             pix_y = SCREEN_HEIGHT / 2 + y
             # check is x value integer in Perlin noise coordinates
-            frequency=0.002
+            frequency = 0.002
             real_x = x * frequency
             if show_marks and math.isclose(real_x, int(real_x), rel_tol=0.001):
                 self.draw_mark(screen, RED, (pix_x, pix_y))
@@ -250,7 +250,13 @@ class PerlinNoise():
         args: offset is just for matching the function signature
         """
         # draw lines and update display
-        pg.draw.lines(screen, (34,139,34), False, self.render_points,4)
+        pg.draw.lines(
+            screen, 
+            (34, 139, 34),
+            False,
+            self.render_points,
+            4
+            )
         pg.display.flip()
 
 
