@@ -166,14 +166,14 @@ class BasicGround(RenderObject, Ground):
 class PerlinNoise():
 
     def __init__(
-        self,
-        seed,
-        amplitude=1,
-        frequency=0.002,
-        octaves=1,
-        interp=InterpolationType.COSINE,
-        use_fade=False
-        ) -> None:
+                self,
+                seed,
+                amplitude=1,
+                frequency=0.002,
+                octaves=1,
+                interp=InterpolationType.COSINE,
+                use_fade=False
+                ) -> None:
         
         self.seed = random.Random(seed).random()
         self.amplitude = amplitude
