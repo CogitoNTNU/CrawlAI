@@ -32,7 +32,6 @@ screen = pg.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
 
 
-
 class Ground(Protocol):
     @property
     def generate_floor_segment(self, start_x: float) -> list:
@@ -46,6 +45,10 @@ class Ground(Protocol):
     def remove_old_floor_segment(self, scroll_offset: float):
         pass
 
+    @property
+    def swap_floor_segments(self, scroll_offset: float):
+        pass
+    
     @property
     def get_y(self, x: int) -> int:
         pass
@@ -139,11 +142,17 @@ class BasicGround(RenderObject, Ground):
             last_x = self.terrain_segments[-1][-1][0]
             self.terrain_segments.append(self.generate_floor_segment(last_x))
 
-    def remove_old_floor_segment(self, scroll_offset: float) -> None:
-        # Remove old segments that are off-screen
-            if self.terrain_segments[0][-1][0] - scroll_offset < -SEGMENT_WIDTH:
-                self.terrain_segments.pop(0)
+    # def remove_old_floor_segment(self, scroll_offset: float) -> None:
+    #     # Remove old segments that are off-screen
+    #         if self.terrain_segments[0][-1][0] - scroll_offset < -SEGMENT_WIDTH:
+    #             self.terrain_segments.pop(0)
+
     
+    def swap_floor_segments(self, scroll_offset: float) -> None:
+        if self.terrain_segments[0][-1][0] - scroll_offset < -SEGMENT_WIDTH:
+            self.terrain_segments.append(self.terrain_segments.pop(0))
+
+
     
     def render(self,scroll_offset: float) -> None:    
         

@@ -1,7 +1,14 @@
+from typing import Protocol
 import pygame as pg
 import random
+import math
+import time 
 import itertools
 from enum import Enum
+
+
+
+# from src.agent_parts.rectangle import Point
 
 from ground import Ground, BasicGround, InterpolationType, PerlinNoise
 from renderObject import RenderObject
