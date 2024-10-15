@@ -5,6 +5,8 @@ import numpy as np
 
 
 class NEATNetwork():
+
+
     def __init__(self, genome: Genome):
         
         # Store genome information
@@ -50,7 +52,14 @@ class NEATNetwork():
 
         return topological_order
 
-    def forward(self, x):
+    def forward(self, x: np.ndarray) -> np.ndarray:
+        """
+        Perform a forward pass through the network given an input.
+        Args:
+            x: Input array to the network
+        Returns:
+            Output array from the network
+        """
         # Dictionary to store outputs of each node
         node_outputs = {}
 
@@ -84,8 +93,3 @@ class NEATNetwork():
         output = np.array([node_outputs[node.id] for node in output_nodes])
         return output
 
-# Example usage:
-# genome = Genome(...) # Your genome definition
-# model = NEATNetwork(genome)
-# x = torch.rand(1, len([n for n in genome.nodes if n.node_type == 'input']))  # Random input
-# output = model(x)
