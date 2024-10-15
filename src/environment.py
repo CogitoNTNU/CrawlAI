@@ -13,7 +13,7 @@ from enum import Enum
 from ground import Ground, BasicGround, InterpolationType, PerlinNoise
 from renderObject import RenderObject
 from agent_parts.rectangle import Point
-from globals import SCREEN_WIDTH, SCREEN_HEIGHT, FONT_SIZE, SEGMENT_WIDTH
+from globals import SCREEN_WIDTH, SCREEN_HEIGHT, FONT_SIZE, SEGMENT_WIDTH, RED, BLACK
 # from src.graphics_facade import GraphicsFacade
 # from src.agent import Agent
 
@@ -40,22 +40,27 @@ class GroundType(Enum):
 class Environment(RenderObject):
     def __init__(self,  screen):
         self.screen = screen
-        self.ground_type = GroundType.PERLIN
+        self.ground_type = GroundType.BASIC_GROUND
         self.ground: Ground = self.ground_factory(self.ground_type)
+        self.starting_xx = 50
+        self.point = Point(self.starting_xx, 300)
+        self.vision: Vision = Vision(self.point)
         # TODO: change all references to noise to ground
         
         self.offset = 0
         self.offset_speed = 1
         
+
     def ground_factory(self, ground_type: GroundType) -> Ground:
         
         match ground_type:
             case GroundType.BASIC_GROUND:
+                print("hei")
                 return BasicGround(self.screen, SEGMENT_WIDTH)
             case GroundType.PERLIN:
                 seed = random.randint(0, 2**32)
-                perlinAmplitude = 50
-                perlinFrequency = 0.2
+                perlinAmplitude = 30
+                perlinFrequency = 0.1
                 octaves = 2
                 interpolation = InterpolationType.COSINE
                 return PerlinNoise(
@@ -82,7 +87,9 @@ class Environment(RenderObject):
             screen.fill((135, 206, 235))
             
             self.ground.update(self.offset)  
-            self.ground.render(self.offset)              
+            self.ground.render(self.offset)
+            self.starting_xx += 1
+            self.vision.update(Point(self.starting_xx,300), self.ground)              
             match self.ground_type:
                 case GroundType.BASIC_GROUND:
                     self.offset += 1
@@ -124,7 +131,14 @@ class Vision:
         
         self.near_periphery = Point(x1, ground.get_y(x1))
         self.far_periphery = Point(x2, ground.get_y(x2))
+        self.render_vision(screen)
+
+    def render_vision(self, screen):
+        pg.draw.circle(screen, BLACK, (self.eye_position.x,self.eye_position.y), 5, 2)
+        pg.draw.line(screen, RED, (self.eye_position.x,self.eye_position.y), (self.near_periphery.x,self.near_periphery.y), 2)
+        pg.draw.line(screen, RED, (self.eye_position.x,self.eye_position.y), (self.far_periphery.x, self.far_periphery.y), 2)
         
+
     def get_lower_periphery(self):
         return self.near_periphery
     
