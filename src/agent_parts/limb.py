@@ -95,7 +95,7 @@ class Limb(RenderObject):
         rect_pos=self.rect.get_position()
         rect_angle=self.rect.get_angle()
 
-        final_x, final_y = self.rect.rotatePointPoint(rect_angle,renderObject_relative_pos,Point(rect_pos.x+1,rect_pos.y))
+        final_x, final_y = self.rect.rotatePointPoint(rect_angle, Point(renderObject_relative_pos.x+rect_pos.x,renderObject_relative_pos.y+rect_pos.y), rect_pos)
 
         renderObject.set_position(Point(final_x, final_y))
     
@@ -157,8 +157,12 @@ class Limb(RenderObject):
             rect_pos=self.rect.get_position()
             rectangle_angle=self.rect.get_angle()
 
-            angle, _ =self.rect.angle_between_vectors(np.array([math.cos(rectangle_angle), math.sin(rectangle_angle)]), np.array([joint_pos.x-rect_pos.x,joint_pos.y-rect_pos.y]))
-            relative_x, relative_y = self.rect.rotatePointPoint(angle,joint_pos,rect_pos)
+            relative_x = joint_pos.x-rect_pos.x
+            relative_y = joint_pos.y-rect_pos.y
+
+            angle, _ =self.rect.angle_between_vectors(np.array([math.cos(rectangle_angle), math.sin(rectangle_angle)]), np.array([ relative_x, relative_y]))
+            
+            relative_x, relative_y =  math.sqrt(relative_x**2+relative_y**2)*math.cos(angle-rectangle_angle), math.sqrt(relative_x**2+relative_y**2)*math.sin(angle-rectangle_angle)
             joint.set_relative_position(Point(relative_x, relative_y))
 
 
