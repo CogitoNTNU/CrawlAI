@@ -1,8 +1,11 @@
-from src.environment import Environment
 from src.renderObject import RenderObject
+import pygame as pg
 from src.agent_parts.limb import Limb
+from src.agent_parts.rectangle import Point
+
 
 class Joint(RenderObject):
+
     """
     The Joint class represents a connection between two limbs, providing a 
     point of articulation or rotation between them. The joint tracks the angle 
@@ -13,17 +16,18 @@ class Joint(RenderObject):
                        rotation between the two limbs.
         limb1 (Limb): The first limb connected to the joint.
         limb2 (Limb): The second limb connected to the joint.
-        position1 (list[float, float]): The position of the joint on the first limb.
-        position2 (list[float, float]): The position of the joint on the second limb.
+        position1 (list[float, float]): The position of the 
+        joint on the first limb.
+        position2 (list[float, float]): The position of the j
+        oint on the second limb.
     """
 
     angle: float
-    limb1: Limb
-    limb2: Limb
-    position1: list[float, float]
-    position2: list[float, float]
+    limbChild: Limb
+    point: Point
+    relative_point: Point
 
-    def __init__(self, angle: float, limb1: Limb, limb2: Limb, position1: list[float, float], position2: list[float, float]):
+    def __init__(self, angle: float, point: Point):
         """
         Initializes a Joint object.
 
@@ -31,30 +35,41 @@ class Joint(RenderObject):
             angle (float): The initial angle of the joint.
             limb1 (Limb): The first limb to be connected to the joint.
             limb2 (Limb): The second limb to be connected to the joint.
-            position1 (list[float, float]): The position on the first limb where the joint is attached.
-            position2 (list[float, float]): The position on the second limb where the joint is attached.
+            position1 (list[float, float]): The position on the first
+            limb where the joint is attached.
+            position2 (list[float, float]): The position on the second
+            limb where the joint is attached.
         """
         self.angle = angle
-        self.limb1 = limb1
-        self.limb2 = limb2
-        self.position1 = position1
-        self.position2 = position2
+        self.limbChild = None
+        self.point = point
+        self.relative_point = None
+
+    def get_position(self):
+        return self.point
     
-    def render(self):
+    def set_position(self, point: Point):
+        self.point = point
+    
+    def render(self, window):
         """
         This method is responsible for rendering the joint visually.
-        It is currently a placeholder method, and should be implemented in 
+        It is currently a placeholder method, and should be implemented in
         subclasses or future revisions if visual representation is required.
         """
-        pass
+        print(self.point.x, self.point.y)
+        radius = min(window.get_width(), window.get_height())*0.005
+        pg.draw.circle(window, (0, 0, 0), (self.point.x, self.point.y), radius)
+        if (self.limbChild is not None):
+            self.limbChild.render(window)
 
     def rotate(self, angle: float):
         """
         Rotates the joint by a given angle, modifying the current joint angle.
 
         Args:
-            angle (float): The angle (in degrees or radians, based on the system) 
-                           by which the joint should be rotated.
+            angle (float): The angle (in degrees or radians, based on 
+            the system) by which the joint should be rotated.
         """
         self.angle += angle
         
@@ -76,8 +91,14 @@ class Joint(RenderObject):
         """
         self.angle = angle
 
+    def set_relative_position(self, point: Point):
+        self.relative_point = point
 
-def joint_factory(parent: Limb, child: Limb) -> Joint:
+    def get_relative_position(self):
+        return self.relative_point
+
+
+def joint_factory(angle: float, point: Point) -> Joint:
     """
     Factory function for creating a Joint object between two limbs.
 
@@ -93,4 +114,4 @@ def joint_factory(parent: Limb, child: Limb) -> Joint:
     Returns:
         Joint: A new Joint instance connecting the parent and child limbs.
     """
-    return Joint()
+    return Joint(angle, point)
