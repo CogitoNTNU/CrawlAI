@@ -7,21 +7,12 @@ import itertools
 from enum import Enum
 
 from renderObject import RenderObject
+from globals import SCREEN_WIDTH, SCREEN_HEIGHT, FLOOR_HEIGHT, PERLIN_SEGMENTS, RED, AMPLITUDE, FREQUENCY, SEGMENT_WIDTH
+
 pg.init()
-FONT_SIZE = 14
-SCREEN_WIDTH = 700
-SCREEN_HEIGHT = 500
-FLOOR_HEIGHT = 100
-font = pg.font.Font(pg.font.get_default_font(), FONT_SIZE)
-Instance=0
-perlinSegments = 40
 
+show_marks = False
 
-BLACK = (0,0,0)
-BLUE = (0,0,255)
-RED = (255, 0, 0)
-YELLOW = (255, 255, 0)
-WHITE = (255,255,255)
 
 
 class InterpolationType(Enum):
@@ -30,20 +21,11 @@ class InterpolationType(Enum):
     CUBIC = 3
 
 
-# set initial parametrs Perlinground generation
-
-interp_iter = itertools.cycle((InterpolationType.LINEAR, InterpolationType.CUBIC, InterpolationType.COSINE))
-show_marks = False
-
 
 
 # Create the screen
 screen = pg.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
-# Constants for Ground terrain generation
-AMPLITUDE = 40 # Max height of hills
-FREQUENCY = 0.05 # Max frequency of hills
-SEGMENT_WIDTH = SCREEN_WIDTH/2  # Width of each terrain segment
 
 
 
@@ -79,6 +61,10 @@ class Ground(Protocol):
     @property
     def calculate_y(self, x: int) -> int:
         # TODO: remove this later
+        pass
+    
+    @property
+    def update(self):
         pass
 
 
@@ -118,6 +104,12 @@ class BasicGround(RenderObject, Ground):
                 return point[1]
             
         raise ValueError("The x-coordinate is not in the terrain segment")
+        
+    def update(self, scroll_offset: float) -> None:
+        pass
+        self.generate_new_floor_segment(scroll_offset)
+        self.remove_old_floor_segment(scroll_offset)
+        scroll_offset +=1
         
             
             
@@ -204,7 +196,8 @@ class PerlinNoise():
         self.interp = interp
         self.use_fade = use_fade
         self.points = list()
-        self.norma = SCREEN_WIDTH / perlinSegments
+        self.render_points = list()
+        self.norma = SCREEN_WIDTH / PERLIN_SEGMENTS
         
         self.mem_x = dict()
     
@@ -230,12 +223,43 @@ class PerlinNoise():
                 self.draw_mark(screen, RED, (pix_x, pix_y))
 
             self.points.append((pix_x, pix_y))
+            
+            
+    def update(self, offset: int) -> None:
+        # interp_inform = '(I) Interpolation: ' + get_interp_name(self.noise.interp)
+        # text_surface = font.render(interp_inform, True, BLACK)
+        # screen.blit(text_surface, dest=(SCREEN_WIDTH - text_surface.get_width() - 5, 0))
+        # seed_inform = '(S) Seed: ' + str(seed)
+        # text_surface = font.render(seed_inform, True, BLACK)
+        # screen.blit(text_surface, dest=(SCREEN_WIDTH - text_surface.get_width() - 5, SCREEN_HEIGHT - FONT_SIZE))
+        points = list()
+        norma = SCREEN_WIDTH / PERLIN_SEGMENTS
+        for pix_x in range(SCREEN_WIDTH):
+            # convert pixel position to real value
+            x = (pix_x + offset) / norma
+            # get perlin noise
+            y = self.calculate_y(x)
+            # convert perlin noise to pixel height value
+            pix_y = SCREEN_HEIGHT / 2 + y
+            # check is x value integer in Perlin noise coordinates
+            frequency=0.002
+            real_x = x * frequency
+            if show_marks and math.isclose(real_x, int(real_x), rel_tol=0.001):
+                self.draw_mark(screen, RED, (pix_x, pix_y))
+            points.append((pix_x, pix_y))
+        # draw lines and update display
+        self.render_points = points
+        # pg.draw.lines(screen, (34,139,34), False, points,4)
+        # pg.display.flip()
+        # move Perlin noise
+        random.seed(time.time())
 
-    def render(self) -> None:
+    def render(self, offset) -> None:
         """_summary_ Render the screen objects
+        args: offset is just for matching the function signature
         """
         # draw lines and update display
-        pg.draw.lines(screen, (34,139,34), False, self.points,4)
+        pg.draw.lines(screen, (34,139,34), False, self.render_points,4)
         pg.display.flip()
 
 
