@@ -3,7 +3,6 @@ import pygame as pg
 import random
 import math
 import time 
-import itertools
 from enum import Enum
 
 from renderObject import RenderObject
@@ -13,23 +12,13 @@ pg.init()
 
 show_marks = False
 
+screen = pg.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
 
 class InterpolationType(Enum):
     LINEAR = 1
     COSINE = 2
     CUBIC = 3
-
-
-
-
-# Create the screen
-screen = pg.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-
-
-
-
-
 
 
 class Ground(Protocol):
@@ -48,21 +37,21 @@ class Ground(Protocol):
     @property
     def swap_floor_segments(self, scroll_offset: float):
         pass
-    
+
     @property
     def get_y(self, x: int) -> int:
         pass
-    
+
     @property
     def render(self, scroll_offset: float):
         # TODO: removew this later, when we call render from another place than environment
         pass
-    
+
     @property
     def calculate_y(self, x: int) -> int:
         # TODO: remove this later
         pass
-    
+
     @property
     def update(self):
         pass
@@ -71,20 +60,23 @@ class Ground(Protocol):
 class BasicGround(RenderObject, Ground):
     def __init__(self, screen: pg.display, segment_width: int) -> None:
         self.screen = screen
-       
+   
         self.segment_width = segment_width
         self.terrain_segments = []
 
         self.terrain_segments.append(self.generate_floor_segment(0))
-        
+    
     def get_current_segment(x: int) -> int:
-        """_summary_ Get the index of the segment that contains the x-coordinate
+        """
+        Get the index of the segment that contains 
+        the x-coordinate
 
         Args:
             x (int): _description_ The x-coordinate
 
         Returns:
-            int: _description_ The index of the segment that contains the x-coordinate
+            int: _description_ The index of the segment that contains the 
+            x-coordinate
         """
         return x // SEGMENT_WIDTH
         
@@ -95,7 +87,8 @@ class BasicGround(RenderObject, Ground):
             x (int): _description_ The x-coordinate
 
         Returns:
-            int: _description_ The y-coordinate of the terrain at the x-coordinate
+            int: _description_ The y-coordinate of the terrain at the 
+            x-coordinate
         """
         points = self.terrain_segments[self.get_current_segment(x)]
         
@@ -109,26 +102,27 @@ class BasicGround(RenderObject, Ground):
         pass
         self.generate_new_floor_segment(scroll_offset)
         self.remove_old_floor_segment(scroll_offset)
-        scroll_offset +=1
-        
-            
-            
-    def generate_floor_segment(self, start_x : float) -> list:
+        scroll_offset += 1
+           
+    def generate_floor_segment(self, start_x: float) -> list:
         """
         Generates a segment of the floor
         
         Args:
-            start_x (float): The x-coordinate of the starting point of the segment
+            start_x (float): The x-coordinate of the starting point 
+            of the segment
         returns:
-            list: A list of points representing the floor segment 
+            list: A list of points representing the floor segment
         """
 
-        floor= []
+        floor = []
         for x in range(start_x, start_x + self.segment_width + 1, 1):
-            y = int(SCREEN_HEIGHT - FLOOR_HEIGHT + AMPLITUDE * math.sin(FREQUENCY * x))
+            y = int(
+                SCREEN_HEIGHT - FLOOR_HEIGHT + AMPLITUDE * math.sin(
+                    FREQUENCY * x)
+                )
             floor.append((x, y))
         return floor
-    
 
     def generate_new_floor_segment(self, scroll_offset: int) -> None:
         """_summary_ Generate a new floor segment
@@ -141,53 +135,36 @@ class BasicGround(RenderObject, Ground):
             # Generate a new segment at the rightmost part of the terrain
             last_x = self.terrain_segments[-1][-1][0]
             self.terrain_segments.append(self.generate_floor_segment(last_x))
-
-    # def remove_old_floor_segment(self, scroll_offset: float) -> None:
-    #     # Remove old segments that are off-screen
-    #         if self.terrain_segments[0][-1][0] - scroll_offset < -SEGMENT_WIDTH:
-    #             self.terrain_segments.pop(0)
-
     
     def swap_floor_segments(self, scroll_offset: float) -> None:
         if self.terrain_segments[0][-1][0] - scroll_offset < -SEGMENT_WIDTH:
             self.terrain_segments.append(self.terrain_segments.pop(0))
 
-
-    
-    def render(self,scroll_offset: float) -> None:    
-        
+    def render(self, scroll_offset: float) -> None:  
         """Render screen objects
 
         Args:
             terrain_segments (_type_): _description_
             scroll_offset (_type_): _description_
         """
-        
-
         for segment in self.terrain_segments:
             shifted_points = [(x - scroll_offset, y) for (x, y) in segment]
             # Add points to close the polygon and fill the bottom of the screen
             shifted_points.append((shifted_points[-1][0], SCREEN_HEIGHT))
             shifted_points.append((shifted_points[0][0], SCREEN_HEIGHT))
-            pg.draw.polygon(screen, (34, 139, 34), shifted_points)  # Green hills
-
-
-
-
-
-
-
-
-
-
+            pg.draw.polygon(screen, (34, 139, 34), shifted_points)
+            
 
 class PerlinNoise():
 
-    def __init__(self, 
-            seed, amplitude=1, frequency=0.002,
-            octaves=1, interp=InterpolationType.COSINE, use_fade=False):
-
-        
+    def __init__(
+        self,
+        seed,
+        amplitude=1,
+        frequency=0.002,
+        octaves=1,
+        interp=InterpolationType.COSINE,
+        use_fade=False) -> None:
 
         self.seed = random.Random(seed).random()
         self.amplitude = amplitude
@@ -201,7 +178,6 @@ class PerlinNoise():
         
         self.mem_x = dict()
     
-
     def generate_floor_segment(self, offset: int) -> None:
         """_summary_ Generate a segment of the floor
 
@@ -223,15 +199,13 @@ class PerlinNoise():
                 self.draw_mark(screen, RED, (pix_x, pix_y))
 
             self.points.append((pix_x, pix_y))
-            
-            
+                
     def update(self, offset: int) -> None:
-        # interp_inform = '(I) Interpolation: ' + get_interp_name(self.noise.interp)
-        # text_surface = font.render(interp_inform, True, BLACK)
-        # screen.blit(text_surface, dest=(SCREEN_WIDTH - text_surface.get_width() - 5, 0))
-        # seed_inform = '(S) Seed: ' + str(seed)
-        # text_surface = font.render(seed_inform, True, BLACK)
-        # screen.blit(text_surface, dest=(SCREEN_WIDTH - text_surface.get_width() - 5, SCREEN_HEIGHT - FONT_SIZE))
+        """Update the screen objects
+
+        Args:
+            offset (int): _description_
+        """
         points = list()
         norma = SCREEN_WIDTH / PERLIN_SEGMENTS
         for pix_x in range(SCREEN_WIDTH):
@@ -267,7 +241,6 @@ class PerlinNoise():
             4
             )
         pg.display.flip()
-
 
     def __noise(self, x) -> float:
         """
@@ -305,9 +278,9 @@ class PerlinNoise():
         Returns:
             float: result of interpolation
         """
-        prev_x = int(x) # previous integer
-        next_x = prev_x + 1 # next integer
-        frac_x = x - prev_x # fractional of x
+        prev_x = int(x)  # previous integer
+        next_x = prev_x + 1  # next integer
+        frac_x = x - prev_x  # fractional of x
 
         if self.use_fade:
             frac_x = self.__fade(frac_x)
@@ -333,7 +306,6 @@ class PerlinNoise():
 
         return res
 
-
     def calculate_y(self, x: int) -> float:
         """_summary_ Calculate the y value of the Perlin noise at the given x
 
@@ -352,8 +324,6 @@ class PerlinNoise():
             amplitude /= 2
 
         return result
-
-
 
     def __cosine_interp(self, a, b, x) -> float:
         x2 = (1 - math.cos(x * math.pi)) / 2

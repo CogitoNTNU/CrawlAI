@@ -11,9 +11,6 @@ from src.agent_parts.creature import Creature, creature_factory
 from src.agent_parts.rectangle import Rectangle, rectangle_factory
 
 
-
-
-
 class Agent():
     genome: Genome
     creature: Creature
@@ -24,7 +21,8 @@ class Agent():
         
     def get_inputs_from_env(self, env) -> list:
         vision = env.get_vision()
-        # TODO: Implement the rest of the inputs, they are the joint angles, health and the position of the limbs.
+        # TODO: Implement the rest of the inputs, they are the joint angles, 
+        # health and the position of the limbs.
         pass
     
     def do_inference(self, inputs: list) -> list:
@@ -38,9 +36,6 @@ class Agent():
         """
         pass
     
-    
-    
-    
     def act(self, env) -> None:
         self.creature.act(self.do_inference(self.get_inputs_from_env(env)))
         pass
@@ -51,7 +46,7 @@ class Agent():
     def load(self, path) -> None:
         pass
 
-    def get_genome(self) :
+    def get_genome(self) -> Genome:
         pass
 
 
