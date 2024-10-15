@@ -13,14 +13,14 @@ class NEATNetwork():
         # Create dictionaries for nodes and connections
         self.node_dict = {node.id: node for node in genome.nodes}
         self.connection_dict = {conn.innovation_number: conn for conn in genome.connections if conn.enabled}
-
+        
         # Topologically sort nodes based on connections
         self.topological_order = self._topological_sort()
 
-    def sigmoid(x):
+    def sigmoid(self, x):
         return 1 / (1 + np.exp(-x))
 
-    def ReLU(x):
+    def ReLU(self, x):
         return np.maximum(0, x)
 
     def _topological_sort(self):
@@ -60,7 +60,7 @@ class NEATNetwork():
 
         # Assign input values
         for i, node in enumerate(input_nodes):
-            node_outputs[node.id] = x[:, i]
+            node_outputs[node.id] = x[i]
 
         # Process nodes in topological order
         for node_id in self.topological_order:
@@ -74,14 +74,14 @@ class NEATNetwork():
             node_sum = 0
             for conn in incoming_connections:
                 in_node = conn.in_node
-                weight = self.connections[f"{in_node}->{conn.out_node}"]
+                weight = conn.weight
                 node_sum += node_outputs[in_node] * weight
 
             # Apply activation (sigmoid for hidden and output nodes)
             node_outputs[node_id] = self.ReLU(node_sum)
 
         # Collect the outputs for final output nodes
-        output = np.stack([node_outputs[node.id] for node in output_nodes], axis=1)
+        output = np.array([node_outputs[node.id] for node in output_nodes])
         return output
 
 # Example usage:
