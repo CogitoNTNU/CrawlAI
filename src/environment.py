@@ -1,21 +1,13 @@
-from typing import Protocol
 import pygame as pg
 import random
-import math
-import time 
+
 import itertools
 from enum import Enum
-
-
-
-# from src.agent_parts.rectangle import Point
 
 from ground import Ground, BasicGround, InterpolationType, PerlinNoise
 from renderObject import RenderObject
 from agent_parts.rectangle import Point
 from globals import SCREEN_WIDTH, SCREEN_HEIGHT, FONT_SIZE, SEGMENT_WIDTH
-# from src.graphics_facade import GraphicsFacade
-# from src.agent import Agent
 
 
 pg.init()
