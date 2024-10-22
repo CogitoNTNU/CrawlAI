@@ -1,7 +1,7 @@
 from enum import Enum
 import numpy as np
 
-from CrawlAI.src.render_object import RenderObject
+from src.render_object import RenderObject
 from src.agent_parts.rectangle import Rectangle, Point
 import math
 

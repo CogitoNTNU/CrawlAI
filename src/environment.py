@@ -5,7 +5,7 @@ import itertools
 from enum import Enum
 
 from ground import Ground, BasicGround, InterpolationType, PerlinNoise
-from CrawlAI.src.render_object import RenderObject
+from render_object import RenderObject
 from agent_parts.rectangle import Point
 from globals import (
     SCREEN_WIDTH, 

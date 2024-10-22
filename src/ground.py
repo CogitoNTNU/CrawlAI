@@ -5,7 +5,7 @@ import math
 import time 
 from enum import Enum
 
-from renderObject import RenderObject
+from src.render_object import RenderObject
 from globals import (SCREEN_WIDTH,
                      SCREEN_HEIGHT,
                      FLOOR_HEIGHT,

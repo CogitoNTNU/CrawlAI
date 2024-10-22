@@ -1,4 +1,4 @@
-from CrawlAI.src.render_object import RenderObject
+from src.render_object import RenderObject
 import pygame as pg
 from src.agent_parts.limb import Limb
 from src.agent_parts.rectangle import Point
