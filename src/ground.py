@@ -192,30 +192,23 @@ class PerlinNoise():
         """Update the screen objects
 
         Args:
-            offset (int): _description_
+            offset (int): The current offset for the scrolling terrain
         """
+        self.offset = offset  # Store the offset for use in other methods
         points = list()
         norma = SCREEN_WIDTH / PERLIN_SEGMENTS
         for pix_x in range(SCREEN_WIDTH):
-            # convert pixel position to real value
             x = (pix_x + offset) / norma
-            # get perlin noise
             y = self.generate_y(x)
-            # convert perlin noise to pixel height value
             pix_y = SCREEN_HEIGHT / 2 + y
-            # check is x value integer in Perlin noise coordinates
-            frequency = 0.002
-            real_x = x * frequency
-            if show_marks and math.isclose(real_x, int(real_x), rel_tol=0.001):
+            if show_marks and math.isclose(
+                    x * self.frequency,
+                    int(x * self.frequency),
+                    rel_tol=0.001
+                    ):
                 self.draw_mark(screen, RED, (pix_x, pix_y))
             points.append((pix_x, pix_y))
-            self.coordinates.append((pix_x, pix_y))
-        # draw lines and update display
         self.render_points = points
-        # pg.draw.lines(screen, (34,139,34), False, points,4)
-        # pg.display.flip()
-        # move Perlin noise
-        random.seed(time.time())
 
     def render(self, offset) -> None:
         """_summary_ Render the screen objects
@@ -306,10 +299,11 @@ class PerlinNoise():
             x-coordinate
         """
     
-        for point in self.coordinates:
-            if point[0] == x:
-                return point[1]
-        return 100
+        norma = SCREEN_WIDTH / PERLIN_SEGMENTS
+        real_x = (x + self.offset) / norma
+        y = self.generate_y(real_x)
+        pix_y = SCREEN_HEIGHT / 2 + y
+        return pix_y
 
     def generate_y(self, x: int) -> int:
         """_summary_ Calculate the y value of the Perlin noise at the given x
