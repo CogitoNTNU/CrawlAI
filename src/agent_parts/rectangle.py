@@ -1,7 +1,7 @@
 import numpy as np 
 import pygame
 import math 
-from src.renderObject import RenderObject
+from renderObject import RenderObject
 
 
 class Point:
