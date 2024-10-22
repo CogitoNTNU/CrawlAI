@@ -30,7 +30,7 @@ def main():
     rect = rectangle_factory(Point(100, 100), 50, 20, 5.0)
     space.add(rect.body, rect.shape)
 
-    static_rect = rectangle_factory(Point(140, 500), 300, 20, mass=0.0, body_type="static")  # No mass for static body
+    static_rect = rectangle_factory(Point(120, 500), 300, 20, mass=0.0, body_type="static")  # No mass for static body
     space.add(static_rect.body, static_rect.shape)
 
     clock = pygame.time.Clock()
@@ -40,6 +40,12 @@ def main():
         for event in pygame.event.get():
             if event.type == QUIT:
                 running = False
+            
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_LEFT:
+                    rect.update_shape( 5)
+                if event.key == pygame.K_RIGHT:
+                    print("Right arrow pressed")
 
         # Step the Pymunk simulation
         space.step(1 / 60.0)
