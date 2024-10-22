@@ -8,11 +8,8 @@ from enum import Enum
 from render_object import RenderObject
 from globals import (SCREEN_WIDTH,
                      SCREEN_HEIGHT,
-                     FLOOR_HEIGHT,
                      PERLIN_SEGMENTS,
                      RED,
-                     AMPLITUDE,
-                     FREQUENCY,
                      SEGMENT_WIDTH)
 
 pg.init()
@@ -177,7 +174,7 @@ class PerlinNoise():
         self.octaves = octaves
         self.interp = interp
         self.use_fade = use_fade
-        self.points = list()
+        self.coordinates = list()
         self.render_points = list()
         self.norma = SCREEN_WIDTH / PERLIN_SEGMENTS
         
@@ -189,21 +186,7 @@ class PerlinNoise():
         Args:
             offset (int): _description_
         """
-        for pix_x in range(SCREEN_WIDTH):
-            # convert pixel position to real value
-            x = (pix_x + offset) / self.norma
-            # get perlin noise
-            y = self.get_y(x)
-
-            # convert perlin noise to pixel height value
-            pix_y = SCREEN_HEIGHT / 2 + y
-
-            # check is x value integer in Perlin noise coordinates
-            real_x = x * self.frequency
-            if show_marks and math.isclose(real_x, int(real_x), rel_tol=0.001):
-                self.draw_mark(screen, RED, (pix_x, pix_y))
-
-            self.points.append((pix_x, pix_y))
+        pass
                 
     def update(self, offset: int) -> None:
         """Update the screen objects
@@ -217,7 +200,7 @@ class PerlinNoise():
             # convert pixel position to real value
             x = (pix_x + offset) / norma
             # get perlin noise
-            y = self.get_y(x)
+            y = self.generate_y(x)
             # convert perlin noise to pixel height value
             pix_y = SCREEN_HEIGHT / 2 + y
             # check is x value integer in Perlin noise coordinates
@@ -226,6 +209,7 @@ class PerlinNoise():
             if show_marks and math.isclose(real_x, int(real_x), rel_tol=0.001):
                 self.draw_mark(screen, RED, (pix_x, pix_y))
             points.append((pix_x, pix_y))
+            self.coordinates.append((pix_x, pix_y))
         # draw lines and update display
         self.render_points = points
         # pg.draw.lines(screen, (34,139,34), False, points,4)
@@ -312,6 +296,22 @@ class PerlinNoise():
         return res
 
     def get_y(self, x: int) -> int:
+        """_summary_ Get the y-coordinate of the terrain at the x-coordinate
+
+        Args:
+            x (int): _description_ The x-coordinate
+
+        Returns:
+            int: _description_ The y-coordinate of the terrain at the 
+            x-coordinate
+        """
+    
+        for point in self.coordinates:
+            if point[0] == x:
+                return point[1]
+        return 100
+
+    def generate_y(self, x: int) -> int:
         """_summary_ Calculate the y value of the Perlin noise at the given x
 
         Args:

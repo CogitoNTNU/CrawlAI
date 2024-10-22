@@ -44,7 +44,6 @@ class Environment(RenderObject):
         self.starting_xx = 50
         self.point = Point(self.starting_xx, 100)
         self.vision: Vision = Vision(self.point)
-        # TODO: change all references to noise to ground
         
         self.offset = 0
         self.offset_speed = 1
@@ -72,7 +71,10 @@ class Environment(RenderObject):
         pass
         
     def run(self):
-        self.ground.generate_floor_segment(0)
+
+        if self.ground_type == GroundType.BASIC_GROUND:
+            self.ground.generate_floor_segment(0)
+                
         active = True
         while active:
             clock = pg.time.Clock()
@@ -88,7 +90,7 @@ class Environment(RenderObject):
             self.ground.render(self.offset)
             self.starting_xx += 1
             self.vision.update(
-                Point(self.starting_xx,100), 
+                Point(self.starting_xx, 100), 
                 self.ground, 
                 self.offset)              
             match self.ground_type:
@@ -96,7 +98,7 @@ class Environment(RenderObject):
                     self.offset += 1
                     
                 case GroundType.PERLIN:
-                    self.offset += self.offset_speed
+                    self.offset += 1
                     
             pg.display.flip()
         pg.quit()
@@ -116,7 +118,12 @@ class Vision:
         self.near_periphery = None
         self.far_periphery = None
         
-    def update(self, eye_position: Point, ground: Ground, scroll_offset: int) -> None:
+    def update(
+            self, 
+            eye_position: Point, 
+            ground: Ground, 
+            scroll_offset: int
+            ) -> None:
         """
         Update the vision based on the 
         eye position and the environment.
@@ -132,7 +139,7 @@ class Vision:
         
         self.near_periphery = Point(x1, ground.get_y(x1+scroll_offset))
         self.far_periphery = Point(x2, ground.get_y(x2+scroll_offset))
-        self.render_vision(screen, scroll_offset)
+        self.render_vision(screen)
 
     def render_vision(self, screen):
         pg.draw.circle(
