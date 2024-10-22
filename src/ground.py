@@ -217,7 +217,7 @@ class PerlinNoise():
             # convert pixel position to real value
             x = (pix_x + offset) / self.norma
             # get perlin noise
-            y = self.calculate_y(x)
+            y = self.get_y(x)
 
             # convert perlin noise to pixel height value
             pix_y = SCREEN_HEIGHT / 2 + y
@@ -241,7 +241,7 @@ class PerlinNoise():
             # convert pixel position to real value
             x = (pix_x + offset) / norma
             # get perlin noise
-            y = self.calculate_y(x)
+            y = self.get_y(x)
             # convert perlin noise to pixel height value
             pix_y = SCREEN_HEIGHT / 2 + y
             # check is x value integer in Perlin noise coordinates

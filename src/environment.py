@@ -40,10 +40,10 @@ class GroundType(Enum):
 class Environment(RenderObject):
     def __init__(self,  screen):
         self.screen = screen
-        self.ground_type = GroundType.BASIC_GROUND
+        self.ground_type = GroundType.PERLIN
         self.ground: Ground = self.ground_factory(self.ground_type)
         self.starting_xx = 50
-        self.point = Point(self.starting_xx, 300)
+        self.point = Point(self.starting_xx, 100)
         self.vision: Vision = Vision(self.point)
         # TODO: change all references to noise to ground
         
@@ -89,7 +89,7 @@ class Environment(RenderObject):
             self.ground.update(self.offset)  
             self.ground.render(self.offset)
             self.starting_xx += 1
-            self.vision.update(Point(self.starting_xx,300), self.ground)              
+            self.vision.update(Point(self.starting_xx,100), self.ground, self.offset)              
             match self.ground_type:
                 case GroundType.BASIC_GROUND:
                     self.offset += 1
@@ -115,7 +115,7 @@ class Vision:
         self.near_periphery = None
         self.far_periphery = None
         
-    def update(self, eye_position: Point, ground: Ground) -> None:
+    def update(self, eye_position: Point, ground: Ground, scroll_offset: int) -> None:
         """
         Update the vision based on the 
         eye position and the environment.
@@ -129,11 +129,11 @@ class Vision:
         x1 = eye_position.x + self.x_offset
         x2 = x1 + self.sight_width
         
-        self.near_periphery = Point(x1, ground.get_y(x1))
-        self.far_periphery = Point(x2, ground.get_y(x2))
-        self.render_vision(screen)
+        self.near_periphery = Point(x1, ground.get_y(x1+scroll_offset))
+        self.far_periphery = Point(x2, ground.get_y(x2+scroll_offset))
+        self.render_vision(screen, scroll_offset)
 
-    def render_vision(self, screen):
+    def render_vision(self, screen, scroll_offset: int):
         pg.draw.circle(screen, BLACK, (self.eye_position.x,self.eye_position.y), 5, 2)
         pg.draw.line(screen, RED, (self.eye_position.x,self.eye_position.y), (self.near_periphery.x,self.near_periphery.y), 2)
         pg.draw.line(screen, RED, (self.eye_position.x,self.eye_position.y), (self.far_periphery.x, self.far_periphery.y), 2)
