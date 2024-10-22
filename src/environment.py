@@ -1,14 +1,20 @@
 import pygame as pg
 import random
+
 import itertools
 from enum import Enum
 
 from ground import Ground, BasicGround, InterpolationType, PerlinNoise
-from renderObject import RenderObject
+from render_object import RenderObject
 from agent_parts.rectangle import Point
-from globals import SCREEN_WIDTH, SCREEN_HEIGHT, FONT_SIZE, SEGMENT_WIDTH
-# from src.graphics_facade import GraphicsFacade
-# from src.agent import Agent
+from globals import (
+    SCREEN_WIDTH,
+    SCREEN_HEIGHT,
+    FONT_SIZE,
+    SEGMENT_WIDTH,
+    BLACK,
+    RED
+    )
 
 
 pg.init()
@@ -35,7 +41,9 @@ class Environment(RenderObject):
         self.screen = screen
         self.ground_type = GroundType.PERLIN
         self.ground: Ground = self.ground_factory(self.ground_type)
-        # TODO: change all references to noise to ground
+        self.starting_xx = 50
+        self.point = Point(self.starting_xx, 100)
+        self.vision: Vision = Vision(self.point)
         
         self.offset = 0
         self.offset_speed = 1
@@ -45,10 +53,11 @@ class Environment(RenderObject):
         match ground_type:
             case GroundType.BASIC_GROUND:
                 return BasicGround(self.screen, SEGMENT_WIDTH)
+
             case GroundType.PERLIN:
                 seed = random.randint(0, 2**32)
-                perlinAmplitude = 50
-                perlinFrequency = 0.2
+                perlinAmplitude = 30
+                perlinFrequency = 0.1
                 octaves = 2
                 interpolation = InterpolationType.COSINE
                 return PerlinNoise(
@@ -62,7 +71,10 @@ class Environment(RenderObject):
         pass
         
     def run(self):
-        self.ground.generate_floor_segment(0)
+
+        if self.ground_type == GroundType.BASIC_GROUND:
+            self.ground.generate_floor_segment(0)
+                
         active = True
         while active:
             clock = pg.time.Clock()
@@ -75,13 +87,18 @@ class Environment(RenderObject):
             screen.fill((135, 206, 235))
             
             self.ground.update(self.offset)  
-            self.ground.render(self.offset)              
+            self.ground.render(self.offset)
+            self.starting_xx += 1
+            self.vision.update(
+                Point(self.starting_xx, 100), 
+                self.ground, 
+                self.offset)              
             match self.ground_type:
                 case GroundType.BASIC_GROUND:
                     self.offset += 1
                     
                 case GroundType.PERLIN:
-                    self.offset += self.offset_speed
+                    self.offset += 1
                     
             pg.display.flip()
         pg.quit()
@@ -101,7 +118,12 @@ class Vision:
         self.near_periphery = None
         self.far_periphery = None
         
-    def update(self, eye_position: Point, ground: Ground) -> None:
+    def update(
+            self, 
+            eye_position: Point, 
+            ground: Ground, 
+            scroll_offset: int
+            ) -> None:
         """
         Update the vision based on the 
         eye position and the environment.
@@ -115,9 +137,29 @@ class Vision:
         x1 = eye_position.x + self.x_offset
         x2 = x1 + self.sight_width
         
-        self.near_periphery = Point(x1, ground.get_y(x1))
-        self.far_periphery = Point(x2, ground.get_y(x2))
-        
+        self.near_periphery = Point(x1, ground.get_y(x1+scroll_offset))
+        self.far_periphery = Point(x2, ground.get_y(x2+scroll_offset))
+        self.render_vision(screen)
+
+    def render_vision(self, screen):
+        pg.draw.circle(
+            screen,
+            BLACK,
+            (self.eye_position.x, self.eye_position.y),
+            5,
+            2
+            )
+        pg.draw.line(
+            screen, RED, (self.eye_position.x, self.eye_position.y), 
+            (self.near_periphery.x, self.near_periphery.y),
+            2
+            )
+        pg.draw.line(
+            screen, RED, (self.eye_position.x, self.eye_position.y),
+            (self.far_periphery.x, self.far_periphery.y),
+            2
+            )
+
     def get_lower_periphery(self):
         return self.near_periphery
     

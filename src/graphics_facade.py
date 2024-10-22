@@ -1,6 +1,6 @@
 
 
-from pygame import *
+from pygame import Surface, display
 from typing import Protocol
 
 

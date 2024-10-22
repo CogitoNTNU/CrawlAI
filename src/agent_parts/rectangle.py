@@ -2,7 +2,8 @@ import numpy as np
 import pygame
 import pymunk
 import math 
-from src.renderObject import RenderObject
+from render_object import RenderObject
+
 
 class Point:
     x: float
@@ -48,7 +49,7 @@ class Rectangle:
 
     class anchor: 
         x: float 
-        y : float
+        y: float
 
         def __init__(self, x: float, y: float):
             self.x = x
@@ -214,9 +215,11 @@ class Rectangle:
         Returns:
         -------
         str:
-            The string format of the rectangle's position and size as "X: {x}, Y: {y}, Width: {width}, Height: {height}".
+            The string format of the rectangle's position and size as "X: {x}, 
+            Y: {y}, Width: {width}, Height: {height}".
         """
-        return f"X: {self.poPoints[0][0]}, Y: {self.poPoints[0][1]}, Width: {self.width}, Height: {self.height}"
+        return (f"X: {self.poPoints[0][0]}, Y: {self.poPoints[0][1]}, "
+                f"Width: {self.width}, Height: {self.height}")
 
     def render(self, window):
         """
@@ -227,10 +230,16 @@ class Rectangle:
         window : any
             The graphical window where the rectangle will be drawn.
         """
-        pygame.draw.polygon(window, (255, 255, 255), ((self.poPoints[0][0], self.poPoints[0][1]), 
-                                                      (self.poPoints[1][0], self.poPoints[1][1]), 
-                                                      (self.poPoints[2][0], self.poPoints[2][1]), 
-                                                      (self.poPoints[3][0], self.poPoints[3][1])))
+        pygame.draw.polygon(
+            window, 
+            (255, 255, 255), 
+            [
+                (self.poPoints[0][0], self.poPoints[0][1]), 
+                (self.poPoints[1][0], self.poPoints[1][1]), 
+                (self.poPoints[2][0], self.poPoints[2][1]), 
+                (self.poPoints[3][0], self.poPoints[3][1])
+            ]
+        )
 
     def updatePosition(self, point: Point):
         """
@@ -261,20 +270,25 @@ class Rectangle:
         self.poPoints = self.poPoints + translation"""
     
     def get_angle(self):
-        x1,y1= self.poPoints[0][0], self.poPoints[0][1]
-        x2,y2= self.poPoints[1][0], self.poPoints[1][1]
+        x1, y1 = self.poPoints[0][0], self.poPoints[0][1]
+        x2, y2 = self.poPoints[1][0], self.poPoints[1][1]
 
-        angle, _ = self.angle_between_vectors(np.array([1,0]),np.array([x2-x1,y2-y1]))
+        vector1 = np.array([1, 0])
+        vector2 = np.array([x2 - x1, y2 - y1])
+        angle, _ = self.angle_between_vectors(vector1, vector2)
         if y2-y1 < 0:
-            angle=2*math.pi-angle
+            angle = 2*math.pi-angle
         return angle
 
-
-
     def rotateRectangle(self, angle: float):
-        """Returns the coordinates of the edges of the rectangle after rotation"""
-        widthVector = np.array([self.width * math.cos(angle), self.width * math.sin(angle)])
-        heightVector = np.array([-self.height *math.sin(angle), self.height * math.cos(angle)])
+        """
+        Returns the coordinates of the edges of the rectangle after rotation
+        """
+
+        widthVector = np.array(
+            [self.width * math.cos(angle), self.width * math.sin(angle)])
+        heightVector = np.array(
+            [-self.height *math.sin(angle), self.height * math.cos(angle)])
         self.poPoints[1][0], self.poPoints[1][1] = self.poPoints[0][0] + widthVector[0] , self.poPoints[0][1] + widthVector[1]
         self.poPoints[2][0], self.poPoints[2][1] = self.poPoints[0][0] + widthVector[0] + heightVector[0], self.poPoints[0][1] + widthVector[1] + heightVector[1]
         self.poPoints[3][0], self.poPoints[3][1] = self.poPoints[0][0] + heightVector[0] , self.poPoints[0][1] + heightVector[1]
