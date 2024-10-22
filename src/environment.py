@@ -5,7 +5,7 @@ import itertools
 from enum import Enum
 
 from ground import Ground, BasicGround, InterpolationType, PerlinNoise
-from renderObject import RenderObject
+from CrawlAI.src.render_object import RenderObject
 from agent_parts.rectangle import Point
 from globals import (
     SCREEN_WIDTH, 
@@ -53,8 +53,8 @@ class Environment(RenderObject):
         
         match ground_type:
             case GroundType.BASIC_GROUND:
-                print("hei")
                 return BasicGround(self.screen, SEGMENT_WIDTH)
+
             case GroundType.PERLIN:
                 seed = random.randint(0, 2**32)
                 perlinAmplitude = 30
