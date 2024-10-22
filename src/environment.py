@@ -8,11 +8,11 @@ from ground import Ground, BasicGround, InterpolationType, PerlinNoise
 from render_object import RenderObject
 from agent_parts.rectangle import Point
 from globals import (
-    SCREEN_WIDTH, 
-    SCREEN_HEIGHT, 
-    FONT_SIZE, 
-    SEGMENT_WIDTH, 
-    BLACK, 
+    SCREEN_WIDTH,
+    SCREEN_HEIGHT,
+    FONT_SIZE,
+    SEGMENT_WIDTH,
+    BLACK,
     RED
     )
 
