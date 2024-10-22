@@ -1,6 +1,6 @@
 import random
 from dataclasses import dataclass, field  # Ensure field is imported
-from typing import List, Optional
+from typing import List
 
 
 class Inovation:
@@ -30,14 +30,7 @@ class Inovation:
             self._global_innovation_counter += 1
             self._innovation_history[(in_node,out_node)] = self._global_innovation_counter
             return self._innovation_history[(in_node,out_node)]
-        
-    
-
-
-
-    
-        
-        
+          
             
 @dataclass
 class Node:
@@ -60,12 +53,34 @@ class Connection:
 
 class Genome:
     """Genome class representing a neural network in NEAT."""
-    id: int
-    fitness: float = 0.0
-    nodes: set[Node] = field(default_factory=set)  # Use field for default empty lists
-    connections: List[Connection] = field(default_factory=list)
-    species: int = 0
-    adjusted_fitness: float = 0.0
+    
+    def __init__(self, genome_id: int, num_inputs: int, num_outputs: int):
+        """Create an initial genome with specified input and output nodes."""
+        self.id = genome_id
+        self.fitness: float = 0.0
+        self.nodes: List[Node] = field(default_factory=list)
+        self.connections: List[Connection] = field(default_factory=list)
+        self.species: int = 0
+        self.adjusted_fitness: float = 0.0
+
+        
+        # Create input nodes
+        for i in range(num_inputs):
+            self.nodes.add(Node(id=i, node_type='input'))
+        
+        # Create output nodes
+        for i in range(num_outputs):
+            self.nodes.add(Node(id=num_inputs + i, node_type='output'))
+        
+        # Connect each input node to each output node with a random weight
+        for input_node in range(num_inputs):
+            for output_node in range(num_outputs):
+                self.connections.append(Connection(
+                    in_node = input_node,
+                    out_node = num_inputs + output_node,
+                    weight = random.uniform(-1.0, 1.0),  # Random weight between -1 and 1
+                    innovation_number = get_innovation_number(input_node, num_inputs + output_node)
+                )) 
 
     def __str__(self):
         return f"Genome ID: {self.id}, Fitness: {self.fitness}, Species: {self.species}, Adjusted Fitness: {self.adjusted_fitness}"
@@ -91,34 +106,6 @@ def get_innovation_number(in_node, out_node):   # Method that gets or sets innov
         innovation_history[(in_node, out_node)] = global_innovation_counter
         return global_innovation_counter
 
-
-def create_initial_genome(genome_id: int, num_inputs: int, num_outputs: int) -> Genome:
-    """Create an initial genome with specified input and output nodes."""
-
-    nodes = set()  # Initialize nodes as a set to match Genome class
-    connections = []
-    
-    # Create input nodes
-    for i in range(num_inputs):
-        nodes.add(Node(id=i, node_type='input'))
-    
-    # Create output nodes
-    for i in range(num_outputs):
-        nodes.add(Node(id=num_inputs + i, node_type='output'))
-    
-    # Connect each input node to each output node with a random weight
-    for input_node in range(num_inputs):
-        for output_node in range(num_outputs):
-            connections.append(Connection(
-                in_node = input_node,
-                out_node = num_inputs + output_node,
-                weight = random.uniform(-1.0, 1.0),  # Random weight between -1 and 1
-                innovation_number = get_innovation_number(input_node, num_inputs + output_node)
-            ))
-    
-    return Genome(id = genome_id, nodes = nodes, connections=connections)
-
-
 def initialize_population(pop_size: int, num_inputs: int, num_outputs: int) -> List[Genome]:
     """Initialize a population of genomes."""
     population = []
@@ -126,42 +113,6 @@ def initialize_population(pop_size: int, num_inputs: int, num_outputs: int) -> L
         genome = create_initial_genome(genome_id, num_inputs, num_outputs)
         population.append(genome)
     return population
-
-
-
-def translate_genome_to_network(genome: Genome):
-    
-    input_nodes = []
-    hidden_nodes = [] 
-    output_nodes = [] 
-    connections = []
-
-
-    for node in genome.nodes:
-        if node.node_type == "input":
-            input_nodes.append(node)
-        elif node.node_type == "hidden":
-            hidden_nodes.append(node)
-        elif node.node_type == "output":
-            output_nodes.append(node)
-
-
-    for connection in genome.connections:
-        if connection.enabled:
-            connections.append((connection.in_node,connection.out_node,connection.weight))
-
-
-    network = {
-    'input_nodes': input_nodes,
-    'hidden_nodes': hidden_nodes,
-    'output_nodes': output_nodes,
-    'connections': connections
-
-    }
-    
-    return network
-
-        
 
 
 # Example usage:
