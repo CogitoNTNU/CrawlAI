@@ -72,11 +72,15 @@ class BasicGround(RenderObject, Ground):
         self.segment_width = segment_width
         self.terrain_segments = []
 
-        self.terrain_segments.append(self.generate_floor_segment(0))
-        self.terrain_segments.append(self.generate_floor_segment(self.segment_width))
+        self.terrain_segments.append(
+            self.generate_floor_segment(0))
+        self.terrain_segments.append(
+            self.generate_floor_segment(self.segment_width))
         
     def get_current_segment(self, x: int) -> int:
-        """_summary_ Get the index of the segment that contains the x-coordinate
+        """
+        Get the index of the segment that
+        contains the x-coordinate
 
         Args:
             x (int): _description_ The x-coordinate
@@ -108,33 +112,10 @@ class BasicGround(RenderObject, Ground):
         raise ValueError("The x-coordinate is not in the terrain segment")
         
     def update(self, scroll_offset: float) -> None:
-        
         self.generate_new_floor_segment(scroll_offset)
         self.remove_old_floor_segment(scroll_offset)
         # self.swap_floor_segments(scroll_offset)
-        scroll_offset +=1
-        
-            
-            
-    def generate_floor_segment(self, start_x : int) -> list:
-        """
-        Generates a segment of the floor
-        
-        Args:
-            start_x (float): The x-coordinate of the starting point 
-            of the segment
-        returns:
-            list: A list of points representing the floor segment
-        """
-
-        floor = []
-        for x in range(start_x, start_x + self.segment_width + 1, 1):
-            y = int(
-                SCREEN_HEIGHT - FLOOR_HEIGHT + AMPLITUDE * math.sin(
-                    FREQUENCY * x)
-                )
-            floor.append((x, y))
-        return floor
+        scroll_offset += 1
 
     def generate_new_floor_segment(self, scroll_offset: int) -> None:
         """_summary_ Generate a new floor segment
@@ -142,25 +123,20 @@ class BasicGround(RenderObject, Ground):
         Args:
             scroll_offset (int): _description_
         """
-        
         if self.terrain_segments[-1][-1][0] - scroll_offset < SCREEN_WIDTH:
             # Generate a new segment at the rightmost part of the terrain
             last_x = self.terrain_segments[-1][-1][0]
             self.terrain_segments.append(self.generate_floor_segment(last_x))
 
     def remove_old_floor_segment(self, scroll_offset: float) -> None:
-        # Remove old segments that are off-screen
-            if self.terrain_segments[0][-1][0] - scroll_offset < -SEGMENT_WIDTH:
-                self.terrain_segments.pop(0)
-
+        # Remove old segments that are off-
+        if self.terrain_segments[0][-1][0] - scroll_offset < -SEGMENT_WIDTH:
+            self.terrain_segments.pop(0)
     
     def swap_floor_segments(self, scroll_offset: float) -> None:
         """_summary_ Swap the floor segments"""
-        print(f"Last segment x-coordinate: {self.terrain_segments[0][-1][0]}")
-        print(f"Scroll offset: {scroll_offset}")
-        print(f"Condition check: {self.terrain_segments[0][-1][0] - scroll_offset < -SEGMENT_WIDTH}")
-        # Check if the first segment has moved completely off screen
-        if self.terrain_segments[0][-1][0] - self.scroll_offset < -SEGMENT_WIDTH:
+        if (self.terrain_segments[0][-1][0] - self.scroll_offset 
+                < -SEGMENT_WIDTH):
             # Move the first segment to the right end of the second segment
             last_segment_end_x = self.terrain_segments[1][-1][0]
             new_start_x = last_segment_end_x + 1
