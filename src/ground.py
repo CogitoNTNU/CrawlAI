@@ -6,7 +6,14 @@ import time
 from enum import Enum
 
 from renderObject import RenderObject
-from globals import SCREEN_WIDTH, SCREEN_HEIGHT, FLOOR_HEIGHT, PERLIN_SEGMENTS, RED, AMPLITUDE, FREQUENCY, SEGMENT_WIDTH
+from globals import (SCREEN_WIDTH,
+                     SCREEN_HEIGHT,
+                     FLOOR_HEIGHT,
+                     PERLIN_SEGMENTS,
+                     RED,
+                     AMPLITUDE,
+                     FREQUENCY,
+                     SEGMENT_WIDTH)
 
 pg.init()
 
@@ -44,7 +51,8 @@ class Ground(Protocol):
 
     @property
     def render(self, scroll_offset: float):
-        # TODO: removew this later, when we call render from another place than environment
+        # TODO: removew this later, when we call render from another 
+        # place than environment
         pass
 
     @property
@@ -178,14 +186,15 @@ class BasicGround(RenderObject, Ground):
 class PerlinNoise():
 
     def __init__(
-        self,
-        seed,
-        amplitude=1,
-        frequency=0.002,
-        octaves=1,
-        interp=InterpolationType.COSINE,
-        use_fade=False) -> None:
-
+                self,
+                seed,
+                amplitude=1,
+                frequency=0.002,
+                octaves=1,
+                interp=InterpolationType.COSINE,
+                use_fade=False
+                ) -> None:
+        
         self.seed = random.Random(seed).random()
         self.amplitude = amplitude
         self.frequency = frequency
