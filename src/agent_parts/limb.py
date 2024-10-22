@@ -1,10 +1,10 @@
 from enum import Enum
 import numpy as np
-import pygame
-from src.environment import Environment
+
 from src.renderObject import RenderObject
 from src.agent_parts.rectangle import Rectangle, Point
 import math
+
 
 class LimbType(Enum):
     """
@@ -26,7 +26,8 @@ class LimbType(Enum):
 
 class Limb(RenderObject):
     """
-    A class representing a limb of a creature, which is a subclass of RenderObject.
+    A class representing a limb of a creature, 
+    which is a subclass of RenderObject.
 
     Attributes:
     ----------
@@ -37,14 +38,19 @@ class Limb(RenderObject):
     orientation : float
         The orientation or angle of the limb in the environment.
     limbType : LimbType
-        An instance of LimbType indicating the specific type of limb (LIMB, HEAD, or FOOT).
+        An instance of LimbType indicating the specific type of limb 
+        (LIMB, HEAD, or FOOT).
     """
 
     rect: Rectangle
-    damage_scale: float 
+    damage_scale: float
     jointList: list[RenderObject]
 
-    def __init__(self, rect: Rectangle, damage_scale: float, limbType: LimbType):
+    def __init__(self,
+                 rect: Rectangle,
+                 damage_scale: float,
+                 limbType: LimbType
+                 ):
         """
         Initializes a Limb object.
 
@@ -69,16 +75,19 @@ class Limb(RenderObject):
         Parameters:
         ----------
         angle : float
-            The angle by which to rotate the limb, added to the current orientation.
+            The angle by which to rotate the limb, 
+            added to the current orientation.
         """
         self.rect.rotateRectangle(angle)
         for joint in self.jointList:
             self.updateRenderObject(joint)
-
     
-    def inherit_orientation(self, parent_orientation: float, limb_orientation: float):
+    def inherit_orientation(self, 
+                            parent_orientation: float,
+                            limb_orientation: float):
         """
-        Inherits the orientation from the parent and adds the limb's own orientation.
+        Inherits the orientation from the parent and adds 
+        the limb's own orientation.
 
         Parameters:
         ----------
@@ -87,21 +96,26 @@ class Limb(RenderObject):
         limb_orientation : float
             The local orientation of the limb, relative to the parent.
         """
-        #self.orientation = parent_orientation + limb_orientation
+        # self.orientation = parent_orientation + limb_orientation
         pass
+    
     def updateRenderObject(self, renderObject: RenderObject):
         
-        renderObject_relative_pos=renderObject.get_relative_position()
-        rect_pos=self.rect.get_position()
-        rect_angle=self.rect.get_angle()
+        renderObject_relative_pos = renderObject.get_relative_position()
+        rect_pos = self.rect.get_position()
+        rect_angle = self.rect.get_angle()
 
-        final_x, final_y = self.rect.rotatePointPoint(rect_angle,renderObject_relative_pos,Point(rect_pos.x+1,rect_pos.y))
+        final_x, final_y = self.rect.rotatePointPoint(
+            rect_angle,
+            renderObject_relative_pos,
+            Point(rect_pos.x+1, rect_pos.y))
 
         renderObject.set_position(Point(final_x, final_y))
     
     def updatePosition(self, x: float, y: float):
         """
-        Updates the position of the limb by updating the position of its rectangle.
+        Updates the position of the limb by updating the 
+        position of its rectangle.
 
         Parameters:
         ----------
@@ -124,45 +138,33 @@ class Limb(RenderObject):
         self.rect.render(window)
         for joint in self.jointList:
             joint.render(window)
-    
-    #def getAngle(self) -> float:
-        """
-        Retrieves the current orientation angle of the limb.
-
-        Returns:
-        -------
-        float:
-            The current orientation angle of the limb.
-        """
-        #return self.orientation
-        
-
-    def setAngle(self, angle: float):
-        """
-        Sets the orientation of the limb to a specific angle.
-
-        Parameters:
-        ----------
-        angle : float
-            The angle to set as the limb's orientation.
-        """
-        #self.orientation = angle
-        pass
 
     def addJoint(self, joint: RenderObject): 
-        if(self.rect.contains(joint.get_position())):
+        if (self.rect.contains(joint.get_position())):
             self.jointList.append(joint)
 
-            joint_pos=joint.get_position()
-            rect_pos=self.rect.get_position()
-            rectangle_angle=self.rect.get_angle()
+            joint_pos = joint.get_position()
+            rect_pos = self.rect.get_position()
+            rectangle_angle = self.rect.get_angle()
 
-            angle, _ =self.rect.angle_between_vectors(np.array([math.cos(rectangle_angle), math.sin(rectangle_angle)]), np.array([joint_pos.x-rect_pos.x,joint_pos.y-rect_pos.y]))
-            relative_x, relative_y = self.rect.rotatePointPoint(angle,joint_pos,rect_pos)
+            angle, _ = self.rect.angle_between_vectors(
+                np.array([math.cos(rectangle_angle),
+                          math.sin(rectangle_angle)
+                          ]),
+                np.array([joint_pos.x-rect_pos.x, joint_pos.y-rect_pos.y]))
+            relative_x, relative_y = self.rect.rotatePointPoint(
+                angle,
+                joint_pos,
+                rect_pos
+                )
             joint.set_relative_position(Point(relative_x, relative_y))
 
 
-def limb_factory(rect: Rectangle, limbType: LimbType, orientation: float) -> Limb:
+def limb_factory(
+        rect: Rectangle,
+        limbType: LimbType,
+        orientation: float
+        ) -> Limb:
     """
     Factory function for creating a Limb object.
 
@@ -178,7 +180,8 @@ def limb_factory(rect: Rectangle, limbType: LimbType, orientation: float) -> Lim
     Returns:
     -------
     Limb:
-        A new instance of the Limb class with the appropriate damage scale based on the limb type.
+        A new instance of the Limb class with the appropriate damage 
+        scale based on the limb type.
     """
     damage_scale: float = 0
     match limbType:
@@ -190,5 +193,4 @@ def limb_factory(rect: Rectangle, limbType: LimbType, orientation: float) -> Lim
             damage_scale = 0.0  # No damage for the foot
         case _:
             return "Invalid LimbType"
-    
     return Limb(rect, damage_scale, limbType)
