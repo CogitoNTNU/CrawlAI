@@ -4,7 +4,7 @@ import numpy
 
 from src.genome import Genome
 from src.environment import Environment
-from src.renderObject import RenderObject
+from src.render_object import RenderObject
 
 from src.agent_parts.limb import Limb, LimbType, limb_factory
 from src.agent_parts.creature import Creature, creature_factory

@@ -1,21 +1,20 @@
-from typing import Protocol
 import pygame as pg
 import random
-import math
-import time 
+
 import itertools
 from enum import Enum
 
-
-
-# from src.agent_parts.rectangle import Point
-
 from ground import Ground, BasicGround, InterpolationType, PerlinNoise
-from renderObject import RenderObject
+from render_object import RenderObject
 from agent_parts.rectangle import Point
-from globals import SCREEN_WIDTH, SCREEN_HEIGHT, FONT_SIZE, SEGMENT_WIDTH, RED, BLACK
-# from src.graphics_facade import GraphicsFacade
-# from src.agent import Agent
+from globals import (
+    SCREEN_WIDTH,
+    SCREEN_HEIGHT,
+    FONT_SIZE,
+    SEGMENT_WIDTH,
+    BLACK,
+    RED
+    )
 
 
 pg.init()
@@ -50,13 +49,12 @@ class Environment(RenderObject):
         self.offset = 0
         self.offset_speed = 1
         
-
     def ground_factory(self, ground_type: GroundType) -> Ground:
         
         match ground_type:
             case GroundType.BASIC_GROUND:
-                print("hei")
                 return BasicGround(self.screen, SEGMENT_WIDTH)
+
             case GroundType.PERLIN:
                 seed = random.randint(0, 2**32)
                 perlinAmplitude = 30
@@ -89,7 +87,10 @@ class Environment(RenderObject):
             self.ground.update(self.offset)  
             self.ground.render(self.offset)
             self.starting_xx += 1
-            self.vision.update(Point(self.starting_xx,100), self.ground, self.offset)              
+            self.vision.update(
+                Point(self.starting_xx,100), 
+                self.ground, 
+                self.offset)              
             match self.ground_type:
                 case GroundType.BASIC_GROUND:
                     self.offset += 1
@@ -133,11 +134,24 @@ class Vision:
         self.far_periphery = Point(x2, ground.get_y(x2+scroll_offset))
         self.render_vision(screen, scroll_offset)
 
-    def render_vision(self, screen, scroll_offset: int):
-        pg.draw.circle(screen, BLACK, (self.eye_position.x,self.eye_position.y), 5, 2)
-        pg.draw.line(screen, RED, (self.eye_position.x,self.eye_position.y), (self.near_periphery.x,self.near_periphery.y), 2)
-        pg.draw.line(screen, RED, (self.eye_position.x,self.eye_position.y), (self.far_periphery.x, self.far_periphery.y), 2)
-        
+    def render_vision(self, screen):
+        pg.draw.circle(
+            screen,
+            BLACK,
+            (self.eye_position.x, self.eye_position.y),
+            5,
+            2
+            )
+        pg.draw.line(
+            screen, RED, (self.eye_position.x, self.eye_position.y), 
+            (self.near_periphery.x, self.near_periphery.y),
+            2
+            )
+        pg.draw.line(
+            screen, RED, (self.eye_position.x, self.eye_position.y),
+            (self.far_periphery.x, self.far_periphery.y),
+            2
+            )
 
     def get_lower_periphery(self):
         return self.near_periphery
