@@ -57,7 +57,6 @@ class Joint(RenderObject):
         It is currently a placeholder method, and should be implemented in
         subclasses or future revisions if visual representation is required.
         """
-        print(self.point.x, self.point.y)
         radius = min(window.get_width(), window.get_height())*0.005
         pg.draw.circle(window, (0, 0, 0), (self.point.x, self.point.y), radius)
         if (self.limbChild is not None):

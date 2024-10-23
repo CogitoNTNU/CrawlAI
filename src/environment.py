@@ -118,27 +118,13 @@ class Vision:
         self.near_periphery = None
         self.far_periphery = None
         
-    def update(
-            self, 
-            eye_position: Point, 
-            ground: Ground, 
-            scroll_offset: int
-            ) -> None:
-        """
-        Update the vision based on the 
-        eye position and the environment.
-
-        Args:
-            eye_position (Point): _description_
-            environment (Environment): _description_
-        """
+    def update(self, eye_position: Point, ground: Ground, scroll_offset: int) -> None:
         self.eye_position = eye_position
-        
         x1 = eye_position.x + self.x_offset
         x2 = x1 + self.sight_width
-        
-        self.near_periphery = Point(x1, ground.get_y(x1+scroll_offset))
-        self.far_periphery = Point(x2, ground.get_y(x2+scroll_offset))
+
+        self.near_periphery = Point(x1, ground.get_y(x1))
+        self.far_periphery = Point(x2, ground.get_y(x2))
         self.render_vision(screen)
 
     def render_vision(self, screen):
