@@ -10,7 +10,11 @@ from globals import (SCREEN_WIDTH,
                      SCREEN_HEIGHT,
                      PERLIN_SEGMENTS,
                      RED,
-                     SEGMENT_WIDTH)
+                     SEGMENT_WIDTH,
+                     FLOOR_HEIGHT,
+                     AMPLITUDE,
+                     FREQUENCY
+                     )
 
 pg.init()
 
@@ -113,6 +117,26 @@ class BasicGround(RenderObject, Ground):
         self.remove_old_floor_segment(scroll_offset)
         # self.swap_floor_segments(scroll_offset)
         scroll_offset += 1
+
+    def generate_floor_segment(self, start_x: int) -> list:
+        """
+        Generates a segment of the floor
+        
+        Args:
+            start_x (float): The x-coordinate of the starting point 
+            of the segment
+        returns:
+            list: A list of points representing the floor segment
+        """
+
+        floor = []
+        for x in range(start_x, start_x + self.segment_width + 1, 1):
+            y = int(
+                SCREEN_HEIGHT - FLOOR_HEIGHT + AMPLITUDE * math.sin(
+                    FREQUENCY * x)
+                )
+            floor.append((x, y))
+        return floor
 
     def generate_new_floor_segment(self, scroll_offset: int) -> None:
         """_summary_ Generate a new floor segment
