@@ -2,7 +2,6 @@ from typing import Protocol
 import pygame as pg
 import random
 import math
-import time 
 from enum import Enum
 
 from render_object import RenderObject
