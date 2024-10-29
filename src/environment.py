@@ -23,8 +23,8 @@ font = pg.font.Font(pg.font.get_default_font(), FONT_SIZE)
 
 # Remove this
 interp_iter = itertools.cycle((
-    InterpolationType.LINEAR, 
-    InterpolationType.CUBIC, 
+    InterpolationType.LINEAR,
+    InterpolationType.CUBIC,
     InterpolationType.COSINE))
 
 # Create the screen
@@ -35,7 +35,7 @@ class GroundType(Enum):
     BASIC_GROUND = 1
     PERLIN = 2
 
-    
+
 class Environment(RenderObject):
     def __init__(self,  screen):
         self.screen = screen
@@ -44,12 +44,12 @@ class Environment(RenderObject):
         self.starting_xx = 50
         self.point = Point(self.starting_xx, 100)
         self.vision: Vision = Vision(self.point)
-        
+
         self.offset = 0
         self.offset_speed = 1
-        
+
     def ground_factory(self, ground_type: GroundType) -> Ground:
-        
+
         match ground_type:
             case GroundType.BASIC_GROUND:
                 return BasicGround(self.screen, SEGMENT_WIDTH)
@@ -61,20 +61,20 @@ class Environment(RenderObject):
                 octaves = 2
                 interpolation = InterpolationType.COSINE
                 return PerlinNoise(
-                    seed, 
-                    perlinAmplitude, 
-                    perlinFrequency, 
-                    octaves, 
+                    seed,
+                    perlinAmplitude,
+                    perlinFrequency,
+                    octaves,
                     interpolation)
-      
+
     def render(self):
         pass
-        
+
     def run(self):
 
         if self.ground_type == GroundType.BASIC_GROUND:
             self.ground.generate_floor_segment(0)
-                
+
         active = True
         while active:
             clock = pg.time.Clock()
@@ -85,24 +85,29 @@ class Environment(RenderObject):
                     active = False
             # Farger bakgrunnen lyseblå
             screen.fill((135, 206, 235))
-            
-            self.ground.update(self.offset)  
+
+            self.ground.update(self.offset)
             self.ground.render(self.offset)
             self.starting_xx += 1
-            self.vision.update(
-                Point(self.starting_xx, 100), 
-                self.ground, 
-                self.offset)              
+            
             match self.ground_type:
                 case GroundType.BASIC_GROUND:
+                    self.vision.update(
+                        Point(self.starting_xx, 100),
+                        self.ground,
+                        self.offset)
                     self.offset += 1
-                    
+
                 case GroundType.PERLIN:
+                    self.vision.update(
+                        Point(self.starting_xx, 100),
+                        self.ground,
+                        0)
                     self.offset += 1
-                    
+
             pg.display.flip()
         pg.quit()
-        
+
     def draw_mark(surface, color, coord):
         pg.draw.circle(surface, color, coord, 3)
 
@@ -111,20 +116,25 @@ class Vision:
     eye_position: Point
     sight_width = 10
     x_offset = 10
-    near_periphery: Point 
+    near_periphery: Point
     far_periphery: Point
-    
+
     def __init__(self, eye_position: Point):
         self.near_periphery = None
         self.far_periphery = None
+
+    def update(
+            self,
+            eye_position: Point,
+            ground: Ground,
+            scroll_offset: int) -> None:
         
-    def update(self, eye_position: Point, ground: Ground, scroll_offset: int) -> None:
         self.eye_position = eye_position
         x1 = eye_position.x + self.x_offset
         x2 = x1 + self.sight_width
 
-        self.near_periphery = Point(x1, ground.get_y(x1))
-        self.far_periphery = Point(x2, ground.get_y(x2))
+        self.near_periphery = Point(x1, ground.get_y(x1+scroll_offset))
+        self.far_periphery = Point(x2, ground.get_y(x2+scroll_offset))
         self.render_vision(screen)
 
     def render_vision(self, screen):
@@ -136,7 +146,7 @@ class Vision:
             2
             )
         pg.draw.line(
-            screen, RED, (self.eye_position.x, self.eye_position.y), 
+            screen, RED, (self.eye_position.x, self.eye_position.y),
             (self.near_periphery.x, self.near_periphery.y),
             2
             )
@@ -148,18 +158,18 @@ class Vision:
 
     def get_lower_periphery(self):
         return self.near_periphery
-    
+
     def get_upper_periphery(self):
         return self.far_periphery
-    
+
     def get_eye_position(self):
         return self.eye_position
 
     def get_sight_width(self):
         return self.sight_width
-        
 
-if __name__ == "__main__":    
+
+if __name__ == "__main__":
     environment = Environment(screen)
     # Start the main loop
     environment.run()
