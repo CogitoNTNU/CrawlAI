@@ -136,40 +136,23 @@ class Genome:
 
 
     def __str__(self):
-        return f"Genome ID: {self.id}, Fitness: {self.fitness},"
-        f"Species: {self.species}, Adjusted Fitness: {self.adjusted_fitness}"
+        return (
+            f"Genome ID: {self.id}, Fitness: {self.fitness}, "
+            f"Species: {self.species}, "
+            f"Adjusted Fitness: {self.adjusted_fitness}"
+        )
 
     def __repr__(self):
-        return f"Genome ID: {self.id}, Fitness: {self.fitness},"
-        f"Species: {self.species}, Adjusted Fitness: {self.adjusted_fitness}"
+        return (
+            f"Genome ID: {self.id}, Fitness: {self.fitness}, "
+            f"Species: {self.species}, "
+            f"Adjusted Fitness: {self.adjusted_fitness}"
+        )
 
     def __eq__(self, other):
         return self.id == other.id
 
     def __lt__(self, other):
         return self.fitness < other.fitness
-
-
-def get_innovation_number(in_node, out_node): 
-    """
-    Method that gets or sets innovation number for a 
-    connection between two nodes.
-
-    Args:
-        in_node (_type_)
-        out_node (_type_)
-
-    Returns:
-        _type_: global_innovation_counter
-    """
-    global global_innovation_counter
-    global innovation_history
-
-    if (in_node, out_node) in innovation_history:
-        return innovation_history[(in_node, out_node)]
-    else:
-        global_innovation_counter += 1
-        innovation_history[(in_node, out_node)] = global_innovation_counter
-        return global_innovation_counter
-
+    
 
