@@ -29,11 +29,11 @@ creature = Creature(space)
 # Add limbs to the creature, placing them above the ground
 limb1 = creature.add_limb(100, 20, (300, 300), mass=1)  # Positioned above the ground
 limb2 = creature.add_limb(100, 20, (350, 300), mass=1)  # Positioned above the ground
-limb3 = creature.add_limb(80, 40, (400, 300), mass=5)
+limb3 = creature.add_limb(110, 20, (400, 300), mass=5)
 
 # Add a motor between limbs
-creature.add_motor(limb1, limb2, (25, 0), (-25, 0), rate=2)
-creature.add_motor(limb2, limb3, (37, 0), (-23, 0), rate=-2)
+creature.add_motor(limb1, limb2, (50, 0), (-25, 0), rate=2, tolerance= 30)
+creature.add_motor(limb2, limb3, (37, 0), (-23, 0), rate=-2, tolerance= 50)
 # Create the ground
 ground = create_ground(space, width=800, height=10, position=(0, 550))
 
