@@ -25,7 +25,6 @@ class Mutation():
     def connection_mutation(self):
 
         nodes = self.genome.nodes
-
         in_node = random.choice(nodes)
         out_node = random.choice(nodes)
         weight = random.uniform(-1.0,1-0)
@@ -42,12 +41,24 @@ class Mutation():
 
     def node_mutation(self):
         new_node = Node(len(self.genome.nodes)+1, "hidden")
+        con = random.choice(self.genome.connections)
+        con.change_enable(False)
 
-        nodes_copy = self.genome.nodes       
+        con1 = Connection(con.in_node_id, new_node, 1.0, True, Inovation.get_instance()._get_innovation_number(con.in_node_id, new_node))
+        con2 = Connection(new_node,con.out_node_id,  con.weight, True, Inovation.get_instance()._get_innovation_number(new_node,con.out_node_id,))
 
-        new_conn = self.genome.nodes.remove(random.choice(self.genome.nodes))
+        self.genome.connections.append(con1)
+        self.genome.connections.append(con2)
 
         self.genome.nodes.append(new_node)
+
+
+
+        
+
+
+
+
 
 
 
