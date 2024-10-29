@@ -75,11 +75,11 @@ class Genome:
 
         # Create input nodes
         for i in range(num_inputs):
-            self.nodes.add(Node(id=i, node_type='input'))
+            self.nodes.append(Node(id=i, node_type='input'))
         
         # Create output nodes
         for i in range(num_outputs):
-            self.nodes.add(Node(id=num_inputs + i, node_type='output'))
+            self.nodes.append(Node(id=num_inputs + i, node_type='output'))
         
         # Connect each input node to each output node with a random weight
         for input_node in range(num_inputs):
@@ -93,6 +93,43 @@ class Genome:
                         input_node, 
                         num_inputs + output_node)
                 )) 
+    
+    def mutate_weights(self, delta: float):
+
+        for conn in self.connections:
+        # Small chance to fully reset the weight to a random value
+            if random.random() < 0.1:  # 10% chance to completely change the weight
+                conn.weight = random.uniform(-1.0, 1.0)  # Reset weight to random value
+            else:
+            # Perturb the weight slightly (Gaussian perturbation)
+                conn.weight += random.gauss(0, delta)  # Random perturbation with mean 0 and standard deviation delta
+
+    def mutate_connections(self):
+
+        nodes = self.nodes
+
+        in_node = random.choice(nodes)
+        out_node = random.choice(nodes)
+        weight = random.uniform(-1.0,1-0)
+        enabled = random.choice([True,False])
+        new_conn = Connection(
+            in_node,
+            out_node,
+            weight,
+            enabled,
+            Inovation.get_instance()._get_innovation_number(in_node,out_node))
+        
+        self.connections.append(new_conn)
+    
+    def node_mutation(self):
+        new_node = Node(len(self.nodes)+1, "hidden")
+
+        nodes_copy = self.nodes     
+
+        new_conn = self.nodes.remove(random.choice(self.nodes))
+
+        self.nodes.append(new_node)
+
 
     def __str__(self):
         return f"Genome ID: {self.id}, Fitness: {self.fitness},"
