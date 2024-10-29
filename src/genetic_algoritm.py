@@ -1,7 +1,7 @@
 
 
 from typing import List
-from src.genome import Genome
+from src.genome import Genome, create_initial_genome
 import random
 
 
@@ -14,6 +14,10 @@ class GeneticAlgorithm:
     population_size: int
     mutation_rate: float
     crossover_rate: float    
+
+
+    speciation = {}
+
 
     def __init__(self, population_size: int, mutation_rate: float, crossover_rate: float, elitism_count: int):
         """
@@ -31,6 +35,7 @@ class GeneticAlgorithm:
         self.crossover_rate = crossover_rate
         self.elitism_count = elitism_count
         
+<<<<<<< HEAD
     def init_population(self, genome_length: int) -> List[Genome]:
         """
         Initializes the population with random genomes.
@@ -43,6 +48,20 @@ class GeneticAlgorithm:
         """
 
         self.genome_length = genome_length
+=======
+
+    
+    def initialize_population(pop_size: int, num_inputs: int, num_outputs: int) -> List[Genome]:
+        """Initialize a population of genomes."""
+        population = []
+        for genome_id in range(pop_size):
+            genome = create_initial_genome(genome_id, num_inputs, num_outputs)
+            population.append(genome)
+        return population
+'
+
+        
+>>>>>>> 4006e3d (fix merge#)
 
     def calc_fitness(self, genome: Genome) -> float:
         """
@@ -90,6 +109,7 @@ class GeneticAlgorithm:
         """
         
     def mutate(genome: Genome, innovation_tracker):
+<<<<<<< HEAD
         """
         Mutates a genome based on the mutation rate. 
         Each gene has a probability of being flipped.
@@ -136,8 +156,17 @@ class GeneticAlgorithm:
         # Add the new connections to the genome
         genome.connections.append(new_connection1)
         genome.connections.append(new_connection2)
+=======
+    
+    
+        
+>>>>>>> 4006e3d (fix merge#)
 
     def evolve(self, population: List[Genome]) -> List[Genome]:
         """
         Evolves the population by performing selection, crossover, and mutation. The top-performing genomes are preserved
         """
+
+
+
+
