@@ -1,7 +1,8 @@
 import pymunk
 import pygame
 from limb import Limb
-from motorjoint import MotorJoint  
+from motorjoint import MotorJoint 
+
 class Creature:
     def __init__(self, space):
         """Initialize a creature with an empty list of limbs and motors."""
