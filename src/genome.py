@@ -121,12 +121,16 @@ class Genome:
         
         self.connections.append(new_conn)
     
-    def node_mutation(self):
+    def mutate_nodes(self):
         new_node = Node(len(self.nodes)+1, "hidden")
+        con = random.choice(self.connections)
+        con.change_enable(False)
 
-        nodes_copy = self.nodes     
+        con1 = Connection(con.in_node_id, new_node, 1.0, True, Inovation.get_instance()._get_innovation_number(con.in_node_id, new_node))
+        con2 = Connection(new_node,con.out_node_id,  con.weight, True, Inovation.get_instance()._get_innovation_number(new_node,con.out_node_id,))
 
-        new_conn = self.nodes.remove(random.choice(self.nodes))
+        self.connections.append(con1)
+        self.connections.append(con2)
 
         self.nodes.append(new_node)
 
