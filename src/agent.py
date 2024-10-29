@@ -48,9 +48,3 @@ class Agent():
 
     def get_genome(self) -> Genome:
         pass
-
-
-
-
-    
-    
