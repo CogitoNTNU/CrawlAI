@@ -172,6 +172,7 @@ def get_innovation_number(in_node, out_node):
         innovation_history[(in_node, out_node)] = global_innovation_counter
         return global_innovation_counter
 
+<<<<<<< HEAD
 
 def initialize_population(
         pop_size: int,
@@ -201,4 +202,6 @@ if __name__ == "__main__":
     # Print the initialized genomes
     for genome in population:
         print(genome)
+=======
+>>>>>>> 2429a8c (Removed unnessesary stuff genome)
 
