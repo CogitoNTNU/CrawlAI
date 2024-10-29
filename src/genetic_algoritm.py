@@ -5,13 +5,15 @@ from src.genome import Genome
 import random
 
 
-
 class GeneticAlgorithm:
     """
     A class that implements a simple genetic algorithm to evolve solutions for a problem.
     Manages the population of potential solutions (genomes), applies genetic operators 
     like selection, crossover, and mutation, and evolves the population over generations.
     """
+    population_size: int
+    mutation_rate: float
+    crossover_rate: float    
 
     def __init__(self, population_size: int, mutation_rate: float, crossover_rate: float, elitism_count: int):
         """
@@ -29,7 +31,6 @@ class GeneticAlgorithm:
         self.crossover_rate = crossover_rate
         self.elitism_count = elitism_count
         
-
     def init_population(self, genome_length: int) -> List[Genome]:
         """
         Initializes the population with random genomes.
@@ -42,7 +43,6 @@ class GeneticAlgorithm:
         """
 
         self.genome_length = genome_length
-        
 
     def calc_fitness(self, genome: Genome) -> float:
         """
@@ -54,7 +54,6 @@ class GeneticAlgorithm:
         Returns:
         - float: The fitness value, between 0 and 1.
         """
-        
 
     def eval_population(self, population: List[Genome]) -> float:
         """
@@ -67,7 +66,6 @@ class GeneticAlgorithm:
         - float: The average fitness of the population.
         """
         
-
     def select_parent(self, population: List[Genome]) -> Genome:
         """
         Selects a parent genome for crossover using a simple tournament selection method.
@@ -79,7 +77,6 @@ class GeneticAlgorithm:
         - genome: The selected parent genome.
         """
         
-
     def crossover(self, parent1: Genome, parent2: Genome) -> Genome:
         """
         Performs crossover between two parent genomes to produce a child genome.
@@ -92,10 +89,10 @@ class GeneticAlgorithm:
         - genome: The child genome resulting from the crossover.
         """
         
-
     def mutate(genome: Genome, innovation_tracker):
         """
-        Mutates a genome based on the mutation rate. Each gene has a probability of being flipped.
+        Mutates a genome based on the mutation rate. 
+        Each gene has a probability of being flipped.
 
         Parameters:
         - genome (genome): The genome to be mutated.
@@ -104,8 +101,7 @@ class GeneticAlgorithm:
         - genome: The mutated genome.
         """
 
-
-        #Filters the connections to only be the ones with inout then outputnode connected
+        # Filters the connections to only be the ones with inout then outputnode connected
         valid_connections = [connection for connection in Genome.connections 
                             if genome.nodes[conn.in_node].node_type == 'input' and 
                             genome.nodes[conn.out_node].node_type == 'output']
@@ -140,9 +136,6 @@ class GeneticAlgorithm:
         # Add the new connections to the genome
         genome.connections.append(new_connection1)
         genome.connections.append(new_connection2)
-
-
-
 
     def evolve(self, population: List[Genome]) -> List[Genome]:
         """
