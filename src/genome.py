@@ -172,36 +172,4 @@ def get_innovation_number(in_node, out_node):
         innovation_history[(in_node, out_node)] = global_innovation_counter
         return global_innovation_counter
 
-<<<<<<< HEAD
-
-def initialize_population(
-        pop_size: int,
-        num_inputs: int,
-        num_outputs: int
-        ) -> List[Genome]:
-    """Initialize a population of genomes."""
-    population = []
-    for genome_id in range(pop_size):
-        genome = create_initial_genome(genome_id, num_inputs, num_outputs)
-        population.append(genome)
-    return population
-
-
-# Example usage:
-if __name__ == "__main__":
-    # Initialize a population of genomes for a NEAT algorithm
-    population_size = 10
-    num_input_nodes = 3  # For example, 3 input nodes
-    num_output_nodes = 1  # For example, 1 output node
-
-    population = initialize_population(
-        population_size,
-        num_input_nodes,
-        num_output_nodes)
-    
-    # Print the initialized genomes
-    for genome in population:
-        print(genome)
-=======
->>>>>>> 2429a8c (Removed unnessesary stuff genome)
 
