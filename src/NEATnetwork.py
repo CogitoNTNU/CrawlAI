@@ -3,9 +3,7 @@ from collections import defaultdict, deque
 import numpy as np
 
 
-
 class NEATNetwork():
-
 
     def __init__(self, genome: Genome):
         
@@ -19,14 +17,16 @@ class NEATNetwork():
         # Topologically sort nodes based on connections
         self.topological_order = self._topological_sort()
 
-    def sigmoid(self, x):
+    def sigmoid(self, x: np.ndarray) -> np.ndarray:
         return 1 / (1 + np.exp(-x))
 
     def ReLU(self, x):
         return np.maximum(0, x)
 
-    def _topological_sort(self):
-        """Performs topological sorting on the nodes based on their connections."""
+    def _topological_sort(self) -> list:
+        """
+        Performs topological sorting on the nodes based on their connections.
+        """
         in_degree = defaultdict(int)
         adjacency_list = defaultdict(list)
 
