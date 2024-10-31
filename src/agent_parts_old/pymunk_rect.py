@@ -3,7 +3,7 @@ import pygame
 import math
 import pymunk  # Importing Pymunk
 
-from agent_parts.rectangle import Point
+from CrawlAI.src.agent_parts.rectangle import Point
 
 
 class Rectangle:

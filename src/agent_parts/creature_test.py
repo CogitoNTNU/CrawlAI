@@ -43,7 +43,7 @@ while running:
     screen.fill((255, 255, 255))
 
     # Update physics
-    space.step(1/60.0)
+    space.step(1/200.0)
 
     # Render the ground (draw as a line)
     pygame.draw.line(screen, (0, 0, 0), (0, 550), (800, 550), 10)

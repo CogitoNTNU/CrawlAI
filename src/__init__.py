@@ -1,5 +1,5 @@
 # """Init file for src folder"""
 
-# from . import Enviroment, RenderObject, agent_parts
+# from . import agent_parts #Enviroment, RenderObject, 
 
-# __all__ = ["Enviroment", "RenderObject", "agent_parts"]
+# __all__ = ["agent_parts"] #"Enviroment", "RenderObject", 

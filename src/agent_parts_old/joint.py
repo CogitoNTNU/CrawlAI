@@ -1,7 +1,7 @@
 from src.render_object import RenderObject
 import pygame as pg
-from src.agent_parts.limb import Limb
-from src.agent_parts.rectangle import Point
+from src.agent_parts_old.limb import Limb
+from CrawlAI.src.agent_parts.rectangle import Point
 
 
 class Joint(RenderObject):

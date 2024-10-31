@@ -1,71 +1,76 @@
 from typing import Protocol
 from enum import Enum
 import numpy
+import random
 
 import pygame
 import pymunk
 from pygame.locals import *
 
 from src.genome import Genome
-from src.environment import Environment
+from src.globals import SCREEN_WIDTH, SCREEN_HEIGHT
+from src.environment import Environment, GroundType
 from src.render_object import RenderObject
 
-from src.agent_parts.limb import Limb, LimbType, limb_factory
-from src.agent_parts.creature import Creature, creature_factory
-from src.agent_parts.rectangle import Rectangle, rectangle_factory, Point
-from src.agent_parts.joint import Joint, joint_factory
+
+from src.agent_parts.creature import Creature
 
 def main():
     # Initialize Pygame and Pymunk
     pygame.init()
-    screen_width, screen_height = 800, 600
-    window = pygame.display.set_mode((screen_width, screen_height))
+    screen_width, screen_height = SCREEN_WIDTH, SCREEN_HEIGHT
+    screen = pygame.display.set_mode((screen_width, screen_height))
     pygame.display.set_caption("Pymunk Rectangle Physics")
+
+    environment = Environment(screen)
+    environment.ground_type = GroundType.BASIC_GROUND
+
+    if environment.ground_type == GroundType.BASIC_GROUND:
+            environment.ground.generate_floor_segment(0)
 
     # Set up the Pymunk space
     space = pymunk.Space()
     space.gravity = (0, 981)  # Gravity pointing downward
 
-    # Create a rectangle and add its body and shape to the Pymunk space
-    rect = rectangle_factory(Point(100, 100), 50, 20, 5.0)
-    space.add(rect.body, rect.shape)
+    creature = Creature(space)
 
-    static_rect = rectangle_factory(Point(120, 500), 300, 20, mass=0.0, body_type="static")  # No mass for static body
-    space.add(static_rect.body, static_rect.shape)
+    # Add limbs to the creature, placing them above the ground
+    limb1 = creature.add_limb(100, 20, (300, 100), mass=1)  # Positioned above the ground
+    limb2 = creature.add_limb(100, 20, (350, 100), mass=1)  # Positioned above the ground
+    limb3 = creature.add_limb(110, 20, (400, 100), mass=5)
+
+    # Add a motor between limbs
+    creature.add_motor(limb1, limb2, (50, 0), (-25, 0), rate=2, tolerance=30)
+    creature.add_motor(limb2, limb3, (37, 0), (-23, 0), rate=-2, tolerance=50)
 
     clock = pygame.time.Clock()
-
+    
     running = True
     while running:
         for event in pygame.event.get():
             if event.type == QUIT:
                 running = False
-            
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_LEFT:
-                    rect.update_shape( 5)
+                    print("Left arrow pressed")
                 if event.key == pygame.K_RIGHT:
                     print("Right arrow pressed")
 
-        # Step the Pymunk simulation
-        space.step(1 / 60.0)
+        space.step(1/200.0)
 
-        # Update the rectangle's position based on physics simulation
-        rect.update_from_physics()
-        static_rect.update_from_physics()
+        screen.fill((135, 206, 235))
+        
+        environment.update()
+        environment.render()
 
-        # Clear the screen
-        window.fill((0, 0, 0))
-
-        # Render the rectangle
-        rect.render(window)
-        static_rect.render(window)
-
-        # Update the display
-        pygame.display.flip()
-
-        # Cap the frame rate
+        creature.set_joint_rates([random.random()*2, random.random()*2])
+        # Render the creature
+        creature.render(screen)
+            
+            
         clock.tick(60)
+
+        pygame.display.flip()
 
     pygame.quit()
 

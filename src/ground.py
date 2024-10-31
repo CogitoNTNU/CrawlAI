@@ -4,8 +4,8 @@ import random
 import math
 from enum import Enum
 
-from render_object import RenderObject
-from globals import (SCREEN_WIDTH,
+from src.render_object import RenderObject
+from src.globals import (SCREEN_WIDTH,
                      SCREEN_HEIGHT,
                      PERLIN_SEGMENTS,
                      RED,
@@ -114,7 +114,6 @@ class BasicGround(RenderObject, Ground):
     def update(self, scroll_offset: float) -> None:
         self.generate_new_floor_segment(scroll_offset)
         self.remove_old_floor_segment(scroll_offset)
-        # self.swap_floor_segments(scroll_offset)
         scroll_offset += 1
 
     def generate_floor_segment(self, start_x: int) -> list:

@@ -2,7 +2,7 @@ import numpy as np
 import pygame
 import pymunk
 import math 
-from render_object import RenderObject
+from src.render_object import RenderObject
 
 
 class Point:

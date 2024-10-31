@@ -6,9 +6,9 @@ from src.genome import Genome
 from src.environment import Environment
 from src.render_object import RenderObject
 
-from src.agent_parts.limb import Limb, LimbType, limb_factory
-from src.agent_parts.creature import Creature, creature_factory
-from src.agent_parts.rectangle import Rectangle, rectangle_factory
+from src.agent_parts_old.limb import Limb, LimbType, limb_factory
+from src.agent_parts_old.creature import Creature, creature_factory
+from CrawlAI.src.agent_parts.rectangle import Rectangle, rectangle_factory
 
 
 class Agent():

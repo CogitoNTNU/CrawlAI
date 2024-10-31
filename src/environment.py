@@ -4,10 +4,10 @@ import random
 import itertools
 from enum import Enum
 
-from ground import Ground, BasicGround, InterpolationType, PerlinNoise
-from render_object import RenderObject
-from agent_parts.rectangle import Point
-from globals import (
+from src.ground import Ground, BasicGround, InterpolationType, PerlinNoise
+from src.render_object import RenderObject
+from src.agent_parts.rectangle import Point
+from src.globals import (
     SCREEN_WIDTH,
     SCREEN_HEIGHT,
     FONT_SIZE,
@@ -66,9 +66,13 @@ class Environment(RenderObject):
                     perlinFrequency,
                     octaves,
                     interpolation)
+    
+    def update(self):
+        self.ground.update(self.offset)
+        self.starting_xx += 1
 
     def render(self):
-        pass
+        self.ground.render(self.offset)
 
     def run(self):
 
@@ -79,11 +83,11 @@ class Environment(RenderObject):
         while active:
             clock = pg.time.Clock()
             clock.tick(60)
-            # Sjekker om brukeren har lukket vinduet
+
             for event in pg.event.get():
                 if event.type == pg.QUIT:
                     active = False
-            # Farger bakgrunnen lyseblå
+                    
             screen.fill((135, 206, 235))
 
             self.ground.update(self.offset)
