@@ -88,7 +88,7 @@ class BasicSegment():
         self.poly = pymunk.Poly(self.body, self.points, radius=0.0)
         space.add(self.body, self.poly)
 
-    def remove_pymunk_polygon(self,space) -> None:
+    def remove_pymunk_polygon(self, space) -> None:
         space.remove(self.body, self.poly)
 
 

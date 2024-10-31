@@ -32,6 +32,9 @@ def main():
     space = pymunk.Space()
     space.gravity = (0, 981)  # Gravity pointing downward
 
+    for environment_segment in environment.ground.terrain_segments:
+        environment_segment.init_pymunk_polygon(space)
+
     creature = Creature(space)
 
     # Add limbs to the creature, placing them above the ground

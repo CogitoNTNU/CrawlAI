@@ -39,7 +39,7 @@ class GroundType(Enum):
 class Environment(RenderObject):
     def __init__(self,  screen):
         self.screen = screen
-        self.ground_type = GroundType.PERLIN
+        self.ground_type = GroundType.BASIC_GROUND
         self.ground: Ground = self.ground_factory(self.ground_type)
         self.starting_xx = 50
         self.point = Point(self.starting_xx, 100)
