@@ -132,6 +132,7 @@ def main():
                     Point(environment.starting_xx, vision_y),
                     environment.ground,
                     0)
+
         #creature.set_joint_rates([random.random()*2, random.random()*2])
         # Render the creature
         creature.render(screen)
