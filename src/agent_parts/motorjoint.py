@@ -16,9 +16,10 @@ class MotorJoint:
         self.motor.rate = rate
 
     def render(self, screen, body_a, body_b):
-        """Render the motor joint as a line between the two bodies."""
+        """Render the motor joint as a small red circle between the two bodies."""
         # Get the positions of the two bodies
         pos_a_world = body_a.local_to_world(self.pivot.anchor_a)
+<<<<<<< Updated upstream
         # Draw a line connecting the two bodies
         pygame.draw.circle(
             screen, 
@@ -30,3 +31,7 @@ class MotorJoint:
     def get_angle(self):
         """Get the angle of the motor joint."""
         return self.pivot.angle
+=======
+        # Draw a circle connecting the two bodies
+        pygame.draw.circle(surface=screen, color=(255, 0, 0), center=(int(pos_a_world.x), int(pos_a_world.y)), radius=3)
+>>>>>>> Stashed changes
