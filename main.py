@@ -2,7 +2,7 @@ from typing import Protocol
 from enum import Enum
 import numpy
 import random
-
+import numpy as np
 import pygame
 from src.genetic_algoritm import GeneticAlgorithm
 import pymunk
@@ -122,12 +122,12 @@ def main():
         environment.update()
         environment.render()
         
-        import numpy as np
         # TODO: vision should be part of a creature, and not environment
-        inputs = np.array([environment.vision.near_periphery.x, 
-                           environment.vision.near_periphery.y, 
-                           environment.vision.far_periphery.x, 
-                           environment.vision.far_periphery.y])
+        print(environment.vision.get_near_periphery())
+        inputs = np.array([environment.vision.get_near_periphery().x, 
+                           environment.vision.get_near_periphery().y,
+                           environment.vision.get_far_periphery().x,
+                           environment.vision.get_far_periphery().y])
         for index, creature in enumerate(creatures):
             network = population[index]
             for joint_rate in creature.get_joint_rates():
@@ -138,7 +138,7 @@ def main():
                 inputs = np.append(inputs, limb.body.position.y)
 
             outputs = neat_networks[index].forward(inputs)
-            
+            creature.set_joint_rates(outputs)
 
         vision_y = round(creature_instance.limbs[0].body.position.y)
         vision_x = round(creature_instance.limbs[0].body.position.x)

@@ -51,12 +51,15 @@ class Creature:
         """Return the number of limbs in the creature."""
         return len(self.limbs)            
 
-    def set_joint_rates(self, rates: float): 
+    def set_joint_rates(self, rates: list[float]): 
         """Set the rates of all motor joints."""
         for motor, rate in zip(self.motors, rates):
             motor.set_motor_rate(rate)
     
     def get_joint_positions(self) -> list[tuple[float,float]]:
         return [(motor.pivot.a, motor.pivot.b) for motor in self.motors]
+
+    def get_limb_positions(self) -> list[tuple[float,float]]:
+        return [(limb.body.position.x, limb.body.position.y) for limb in self.limbs]
     
     
