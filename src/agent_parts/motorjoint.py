@@ -23,7 +23,7 @@ class MotorJoint:
         pygame.draw.circle(
             surface=screen, 
             color=(255, 0, 0), 
-            center=(int(pos_a_world.x),
+            point=(int(pos_a_world.x),
             int(pos_a_world.y)),
             radius=3)
 
