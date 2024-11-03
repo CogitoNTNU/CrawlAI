@@ -1,6 +1,7 @@
 import random
-from dataclasses import dataclass, field
-from typing import List, Dict, Tuple
+from dataclasses import dataclass
+from typing import List 
+
 
 class Inovation:
     __instance = None
@@ -26,8 +27,10 @@ class Inovation:
             return Inovation._innovation_history[key]
         else:
             Inovation._global_innovation_counter += 1
-            Inovation._innovation_history[key] = Inovation._global_innovation_counter
+            Inovation._innovation_history[key] =\
+                Inovation._global_innovation_counter
             return Inovation._innovation_history[key]
+
 
 @dataclass
 class Node:
@@ -37,16 +40,18 @@ class Node:
     def __hash__(self) -> int:
         return self.id
 
+
 @dataclass
 class Connection:
     in_node: int
     out_node: int
     weight: float
-    enabled: bool = True
     innovation_number: int
+    enabled: bool = True
 
     def change_enable(self, status: bool):
         self.enabled = status
+        
 
 class Genome:
     def __init__(self, genome_id: int, num_inputs: int, num_outputs: int):
@@ -95,7 +100,9 @@ class Genome:
             out_node.id,
             weight,
             enabled,
-            Inovation.get_instance()._get_innovation_number(in_node.id, out_node.id)
+            Inovation.get_instance()._get_innovation_number(
+                in_node.id, 
+                out_node.id)
         )
         self.connections.append(new_conn)
 
@@ -104,8 +111,18 @@ class Genome:
         con = random.choice(self.connections)
         con.change_enable(False)
 
-        con1 = Connection(con.in_node, new_node.id, 1.0, True, Inovation.get_instance()._get_innovation_number(con.in_node, new_node.id))
-        con2 = Connection(new_node.id, con.out_node, con.weight, True, Inovation.get_instance()._get_innovation_number(new_node.id, con.out_node))
+        con1 = Connection(
+            con.in_node, 
+            new_node.id, 
+            1.0, 
+            True, 
+            Inovation.get_instance()._get_innovation_number(con.in_node, new_node.id))
+        con2 = Connection(
+            new_node.id, 
+            con.out_node, 
+            con.weight, 
+            True, 
+            Inovation.get_instance()._get_innovation_number(new_node.id, con.out_node))
 
         self.connections.extend([con1, con2])
         self.nodes.append(new_node)

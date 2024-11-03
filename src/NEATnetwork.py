@@ -1,4 +1,4 @@
-from genome import Genome
+from src.genome import Genome
 from collections import defaultdict, deque
 import numpy as np
 
