@@ -11,18 +11,52 @@ class Creature:
         self.space = space
         self.limbs = []
         self.motors = []
+        self.relative_vectors = []
 
     def add_limb(self, width: float, height: float, position: tuple[float,float], mass=1, color=(0, 255, 0)) -> Limb:
         """Add a limb to the creature."""
         limb = Limb(self.space, width, height, position, mass, color)
         self.limbs.append(limb)
         return limb
+    
+    def start_dragging(self, dragged_limb: Limb):
+        for limb in self.limbs:
+            if limb != dragged_limb: 
+                vector = (limb.body.position.x - dragged_limb.body.position.x,
+                          limb.body.position.y - dragged_limb.body.position.y)
+                self.relative_vectors.append((limb, vector))
 
-    def add_motor(self, limb_a: Limb, limb_b: Limb, anchor_a: tuple[float,float], anchor_b: tuple[float,float], rate: float, tolerance: float) -> MotorJoint|None:
+    
+    def update_creature_position(self, dragged_limb: Limb, new_position: tuple[float, float]):
+        dragged_limb.body.position = new_position[0], new_position[1]
+        for limb, vector in self.relative_vectors:
+            new_position = (dragged_limb.body.position.x + vector[0],
+                            dragged_limb.body.position.y + vector[1])
+            limb.body.position = new_position
+            
+
+    
+    def add_motor_on_limbs(self, limb_a: Limb, limb_b: Limb, position: tuple[float, float]) -> MotorJoint|None: 
+        if(limb_a.contains_point(position) and limb_b.contains_point(position)):
+            anchor1 = limb_a.global_to_local(position)
+            anchor2 = limb_b.global_to_local(position)
+            print("true")
+            return self.add_motor(limb_a, limb_b, anchor1, anchor2, 2.0)
+        else: 
+            print("false")
+            return None
+        
+
+    def add_motor(self, limb_a: Limb, limb_b: Limb, anchor_a: tuple[float,float], anchor_b: tuple[float,float], rate = 0.0, tolerance = 30) -> MotorJoint|None:
         """Add a motor connecting two limbs."""
-        if(abs(limb_a.body.position + anchor_a - limb_b.body.position + anchor_b) < tolerance):
+        global_a = self.local_to_global(limb_a, anchor_a)
+        global_b = self.local_to_global(limb_b, anchor_b)
+
+        # Check if the global points are within the tolerance
+        if abs(global_a[0] - global_b[0]) < tolerance and abs(global_a[1] - global_b[1]) < tolerance:
             motor = MotorJoint(self.space, limb_a.body, limb_b.body, anchor_a, anchor_b, rate)
             self.motors.append(motor)
+            print("add_motor: true")
             return motor
 
     def render(self, screen: pygame.display):
