@@ -1,50 +1,83 @@
 
 
 from typing import List
+from src.genome import Genome, create_initial_genome
 import random
 from src.genome import Genome
 
-
 class GeneticAlgorithm:
-    """
-    A class that implements a simple genetic algorithm to
-    evolve solutions for a problem.
-    Manages the population of potential solutions (genomes),
-    applies genetic operators
-    like selection, crossover, and mutation, and evolves
-    the population over generations.
-    """
+      
+    speciation = {}  
+    species_representatives = {}  
 
-    def __init__(self,
-                 population_size: int,
-                 mutation_rate: float,
-                 crossover_rate: float,
-                 elitism_count: int):
-        """
-        Initializes a new instance of the GeneticAlgorithm class.
+    @staticmethod
+    def initialize_population(pop_size: int, num_inputs: int, num_outputs: int) -> List[Genome]:
+        """Initialize a population of genomes."""
+        population = []
+        for genome_id in range(pop_size):
+            genome = create_initial_genome(genome_id, num_inputs, num_outputs)
+            population.append(genome)
 
-        Parameters:
-        - population_size (int): The number of genomes in the population.
-        - mutation_rate (float): The probability that a gene will be mutated
-          in a genome.
-        - crossover_rate (float): The probability that a gene will be taken
-          from the first parent during crossover.
-        - elitism_count (int): The number of top-performing genomes that are
-          directly carried over to the next generation.
-        """
+            # Initialize the speciation with a key for the genome
+            species_id = GeneticAlgorithm.determine_species(genome)
 
-    def init_population(self, genome_length: int) -> List[Genome]:
-        """
-        Initializes the population with random genomes.
+            if species_id not in GeneticAlgorithm.speciation:
+                GeneticAlgorithm.speciation[species_id] = []
 
-        Parameters:
-        - genome_length (int): The length of each genome.
-        
-        Returns:
-        - List[genome]: A list of genome objects representing the i
-        nitial population.
-        """
-        
+            GeneticAlgorithm.speciation[species_id].append(genome)
+
+        return population
+
+    @staticmethod
+    def determine_species(genome: Genome, speciation_threshold: float = 3.0) -> int:
+        """Determine the species ID for a given genome."""
+        for species_id, representative in GeneticAlgorithm.species_representatives.items():
+            distance = GeneticAlgorithm.delta_function(genome, representative)
+            if distance < speciation_threshold:
+                return species_id
+
+        # If no existing species matches, create a new species
+        new_species_id = len(GeneticAlgorithm.speciation) + 1
+        GeneticAlgorithm.species_representatives[new_species_id] = genome
+        return new_species_id
+
+    @staticmethod
+    def delta_function(genome1: Genome, genome2: Genome, c1=1.0, c2=1.0, c3=0.4) -> float:
+        """Calculate the genetic distance (delta) between two genomes."""
+        conn1 = {c.innovation_number: c for c in genome1.connections}
+        conn2 = {c.innovation_number: c for c in genome2.connections}
+        all_innovations = set(conn1.keys()).union(set(conn2.keys()))
+
+        excess_genes = 0
+        disjoint_genes = 0
+        matching_genes = 0
+        weight_difference_sum = 0
+
+        N = max(len(conn1), len(conn2))
+        if N < 20:
+            N = 1  # Avoid excessive normalization for small genomes
+
+        max_innovation1 = max(conn1.keys(), default=0)
+        max_innovation2 = max(conn2.keys(), default=0)
+
+        for innovation_number in all_innovations:
+            if innovation_number in conn1 and innovation_number in conn2:
+                matching_genes += 1
+                weight_difference_sum += abs(conn1[innovation_number].weight - conn2[innovation_number].weight)
+            elif innovation_number in conn1 or innovation_number in conn2:
+                if innovation_number > max(max_innovation1, max_innovation2):
+                    excess_genes += 1
+                else:
+                    disjoint_genes += 1
+
+        average_weight_difference = (weight_difference_sum / matching_genes) if matching_genes > 0 else 0
+        delta = (c1 * excess_genes / N) + (c2 * disjoint_genes / N) + (c3 * average_weight_difference)
+        return delta
+
+
+
+
+
     def calc_fitness(self, genome: Genome) -> float:
         """
         Calculates the fitness of a given genome. Fitness is defined as the 
@@ -56,7 +89,6 @@ class GeneticAlgorithm:
         Returns:
         - float: The fitness value, between 0 and 1.
         """
-        
     def eval_population(self, population: List[Genome]) -> float:
         """
         Evaluates the entire population's fitness.
@@ -68,46 +100,7 @@ class GeneticAlgorithm:
         Returns:
         - float: The average fitness of the population.
         """
-
-    def select_parent(self, population: List[Genome]) -> Genome:
-        """
-        Selects a parent genome for crossover using a simple tournament
-        selection method.
-
-        Parameters:
-        - population (List[Genome]): A list of genome objects from which a
-        parent will be selected.
         
-        Returns:
-        - genome: The selected parent genome.
-        """
 
-    def crossover(self, parent1: Genome, parent2: Genome) -> Genome:
-        """
-        Performs crossover between two parent genomes to produce a child 
-        genome.
 
-        Parameters:
-        - parent1 (genome): The first parent genome.
-        - parent2 (genome): The second parent genome.
-        
-        Returns:
-        - genome: The child genome resulting from the crossover.
-        """
-        
-    def mutate(self, genome: Genome) -> Genome:
-        """
-        Mutates a genome based on the mutation rate. Each gene has a p
-        probability of being flipped.
 
-        Parameters:
-        - genome (genome): The genome to be mutated.     
-        Returns:
-        - genome: The mutated genome.
-        """
-        
-    def evolve(self, population: List[Genome]) -> List[Genome]:
-        """
-        Evolves the population by performing selection, crossover, 
-        and mutation. The top-performing genomes are preserved
-        """

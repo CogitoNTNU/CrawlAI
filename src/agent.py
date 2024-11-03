@@ -1,6 +1,7 @@
-from typing import Protocol
+from abc import ABC, abstractmethod
+import pybox2d
 from enum import Enum
-import numpy
+import tensorflow as tf
 
 from src.genome import Genome
 from src.environment import Environment
@@ -11,40 +12,42 @@ from src.agent_parts_old.creature import Creature, creature_factory
 from CrawlAI.src.agent_parts.rectangle import Rectangle, rectangle_factory
 
 
-class Agent():
+class Agent(ABC):
+    """
+    
+    """
     genome: Genome
     creature: Creature
     
-    def __init__(self, genome: Genome, creature: Creature):
+    def __init__(self, genome: Genome, creature: Creature) -> None:
         self.genome = genome
         self.creature = creature
-        
-    def get_inputs_from_env(self, env) -> list:
-        vision = env.get_vision()
-        # TODO: Implement the rest of the inputs, they are the joint angles, 
-        # health and the position of the limbs.
+
+    @abstractmethod
+    def act(self, env) -> int:
         pass
-    
-    def do_inference(self, inputs: list) -> list:
-        """_summary_ Do inference on the inputs and return the output.
 
-        Args:
-            inputs (list): _description_
-
-        Returns:
-            list: outputs
+    def save(self, path: str) -> None:
+        """
+        Saves the agent and it's creature to a file.
         """
         pass
-    
-    def act(self, env) -> None:
-        self.creature.act(self.do_inference(self.get_inputs_from_env(env)))
-        pass
 
-    def save(self, path) -> None:
-        pass
-
-    def load(self, path) -> None:
+    def load(self, path: str) -> None:
+        """
+        Loads the agent and it's creature from a file."""
         pass
 
     def get_genome(self) -> Genome:
+        """
+        Returns the genome of the agent.
+        """
+        return self.genome
+    
+    @abstractmethod
+    def get_enviroment_state(self, env) -> tf.Tensor:
+        """
+        Creates the input tensor based on the agent's enviroment and body.
+        """
         pass
+
