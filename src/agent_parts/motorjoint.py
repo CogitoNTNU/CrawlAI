@@ -2,6 +2,7 @@ import pymunk
 import pygame
 import math
 
+
 class MotorJoint:
     def __init__(self, space, body_a, body_b, anchor_a, anchor_b, rate):
         """Initialize a motor joint between two limbs."""
@@ -19,4 +20,13 @@ class MotorJoint:
         # Get the positions of the two bodies
         pos_a_world = body_a.local_to_world(self.pivot.anchor_a)
         # Draw a line connecting the two bodies
-        pygame.draw.circle(screen, (255, 0, 0), (int(pos_a_world.x), int(pos_a_world.y)), 3)
+        pygame.draw.circle(
+            screen, 
+            (255, 0, 0), 
+            (int(pos_a_world.x),
+            int(pos_a_world.y)),
+            3)
+
+    def get_angle(self):
+        """Get the angle of the motor joint."""
+        return self.pivot.angle
