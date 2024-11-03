@@ -70,22 +70,22 @@ def main():
         environment.update()
         environment.render()
 
-        vision_y += random.randint(-1, 1)
+        # vision_y += random.randint(-1, 1)
 
-        match environment.ground_type:
-            case GroundType.BASIC_GROUND:
-                environment.vision.update(
-                    environment.screen,
-                    Point(environment.starting_xx, vision_y),
-                    environment.ground,
-                    environment.offset)
+        # match environment.ground_type:
+        #     case GroundType.BASIC_GROUND:
+        #         environment.vision.update(
+        #             environment.screen,
+        #             Point(environment.starting_xx, vision_y),
+        #             environment.ground,
+        #             environment.offset)
 
-            case GroundType.PERLIN:
-                self.vision.update(
-                    self.screen,
-                    Point(self.starting_xx, vision_y),
-                    self.ground,
-                    0)
+        #     case GroundType.PERLIN:
+        #         self.vision.update(
+        #             self.screen,
+        #             Point(self.starting_xx, vision_y),
+        #             self.ground,
+        #             0)
         #creature.set_joint_rates([random.random()*2, random.random()*2])
         # Render the creature
         creature.render(screen)
@@ -101,14 +101,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-    # pygame.init()
-    # font = pygame.font.Font(pygame.font.get_default_font(), FONT_SIZE)
-
-    # space = pymunk.Space()
-    # space.gravity = (0, 981)  # Gravity pointing downward
-
-    # # Create the screen
-    # screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-    # environment = Environment(screen, space)
-    # # Start the main loop
-    # environment.run()

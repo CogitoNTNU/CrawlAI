@@ -57,12 +57,13 @@ class Environment(RenderObject):
                     interpolation)
     
     def update(self):
-        self.offset += 1
+        self.offset = 1
         self.ground.update(self.offset)
+        # self.ground.move_segments(self.offset/100)
         self.starting_xx += 1
 
     def render(self):
-        self.ground.render(self.offset)
+        self.ground.render()
 
     def run(self):
 
@@ -128,9 +129,12 @@ class Vision:
         self.eye_position = eye_position
         x1 = eye_position.x + self.x_offset
         x2 = x1 + self.sight_width
-
-        self.near_periphery = Point(x1, ground.get_y(x1+scroll_offset))
-        self.far_periphery = Point(x2, ground.get_y(x2+scroll_offset))
+        y1=ground.get_y(x1+scroll_offset)
+        y2=ground.get_y(x2+scroll_offset)
+        if not y1 is None:
+            self.near_periphery = Point(x1, y1)
+        if not y2 is None:
+            self.far_periphery = Point(x2, y2)
         self.render_vision(screen)
 
     def render_vision(self, screen):
