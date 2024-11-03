@@ -8,6 +8,7 @@ from src.genetic_algoritm import GeneticAlgorithm
 import pymunk
 from pygame.locals import *
 
+from src.agent_parts.limb import Limb
 from src.genome import Genome
 from src.globals import SCREEN_WIDTH, SCREEN_HEIGHT
 from src.environment import Environment, GroundType
@@ -96,6 +97,9 @@ def main():
     creatures = create_creatures(population_size, space)
     creature_instance = creatures[0]
     population = create_population(population_size, creature_instance)
+    neat_networks: list[NEATNetwork] = []
+    for genome in population:
+        neat_networks.append(NEATNetwork(genome))
     
     clock = pygame.time.Clock()
     vision_y = 100
@@ -129,9 +133,11 @@ def main():
             for joint_rate in creature.get_joint_rates():
                 inputs = np.append(inputs, joint_rate)
             
-            for
-            
-            
+            for limb in creature.limbs:
+                inputs = np.append(inputs, limb.body.position.x)
+                inputs = np.append(inputs, limb.body.position.y)
+
+            outputs = neat_networks[index].forward(inputs)
             
 
         vision_y = round(creature_instance.limbs[0].body.position.y)
