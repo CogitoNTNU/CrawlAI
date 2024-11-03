@@ -76,19 +76,6 @@ class GeneticAlgorithm:
 
 
 
-
-
-    def calc_fitness(self, genome: Genome) -> float:
-        """
-        Calculates the fitness of a given genome. Fitness is defined as the 
-        proportion of correct genes in the genome (assumed to be 1).
-
-        Parameters:
-        - genome (genome): The genome whose fitness is to be calculated.
-        
-        Returns:
-        - float: The fitness value, between 0 and 1.
-        """
     def eval_population(self, population: List[Genome]) -> float:
         """
         Evaluates the entire population's fitness.

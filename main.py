@@ -12,6 +12,7 @@ from src.genome import Genome
 from src.globals import SCREEN_WIDTH, SCREEN_HEIGHT
 from src.environment import Environment, GroundType
 from src.agent_parts.rectangle import Point
+from src.genetic_algoritm import GeneticAlgorithm
 from src.globals import (
     FONT_SIZE,
     SEGMENT_WIDTH,
@@ -22,7 +23,43 @@ from src.agent_parts.creature import Creature
 from src.NEATnetwork import NEATNetwork
 
 
+
+
+def create_creature(in_nodes: int,out_nodes: int):
+    population = genetic_algorithm.initialize_population(200, in_nodes, out_nodes)
+
+    return population 
+
 def main():
+
+
+    #Initializes Genetic Algorithm 
+
+    genetic_algorithm = GeneticAlgorithm()
+
+    def create_creature(in_nodes: int,out_nodes: int):
+        population = genetic_algorithm.initialize_population(200, in_nodes, out_nodes)
+
+        return population 
+
+    fitness = []
+
+
+    
+
+
+
+    
+    
+
+
+
+
+
+
+
+
+
     # Initialize Pygame and Pymunk
     
     pygame.init()
@@ -95,19 +132,15 @@ def main():
 
         pygame.display.flip()
 
+
     pygame.quit()
+
+
+
+
+
+
 
 
 if __name__ == "__main__":
     main()
-    # pygame.init()
-    # font = pygame.font.Font(pygame.font.get_default_font(), FONT_SIZE)
-
-    # space = pymunk.Space()
-    # space.gravity = (0, 981)  # Gravity pointing downward
-
-    # # Create the screen
-    # screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-    # environment = Environment(screen, space)
-    # # Start the main loop
-    # environment.run()
