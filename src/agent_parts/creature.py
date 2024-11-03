@@ -2,6 +2,8 @@ import pymunk
 import pygame
 from src.agent_parts.limb import Limb
 from src.agent_parts.motorjoint import MotorJoint  
+
+
 class Creature:
 
     def __init__(self, space):
@@ -34,7 +36,19 @@ class Creature:
         """Return the current rates of all motor joints."""
         return [motor.motor.rate for motor in self.motors]
 
+    def get_joint_rotations(self) -> list[float]:
+        """Return the current rotations of all motor joints."""
+        rotations = []
+        for motor in self.motors:
+            rotations.append(motor.get_angle())
+        return rotations
+        
+                
+
     def set_joint_rates(self, rates: float): 
         """Set the rates of all motor joints."""
         for motor, rate in zip(self.motors, rates):
             motor.set_motor_rate(rate)
+            
+    
+    
