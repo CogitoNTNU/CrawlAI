@@ -18,6 +18,14 @@ class NEATNetwork():
         self.topological_order = self._topological_sort()
 
     def sigmoid(self, x: np.ndarray) -> np.ndarray:
+        """ Sigmoid activation function.
+
+        Args:
+            x (np.ndarray): Input array
+
+        Returns:
+            np.ndarray: Output array after applying sigmoid function
+        """
         return 1 / (1 + np.exp(-x))
 
     def ReLU(self, x):
