@@ -7,11 +7,7 @@ from src.enviroment import Enviroment
 from src.renderObject import RenderObject
 from src.genome import Genome
 from src.agent_parts.creature import Creature
-
-
-class LimbType(Enum):  
-    """
-    Summary: Enum for the different types of limbs.
+class LimbType(Enum):  """ Summary: Enum for the different types of limbs.
     """
     FOOT = 1
     LEG = 2
@@ -54,7 +50,6 @@ class Agent(ABC):
     def get_enviroment_state(self, env) -> tf.Tensor:
         """
         Creates the input tensor based on the agent's enviroment and body.
-
         """
         pass
 

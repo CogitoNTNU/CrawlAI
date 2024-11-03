@@ -20,14 +20,12 @@ if __name__ =="__main__":
 
     rect = rectangle_factory(point, 50, 50)
     limb = limb_factory(rect, 3, 2)
-    angle = 0
-    joint = joint_factory(angle, Point(125, 125))
+    angle = 0,'',
+    joint =  joint_factory(angle, Point(125, 125))
     limb.addJoint(joint)
-    aurelius = creature_factory(None, [limb])
-    
+    aurelius = creature_fatory(None, [limb])
     pygame.init()
     window = pygame.display.set_mode((800, 600))
-    active = True
     a = 0
     while active:
         for event in pygame.event.get():
