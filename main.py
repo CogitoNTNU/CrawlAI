@@ -13,16 +13,14 @@ from src.environment import Environment, GroundType
 from src.render_object import RenderObject
 from src.agent_parts.rectangle import Point
 from src.globals import (
-    SCREEN_WIDTH,
-    SCREEN_HEIGHT,
     FONT_SIZE,
     SEGMENT_WIDTH,
     BLACK,
     RED
     )
-
-
 from src.agent_parts.creature import Creature
+from src.NEATnetwork import NEATnetwork
+
 
 def main():
     # Initialize Pygame and Pymunk
@@ -31,11 +29,8 @@ def main():
     screen = pygame.display.set_mode((screen_width, screen_height))
     pygame.display.set_caption("Pymunk Rectangle Physics")
             
-
-    # Set up the Pymunk space
     space = pymunk.Space()
     space.gravity = (0, 981)  # Gravity pointing downward
-
 
     environment = Environment(screen, space)
     environment.ground_type = GroundType.BASIC_GROUND
