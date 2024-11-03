@@ -1,7 +1,7 @@
-from src.enviroment import Enviroment
+from src.environment import Environment
 
 def test_create_enviroment():
-    env = Enviroment(state="Env")
+    env = Environment(state="Env")
     assert env is not None
 
 

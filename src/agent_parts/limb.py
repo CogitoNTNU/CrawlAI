@@ -34,6 +34,6 @@ class Limb:
         vertices = self.shape.get_vertices()
         vertices = [v.rotated(angle) + pos for v in vertices]
         # Convert pymunk Vec2d vertices to pygame coordinates
-        vertices = [(int(v.x), int(v.y)) for v in vertices]
+        vertices = [(float(v.x), float(v.y)) for v in vertices]
         # Draw the polygon onto the screen
         pygame.draw.polygon(screen, (0, 255, 0), vertices, 0)
