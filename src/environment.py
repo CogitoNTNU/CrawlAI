@@ -17,18 +17,6 @@ from src.globals import (
     )
 
 
-pg.init()
-font = pg.font.Font(pg.font.get_default_font(), FONT_SIZE)
-
-
-# Remove this
-interp_iter = itertools.cycle((
-    InterpolationType.LINEAR,
-    InterpolationType.CUBIC,
-    InterpolationType.COSINE))
-
-# Create the screen
-screen = pg.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
 
 class GroundType(Enum):
@@ -37,8 +25,9 @@ class GroundType(Enum):
 
 
 class Environment(RenderObject):
-    def __init__(self,  screen):
+    def __init__(self,  screen, space):
         self.screen = screen
+        self.space = space
         self.ground_type = GroundType.BASIC_GROUND
         self.ground: Ground = self.ground_factory(self.ground_type)
         self.starting_xx = 50
@@ -52,7 +41,7 @@ class Environment(RenderObject):
 
         match ground_type:
             case GroundType.BASIC_GROUND:
-                return BasicGround(self.screen, SEGMENT_WIDTH)
+                return BasicGround(self.screen, self.space, SEGMENT_WIDTH)
 
             case GroundType.PERLIN:
                 seed = random.randint(0, 2**32)
@@ -68,6 +57,7 @@ class Environment(RenderObject):
                     interpolation)
     
     def update(self):
+        self.offset += 1
         self.ground.update(self.offset)
         self.starting_xx += 1
 
@@ -88,7 +78,7 @@ class Environment(RenderObject):
                 if event.type == pg.QUIT:
                     active = False
                     
-            screen.fill((135, 206, 235))
+            self.screen.fill((135, 206, 235))
 
             self.ground.update(self.offset)
             self.ground.render(self.offset)
@@ -97,18 +87,18 @@ class Environment(RenderObject):
             match self.ground_type:
                 case GroundType.BASIC_GROUND:
                     self.vision.update(
+                        self.screen,
                         Point(self.starting_xx, 100),
                         self.ground,
                         self.offset)
-                    self.offset += 1
 
                 case GroundType.PERLIN:
                     self.vision.update(
+                        self.screen,
                         Point(self.starting_xx, 100),
                         self.ground,
                         0)
-                    self.offset += 1
-
+            self.offset += 1
             pg.display.flip()
         pg.quit()
 
@@ -129,9 +119,11 @@ class Vision:
 
     def update(
             self,
+            screen: pg.display,
             eye_position: Point,
             ground: Ground,
-            scroll_offset: int) -> None:
+            scroll_offset: int
+            ) -> None:
         
         self.eye_position = eye_position
         x1 = eye_position.x + self.x_offset
@@ -173,7 +165,4 @@ class Vision:
         return self.sight_width
 
 
-if __name__ == "__main__":
-    environment = Environment(screen)
-    # Start the main loop
-    environment.run()
+

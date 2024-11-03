@@ -67,6 +67,7 @@ class Ground(Protocol):
 
 
 class BasicSegment():
+    
     def __init__(self, start_x: int, end_x: int) -> None:
         self.start_x = start_x
         self.end_x = end_x
@@ -95,9 +96,9 @@ class BasicSegment():
 
 
 class BasicGround(RenderObject, Ground, BasicSegment):
-    def __init__(self, screen: pg.display, segment_width: int) -> None:
+    def __init__(self, screen: pg.display, space: pymunk.space, segment_width: int) -> None:
         self.screen = screen
-   
+        self.space = space
         self.segment_width = segment_width
         self.terrain_segments: BasicSegment = []
 
@@ -159,6 +160,7 @@ class BasicGround(RenderObject, Ground, BasicSegment):
 
         segment = BasicSegment(start_x, start_x + SEGMENT_WIDTH)
         segment.add_points(start_x, start_x + SEGMENT_WIDTH)
+        segment.init_pymunk_polygon(self.space)
         return segment
 
     def generate_new_floor_segment(self, scroll_offset: int) -> None:
@@ -178,6 +180,7 @@ class BasicGround(RenderObject, Ground, BasicSegment):
         last_segment = self.terrain_segments[-1]
         if last_segment.get_points()[-1][0] - scroll_offset < -SEGMENT_WIDTH:
             self.terrain_segments.pop(0)
+            last_segment.remove_pymunk_polygon(self.space)
     
     def swap_floor_segments(self, scroll_offset: float) -> None:
         """_summary_ Swap the floor segments"""
@@ -204,6 +207,11 @@ class BasicGround(RenderObject, Ground, BasicSegment):
             shifted_points.append((shifted_points[-1][0], SCREEN_HEIGHT))
             shifted_points.append((shifted_points[0][0], SCREEN_HEIGHT))
             pg.draw.polygon(screen, (34, 139, 34), shifted_points)
+    
+    def move_segments(self, scroll_offset: float) -> None:  
+        
+        for segment in self.terrain_segments:
+            pymunk_body= segment.body
             
 
 class PerlinSegment():

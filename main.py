@@ -11,6 +11,15 @@ from src.genome import Genome
 from src.globals import SCREEN_WIDTH, SCREEN_HEIGHT
 from src.environment import Environment, GroundType
 from src.render_object import RenderObject
+from src.agent_parts.rectangle import Point
+from src.globals import (
+    SCREEN_WIDTH,
+    SCREEN_HEIGHT,
+    FONT_SIZE,
+    SEGMENT_WIDTH,
+    BLACK,
+    RED
+    )
 
 
 from src.agent_parts.creature import Creature
@@ -21,33 +30,28 @@ def main():
     screen_width, screen_height = SCREEN_WIDTH, SCREEN_HEIGHT
     screen = pygame.display.set_mode((screen_width, screen_height))
     pygame.display.set_caption("Pymunk Rectangle Physics")
-
-    environment = Environment(screen)
-    environment.ground_type = GroundType.BASIC_GROUND
-
-    
             
 
     # Set up the Pymunk space
     space = pymunk.Space()
     space.gravity = (0, 981)  # Gravity pointing downward
 
-    for environment_segment in environment.ground.terrain_segments:
-        environment_segment.init_pymunk_polygon(space)
+    environment = Environment(screen, space)
+    environment.ground_type = GroundType.BASIC_GROUND
 
     creature = Creature(space)
 
     # Add limbs to the creature, placing them above the ground
-    limb1 = creature.add_limb(100, 20, (300, 100), mass=1)  # Positioned above the ground
-    limb2 = creature.add_limb(100, 20, (350, 100), mass=1)  # Positioned above the ground
-    limb3 = creature.add_limb(110, 20, (400, 100), mass=5)
+    limb1 = creature.add_limb(100, 60, (300, 100), mass=1)  
+    limb2 = creature.add_limb(100, 20, (350, 100), mass=1)  
+    limb3 = creature.add_limb(110, 60, (400, 100), mass=5)
 
     # Add a motor between limbs
     creature.add_motor(limb1, limb2, (50, 0), (-25, 0), rate=-2, tolerance=30)
     creature.add_motor(limb2, limb3, (37, 0), (-23, 0), rate=2, tolerance=50)
 
     clock = pygame.time.Clock()
-    
+    vision_y = 100
     running = True
     while running:
         for event in pygame.event.get():
@@ -66,9 +70,26 @@ def main():
         environment.update()
         environment.render()
 
+        vision_y += random.randint(-1, 1)
+
+        match environment.ground_type:
+            case GroundType.BASIC_GROUND:
+                environment.vision.update(
+                    environment.screen,
+                    Point(environment.starting_xx, vision_y),
+                    environment.ground,
+                    environment.offset)
+
+            case GroundType.PERLIN:
+                self.vision.update(
+                    self.screen,
+                    Point(self.starting_xx, vision_y),
+                    self.ground,
+                    0)
         #creature.set_joint_rates([random.random()*2, random.random()*2])
         # Render the creature
         creature.render(screen)
+        
             
             
         clock.tick(60)
@@ -80,3 +101,14 @@ def main():
 
 if __name__ == "__main__":
     main()
+    # pygame.init()
+    # font = pygame.font.Font(pygame.font.get_default_font(), FONT_SIZE)
+
+    # space = pymunk.Space()
+    # space.gravity = (0, 981)  # Gravity pointing downward
+
+    # # Create the screen
+    # screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+    # environment = Environment(screen, space)
+    # # Start the main loop
+    # environment.run()

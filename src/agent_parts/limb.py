@@ -16,7 +16,7 @@ class Limb:
         # Create a box shape for the limb
         self.shape = pymunk.Poly.create_box(self.body, (width, height))
         
-        self.shape.friction = 0.5
+        self.shape.friction = 1
         self.shape.filter = pymunk.ShapeFilter(categories=0b1, mask=pymunk.ShapeFilter.ALL_MASKS() ^ 0b1)
    
         space.add(self.body, self.shape)
