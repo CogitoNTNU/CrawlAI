@@ -36,6 +36,7 @@ def main():
     space = pymunk.Space()
     space.gravity = (0, 981)  # Gravity pointing downward
 
+
     environment = Environment(screen, space)
     environment.ground_type = GroundType.BASIC_GROUND
 
