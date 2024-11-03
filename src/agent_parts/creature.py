@@ -43,7 +43,13 @@ class Creature:
             rotations.append(motor.get_angle())
         return rotations
         
-                
+    def get_amount_of_joints(self) -> int:
+        """Return the number of motor joints in the creature."""
+        return len(self.motors)
+    
+    def get_amount_of_limb(self) -> int:
+        """Return the number of limbs in the creature."""
+        return len(self.limbs)            
 
     def set_joint_rates(self, rates: float): 
         """Set the rates of all motor joints."""
