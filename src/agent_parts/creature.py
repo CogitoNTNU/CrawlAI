@@ -55,6 +55,8 @@ class Creature:
         """Set the rates of all motor joints."""
         for motor, rate in zip(self.motors, rates):
             motor.set_motor_rate(rate)
-            
+    
+    def get_joint_positions(self) -> list[tuple[float,float]]:
+        return [(motor.pivot.a, motor.pivot.b) for motor in self.motors]
     
     
