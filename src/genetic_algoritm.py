@@ -1,7 +1,7 @@
 
 
 from typing import List
-from src.genome import Genome, create_initial_genome
+from src.genome import Genome 
 import random
 from src.genome import Genome
 
@@ -15,7 +15,7 @@ class GeneticAlgorithm:
         """Initialize a population of genomes."""
         population = []
         for genome_id in range(pop_size):
-            genome = create_initial_genome(genome_id, num_inputs, num_outputs)
+            genome = Genome(genome_id, num_inputs, num_outputs)
             population.append(genome)
 
             # Initialize the speciation with a key for the genome
