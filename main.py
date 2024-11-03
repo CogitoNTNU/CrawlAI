@@ -10,7 +10,6 @@ from pygame.locals import *
 from src.genome import Genome
 from src.globals import SCREEN_WIDTH, SCREEN_HEIGHT
 from src.environment import Environment, GroundType
-from src.render_object import RenderObject
 from src.agent_parts.rectangle import Point
 from src.globals import (
     FONT_SIZE,
@@ -19,11 +18,17 @@ from src.globals import (
     RED
     )
 from src.agent_parts.creature import Creature
-from src.NEATnetwork import NEATnetwork
+from src.NEATnetwork import NEATNetwork
+
+
+def initialize_network(genome: Genome) -> NEATNetwork:
+    network = NEATNetwork(genome)
+    return network
 
 
 def main():
     # Initialize Pygame and Pymunk
+    
     pygame.init()
     screen_width, screen_height = SCREEN_WIDTH, SCREEN_HEIGHT
     screen = pygame.display.set_mode((screen_width, screen_height))
@@ -36,6 +41,7 @@ def main():
     environment.ground_type = GroundType.BASIC_GROUND
 
     creature = Creature(space)
+
 
     # Add limbs to the creature, placing them above the ground
     limb1 = creature.add_limb(100, 60, (300, 100), mass=1)  
