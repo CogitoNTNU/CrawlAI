@@ -1,7 +1,7 @@
-from src.renderObject import RenderObject
+from src.render_object import RenderObject
 import pygame as pg
-from src.agent_parts.limb import Limb
-from src.agent_parts.rectangle import Point
+from src.agent_parts_old.limb import Limb
+from CrawlAI.src.agent_parts.rectangle import Point
 
 
 class Joint(RenderObject):
@@ -57,7 +57,6 @@ class Joint(RenderObject):
         It is currently a placeholder method, and should be implemented in
         subclasses or future revisions if visual representation is required.
         """
-        print(self.point.x, self.point.y)
         radius = min(window.get_width(), window.get_height())*0.005
         pg.draw.circle(window, (0, 0, 0), (self.point.x, self.point.y), radius)
         if (self.limbChild is not None):

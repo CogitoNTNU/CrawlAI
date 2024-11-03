@@ -15,8 +15,9 @@ SCREEN_WIDTH = 700
 SCREEN_HEIGHT = 500
 FLOOR_HEIGHT = 100
 
-AMPLITUDE = 40  # Max height of hills
-FREQUENCY = 0.05  # Max frequency of hills
+
+AMPLITUDE = 30  # Max height of hills
+FREQUENCY = 0.01  # Max frequency of hills
 SEGMENT_WIDTH = 200  # Width of each terrain segment
 
 

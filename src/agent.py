@@ -3,15 +3,13 @@ import pybox2d
 from enum import Enum
 import tensorflow as tf
 
-from src.enviroment import Enviroment
-from src.renderObject import RenderObject
 from src.genome import Genome
-from src.agent_parts.creature import Creature
-class LimbType(Enum):  """ Summary: Enum for the different types of limbs.
-    """
-    FOOT = 1
-    LEG = 2
-    LIMB = 3
+from src.environment import Environment
+from src.render_object import RenderObject
+
+from src.agent_parts_old.limb import Limb, LimbType, limb_factory
+from src.agent_parts_old.creature import Creature, creature_factory
+from CrawlAI.src.agent_parts.rectangle import Rectangle, rectangle_factory
 
 
 class Agent(ABC):
@@ -53,7 +51,3 @@ class Agent(ABC):
         """
         pass
 
-
-
-    
-    

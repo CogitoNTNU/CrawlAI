@@ -1,112 +1,40 @@
-from typing import List
-
-from src.environment import Environment
+import pymunk
+import pygame
 from src.agent_parts.limb import Limb
-from src.agent_parts.joint import Joint
-# from joint import Joint
-
+from src.agent_parts.motorjoint import MotorJoint  
 class Creature:
-    """
-    A class representing a creature composed of limbs and joints in a given environment.
 
-    Attributes:
-    ----------
-    env : Environment
-        The environment in which the creature exists.
-    limblist : list[Limb]
-        A list of Limb objects representing the creature's limbs.
-    jointlist : list[Joint]
-        A list of Joint objects representing the creature's joints.
-    position : list[float, float]
-        The position of the creature represented as a list containing two floats [x, y].
-    """
+    def __init__(self, space):
+        """Initialize a creature with an empty list of limbs and motors."""
+        self.space = space
+        self.limbs = []
+        self.motors = []
+
+    def add_limb(self, width: float, height: float, position: tuple[float,float], mass=1, color=(0, 255, 0)) -> Limb:
+        """Add a limb to the creature."""
+        limb = Limb(self.space, width, height, position, mass, color)
+        self.limbs.append(limb)
+        return limb
+
+    def add_motor(self, limb_a: Limb, limb_b: Limb, anchor_a: tuple[float,float], anchor_b: tuple[float,float], rate: float, tolerance: float) -> MotorJoint|None:
+        """Add a motor connecting two limbs."""
+        if(abs(limb_a.body.position + anchor_a - limb_b.body.position + anchor_b) < tolerance):
+            motor = MotorJoint(self.space, limb_a.body, limb_b.body, anchor_a, anchor_b, rate)
+            self.motors.append(motor)
+            return motor
+
+    def render(self, screen: pygame.display):
+        """Render the entire creature by rendering all limbs."""
+        for limb in self.limbs:
+            limb.render(screen)
+        for motor in self.motors:
+            motor.render(screen, motor.pivot.a, motor.pivot.b)    # Render motor joints
     
-    env: Environment
-    limblist: list[Limb]
-    #jointlist: list[Joint]
-    position: list[float, float]
+    def get_joint_rates(self) -> list[float]:
+        """Return the current rates of all motor joints."""
+        return [motor.motor.rate for motor in self.motors]
 
-    def __init__(self, env: Environment, limblist: list[Limb]):
-        #takes jointList as input
-        """
-        Initializes the Creature object.
-
-        Parameters:
-        ----------
-        env : Environment
-            The environment where the creature is situated.
-        limblist : list[Limb]
-            A list of Limb objects which form the creature.
-        jointlist : list[Joint]
-            A list of Joint objects which connect the limbs of the creature.
-
-        The creature's initial position is set to [200, 200].
-        """
-        self.env = env
-        self.limblist = limblist
-        #self.jointlist = jointlist
-        self.position = [200, 200]
-        
-    # def act(self, actions: list) -> None:
-    #     """_summary_ Act on the environment based on the actions. This will rotate the joints. Creature physics must handle the rest.
-
-    #     Args:
-    #         actions (list): list of rotations for each joint.
-    #     """
-    #     for i in range(len(actions)):
-    #         self.jointlist[i].rotate(actions[i])
-    
-    def render(self, window):
-        """
-        Renders the creature on a given window.
-
-        Parameters:
-        ----------
-        window : any
-            The graphical window where the creature will be rendered. 
-            This can be any object capable of rendering the limbs and joints (e.g., a game screen or canvas).
-
-        The function iterates through all the creature's limbs and joints and calls their respective render method.
-        """
-        for limb in self.limblist:
-            limb.render(window)
-        # for joint in self.jointlist:
-        #     joint.render(window)
-    
-    def updatePosition(self, x: float, y: float):
-        """
-        Updates the creature's position and propagates the change to all its limbs.
-
-        Parameters:
-        ----------
-        x : float
-            The new x-coordinate of the creature.
-        y : float
-            The new y-coordinate of the creature.
-
-        This method sets the new position of the creature and then updates the position of all limbs accordingly.
-        """
-        self.position = [x, y]
-        for limb in self.limblist:
-            limb.updatePosition(x, y)
-
-def creature_factory(env: Environment, limblist: list[Limb]) -> Creature:
-    #, jointlist: list[Joint]
-    """
-    Factory function for creating a Creature object.
-
-    Parameters:
-    ----------
-    env : Environment
-        The environment in which the creature will be created.
-    limblist : list[Limb]
-        A list of Limb objects to form the creature.
-    jointlist : list[Joint]
-        A list of Joint objects to connect the limbs of the creature.
-
-    Returns:
-    -------
-    Creature:
-        A new instance of the Creature class.
-    """
-    return Creature(env, limblist)
+    def set_joint_rates(self, rates: float): 
+        """Set the rates of all motor joints."""
+        for motor, rate in zip(self.motors, rates):
+            motor.set_motor_rate(rate)
