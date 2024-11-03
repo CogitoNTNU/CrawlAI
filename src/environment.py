@@ -109,8 +109,8 @@ class Environment(RenderObject):
 
 class Vision:
     eye_position: Point
-    sight_width = 10
-    x_offset = 10
+    sight_width = 50
+    x_offset = 50
     near_periphery: Point
     far_periphery: Point
 
