@@ -42,8 +42,8 @@ class Connection:
     in_node: int
     out_node: int
     weight: float
-    enabled: bool = True
     innovation_number: int
+    enabled: bool = True
 
     def change_enable(self, status: bool):
         self.enabled = status

@@ -4,6 +4,7 @@ import numpy
 import random
 
 import pygame
+from src.genetic_algoritm import GeneticAlgorithm
 import pymunk
 from pygame.locals import *
 
@@ -40,19 +41,14 @@ def main():
     environment = Environment(screen, space)
     environment.ground_type = GroundType.BASIC_GROUND
 
-    creature = Creature(space)
-
-    # Add limbs to the creature, placing them above the ground
-    limb1 = creature.add_limb(100, 60, (300, 100), mass=1)  
-    limb2 = creature.add_limb(100, 20, (350, 100), mass=1)  
-    limb3 = creature.add_limb(110, 60, (400, 100), mass=5)
-
-    # Add a motor between limbs
-    creature.add_motor(limb1, limb2, (50, 0), (-25, 0), rate=-2, tolerance=30)
-    creature.add_motor(limb2, limb3, (37, 0), (-23, 0), rate=2, tolerance=50)
-
+    population_size = 10
+    creatures = create_creatures(population_size, space)
+    creature_instance = creatures[0]
+    population = create_population(population_size, creature_instance)
+    
     clock = pygame.time.Clock()
     vision_y = 100
+    vision_x = 0
     running = True
     while running:
         for event in pygame.event.get():
@@ -70,28 +66,42 @@ def main():
         
         environment.update()
         environment.render()
+        
+        import numpy as np
+        # TODO: vision should be part of a creature, and not environment
+        inputs = np.array([environment.vision.near_periphery.x, 
+                           environment.vision.near_periphery.y, 
+                           environment.vision.far_periphery.x, 
+                           environment.vision.far_periphery.y])
+        for index, creature in enumerate(creatures):
+            network = population[index]
+            for joint_rate in creature.get_joint_rates():
+                inputs = np.append(inputs, joint_rate)
+            
+            for
+            
+            
+            
 
-        vision_y += random.randint(-1, 1)
+        vision_y = round(creature_instance.limbs[0].body.position.y)
+        vision_x = round(creature_instance.limbs[0].body.position.x)
 
         match environment.ground_type:
             case GroundType.BASIC_GROUND:
                 environment.vision.update(
                     environment.screen,
-                    Point(environment.starting_xx, vision_y),
+                    Point(vision_x, vision_y),
                     environment.ground,
                     environment.offset)
 
             case GroundType.PERLIN:
-                self.vision.update(
-                    self.screen,
-                    Point(self.starting_xx, vision_y),
-                    self.ground,
+                environment.vision.update(
+                    environment.screen,
+                    Point(vision_x, vision_y),
+                    environment.ground,
                     0)
-        #creature.set_joint_rates([random.random()*2, random.random()*2])
-        # Render the creature
-        creature.render(screen)
-        
-            
+   
+        creature_instance.render(screen)
             
         clock.tick(60)
 
