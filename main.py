@@ -15,7 +15,7 @@ from src.environment import Environment, GroundType
 from src.render_object import RenderObject
 from src.interface import Button, Interface
 from src.agent_parts.limb import Limb
-from src.agent_parts.rectangle import Point, Rectangle, rectangle_factory
+from src.agent_parts.rectangle import Point
 
 
 from src.agent_parts.rectangle import Point
@@ -143,35 +143,25 @@ def main():
     interface.add_button(pause_button)
 
 
-    environment = Environment(screen)
-    environment.ground_type = GroundType.BASIC_GROUND
 
     # Set up the Pymunk space
     space = pymunk.Space()
     space.gravity = (0, 981)  # Gravity pointing downward
 
+    environment = Environment(screen, space)
+    environment.ground_type = GroundType.BASIC_GROUND
     for environment_segment in environment.ground.terrain_segments:
         environment_segment.init_pymunk_polygon(space)
 
     creature = Creature(space)
 
-    # Add limbs to the creature, placing them above the ground
-    #limb1 = creature.add_limb(100, 20, (300, 100), mass=1)  # Positioned above the ground
-    #limb2 = creature.add_limb(100, 20, (350, 100), mass=1)  # Positioned above the ground
-    #limb3 = creature.add_limb(110, 20, (400, 100), mass=5)
-
-    # Add a motor between limbs
-    #creature.add_motor(limb1, limb2, (50, 0), (-25, 0), rate=2, tolerance=30)
-    #creature.add_motor(limb2, limb3, (37, 0), (-23, 0), rate=-2, tolerance=50)
+   
 
     # Add limbs to the creature
     limb1 = creature.add_limb(100, 20, (300, 300), mass=1)
     limb2 = creature.add_limb(100, 20, (350, 300), mass=3)
     limb3 = creature.add_limb(80, 40, (400, 300), mass=5)
 
-    # Add motors between limbs
-    #creature.add_motor(limb1, limb2, (25, 0), (-25, 0), rate=2)
-    #creature.add_motor(limb2, limb3, (37, 0), (-23, 0), rate=-2)
     creature.add_motor_on_limbs(limb1, limb2, (325, 300))
     creature.add_motor_on_limbs(limb2, limb3, (375, 300))
 
