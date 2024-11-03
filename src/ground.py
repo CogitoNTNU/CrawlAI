@@ -86,6 +86,7 @@ class BasicSegment():
     def init_pymunk_polygon(self, space) -> None:
         self.body = pymunk.Body(0, 0, 1)
         self.poly = pymunk.Poly(self.body, self.points, radius=0.0)
+        self.poly.friction = 0.5
         space.add(self.body, self.poly)
 
     def remove_pymunk_polygon(self, space) -> None:

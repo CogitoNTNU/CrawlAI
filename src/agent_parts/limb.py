@@ -18,7 +18,7 @@ class Limb:
         
         self.shape.friction = 0.5
         self.shape.filter = pymunk.ShapeFilter(categories=0b1, mask=pymunk.ShapeFilter.ALL_MASKS() ^ 0b1)
-        # Add the body and shape to the space
+   
         space.add(self.body, self.shape)
 
     def render(self, screen):

@@ -25,8 +25,8 @@ def main():
     environment = Environment(screen)
     environment.ground_type = GroundType.BASIC_GROUND
 
-    if environment.ground_type == GroundType.BASIC_GROUND:
-            environment.ground.generate_floor_segment(0)
+    
+            
 
     # Set up the Pymunk space
     space = pymunk.Space()
@@ -43,8 +43,8 @@ def main():
     limb3 = creature.add_limb(110, 20, (400, 100), mass=5)
 
     # Add a motor between limbs
-    creature.add_motor(limb1, limb2, (50, 0), (-25, 0), rate=2, tolerance=30)
-    creature.add_motor(limb2, limb3, (37, 0), (-23, 0), rate=-2, tolerance=50)
+    creature.add_motor(limb1, limb2, (50, 0), (-25, 0), rate=-2, tolerance=30)
+    creature.add_motor(limb2, limb3, (37, 0), (-23, 0), rate=2, tolerance=50)
 
     clock = pygame.time.Clock()
     
@@ -59,14 +59,14 @@ def main():
                 if event.key == pygame.K_RIGHT:
                     print("Right arrow pressed")
 
-        space.step(1/200.0)
+        space.step(1/60.0)
 
         screen.fill((135, 206, 235))
         
         environment.update()
         environment.render()
 
-        creature.set_joint_rates([random.random()*2, random.random()*2])
+        #creature.set_joint_rates([random.random()*2, random.random()*2])
         # Render the creature
         creature.render(screen)
             
