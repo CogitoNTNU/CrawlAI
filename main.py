@@ -91,7 +91,7 @@ def main():
     space.gravity = (0, 981)  # Gravity pointing downward
 
     environment = Environment(screen, space)
-    environment.ground_type = GroundType.BASIC_GROUND
+    environment.ground_type = GroundType.PERLIN
 
     population_size = 10
     creatures = create_creatures(population_size, space)
@@ -123,11 +123,11 @@ def main():
         environment.render()
         
         # TODO: vision should be part of a creature, and not environment
-        print(environment.vision.get_near_periphery())
         inputs = np.array([environment.vision.get_near_periphery().x, 
                            environment.vision.get_near_periphery().y,
                            environment.vision.get_far_periphery().x,
                            environment.vision.get_far_periphery().y])
+
         for index, creature in enumerate(creatures):
             network = population[index]
             for joint_rate in creature.get_joint_rates():
