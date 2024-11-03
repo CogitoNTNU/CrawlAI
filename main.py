@@ -7,7 +7,7 @@ import pygame
 import pymunk
 from pygame.locals import *
 
-from src.genome import Genome
+#from src.genome import Genome
 from src.globals import SCREEN_WIDTH, SCREEN_HEIGHT
 from src.environment import Environment, GroundType
 from src.render_object import RenderObject
