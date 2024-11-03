@@ -4,6 +4,7 @@ import numpy
 import random
 
 import pygame
+from CrawlAI.src.genetic_algoritm import GeneticAlgorithm
 import pymunk
 from pygame.locals import *
 
@@ -19,11 +20,6 @@ from src.globals import (
     )
 from src.agent_parts.creature import Creature
 from src.NEATnetwork import NEATNetwork
-
-
-def initialize_network(genome: Genome) -> NEATNetwork:
-    network = NEATNetwork(genome)
-    return network
 
 
 def main():
@@ -42,7 +38,6 @@ def main():
 
     creature = Creature(space)
 
-
     # Add limbs to the creature, placing them above the ground
     limb1 = creature.add_limb(100, 60, (300, 100), mass=1)  
     limb2 = creature.add_limb(100, 20, (350, 100), mass=1)  
@@ -52,12 +47,14 @@ def main():
     creature.add_motor(limb1, limb2, (50, 0), (-25, 0), rate=-2, tolerance=30)
     creature.add_motor(limb2, limb3, (37, 0), (-23, 0), rate=2, tolerance=50)
 
+    population = GeneticAlgorithm.initialize_population(10, 2, 1)
+    
     clock = pygame.time.Clock()
     vision_y = 100
     running = True
     while running:
         for event in pygame.event.get():
-            if event.type == QUIT:
+            if event.type == pygame.QUIT:
                 running = False
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_LEFT:
@@ -83,10 +80,10 @@ def main():
                     environment.offset)
 
             case GroundType.PERLIN:
-                self.vision.update(
-                    self.screen,
-                    Point(self.starting_xx, vision_y),
-                    self.ground,
+                environment.vision.update(
+                    screen,
+                    Point(environment.starting_xx, vision_y),
+                    environment.ground,
                     0)
         #creature.set_joint_rates([random.random()*2, random.random()*2])
         # Render the creature
