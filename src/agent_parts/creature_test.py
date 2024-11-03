@@ -2,7 +2,6 @@ import pygame
 import pymunk
 from creature import Creature
 import random
-from concurrent.futures import ThreadPoolExecutor, as_completed
 
 def create_ground(space, width, height, position=(0, 0)):
     """Create a static ground body to interact with the creature."""

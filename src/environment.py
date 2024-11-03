@@ -115,8 +115,9 @@ class Vision:
     far_periphery: Point
 
     def __init__(self, eye_position: Point):
-        self.near_periphery = None
-        self.far_periphery = None
+        self.eye_position = eye_position
+        self.near_periphery = Point(0, 0)
+        self.far_periphery = Point(0, 0)
 
     def update(
             self,
@@ -167,6 +168,16 @@ class Vision:
 
     def get_sight_width(self):
         return self.sight_width
+    
+    def get_near_periphery(self) -> Point:
+        if self.near_periphery is None:
+            return Point(0, 0)
+        return self.near_periphery
+    
+    def get_far_periphery(self) -> Point:
+        if self.far_periphery is None:
+            return Point(0, 0)
+        return self.far_periphery
 
 
 
