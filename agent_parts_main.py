@@ -7,15 +7,15 @@ import pygame
 import pymunk
 from pygame.locals import *
 
-from genome import Genome
-from globals import SCREEN_WIDTH, SCREEN_HEIGHT
-from environment import Environment, GroundType
-from render_object import RenderObject
-from interface import Button, Interface
-from agent_parts.limb import Limb
-from ground import *
+from src.genome import Genome
+from src.globals import SCREEN_WIDTH, SCREEN_HEIGHT
+from src.environment import Environment, GroundType
+from src.render_object import RenderObject
+from src.interface import Button, Interface
+from src.agent_parts.limb import Limb
+from src.ground import *
 
-from agent_parts.creature import Creature
+from src.agent_parts.creature import Creature
 
 def main():
     # Initialize Pygame and Pymunk
