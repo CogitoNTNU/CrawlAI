@@ -23,8 +23,8 @@ class MotorJoint:
         pygame.draw.circle(
             surface=screen, 
             color=(255, 0, 0), 
-            center=(int(pos_a_world.x),
-            int(pos_a_world.y)),
+            center=(float(pos_a_world.x),
+            float(pos_a_world.y)),
             radius=3)
 
     def get_angle(self):

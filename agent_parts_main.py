@@ -17,6 +17,8 @@ from src.ground import *
 
 from src.agent_parts.creature import Creature
 
+#NOTE_TO_MYSELF: When add limb is clicked it doesn't go away when unpaused 
+
 def main():
     # Initialize Pygame and Pymunk
     pygame.init()
@@ -71,7 +73,27 @@ def main():
         callback=make_limb
     )
 
+    make_motorjoint_mode = False
+
+    def add_motorjoint():
+        nonlocal make_motorjoint_mode
+        make_motorjoint_mode = not make_motorjoint_mode
+    
+    motorjoint_button = Button(
+        text="Add joint",
+        pos=(10, 90),
+        width=100,
+        height=30,
+        font=font,
+        color=(70, 130, 180),
+        hover_color=(100, 149, 237),
+        text_color=(255, 255, 255),
+        active_color=(200, 100, 100),
+        callback=add_motorjoint
+    )
+
     interface.add_button(pause_button)
+    interface.add_button(motorjoint_button)
 
 
 
@@ -134,6 +156,8 @@ def main():
                 if not physics_on:
                     mouse_x, mouse_y = event.pos
                     mouse_pos = (mouse_x, mouse_y)
+                    # List of limbs to make motorjoint on
+                    limbs_hovered = []
                     # For dragging creature: Check if the mouse is over any limb
                     if not make_limb_mode:
                         for limb in creature.limbs: 
@@ -142,10 +166,16 @@ def main():
                                 dragged_limb = limb 
                                 creature.start_dragging(dragged_limb)
                                 drag_offset = (limb.body.position.x - mouse_x, limb.body.position.y - mouse_y)
-                                break
+                                limbs_hovered.append(limb)
                     # For creating rectangles
                     elif make_limb_mode:
                         start_pos = mouse_pos
+                    # For creating motorjoint
+                    if make_motorjoint_mode and len(limbs_hovered) == 2:
+                        limb_1 = limbs_hovered[0]
+                        limb_2 = limbs_hovered[1]
+                        creature.add_motor_on_limbs(limb_1, limb_2, mouse_pos)
+                        limbs_hovered.clear()
 
             elif event.type == MOUSEMOTION and make_limb_mode:
                 mouse_x, mouse_y = event.pos
