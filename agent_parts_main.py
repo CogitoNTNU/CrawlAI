@@ -173,7 +173,8 @@ def main():
             creature.update_creature_position(dragged_limb, new_position)
 
         screen.fill((135, 206, 235))
-        environment.update()
+        if(physics_on):
+            environment.update()
         environment.render()
 
         #creature.set_joint_rates([random.random()*2, random.random()*2])
