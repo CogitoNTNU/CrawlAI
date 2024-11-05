@@ -2,6 +2,7 @@ import pymunk
 import pygame
 from src.agent_parts.limb import Limb
 from src.agent_parts.motorjoint import MotorJoint  
+from globals import SCREEN_HEIGHT
 
 
 class Creature:
@@ -59,4 +60,54 @@ class Creature:
     def get_joint_positions(self) -> list[tuple[float,float]]:
         return [(motor.pivot.a, motor.pivot.b) for motor in self.motors]
     
+    def get_limb_positions(self) -> list[tuple[float,float]]:
+        """
+        Get the position of each limb in the creature.
+
+        Returns:
+            A list of tuples. Each tuple contains:
+            - A tuple of the limb's position (x, y).
+        """
+        limb_positions = []
+        for limb in self.limbs:
+            # Limb center position
+            limb_pos = (limb.get_position(limb).x, limb.get_position(limb).y)
+            limb_positions.append(limb.pos)
+        return limb_positions
+
+    def get_limb_max_y_position(self) -> tuple[float,float]:
+        """
+        Get the position of the highest limb.
+
+        Returns:
+            A tuple. 
+        """
+        limb_positions = self.get_limb_positions(self)
+
+        # Find the limb with the smallest y-coordinate
+        highest_limb = min(limb_positions, key=lambda pos: pos[1])
+        return highest_limb
+            
+
+    def get_limb_min_x_position(self) -> tuple[float,float]:
+        """
+        Get the position of the highest limb.
+
+        Returns:
+            A tuple. 
+        """
+        limb_positions = self.get_limb_positions()
+        
+        # Find the limb with the smallest x-coordinate
+        leftmost_limb = min(limb_positions, key=lambda pos: pos[0])
+        return leftmost_limb
+
+    def check_if_dead(self):
+        highest_limb = self.get_limb_max_y_position(self)
+        leftmost_limb = self.get_limb_min_x_position(self)
+
+        if highest_limb.y > SCREEN_HEIGHT or leftmost_limb.x < 0:
+            return True
+        else:
+            return False
     

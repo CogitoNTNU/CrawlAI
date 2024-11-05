@@ -22,19 +22,28 @@ class Limb:
    
         space.add(self.body, self.shape)
 
+    def get_vertices(self) -> list[tuple[float,float]]:
+         # Get the position and angle from the pymunk body
+        pos = self.body.position
+        angle = self.body.angle
+
+        # Calculate the vertices of the rectangle in world coordinates
+        vertices = self.shape.get_vertices()
+        vertices = [v.rotated(angle) + pos for v in vertices]
+
+        # Convert pymunk Vec2d vertices to pygame coordinates
+        vertices = [(int(v.x), int(v.y)) for v in vertices]
+        return vertices
+    
+    def get_position(self) -> tuple[float,float]:
+        position = self.body.position
+        return position
+
     def render(self, screen):
         """
         Render the limb onto the screen.
         Args:
         - screen: The pygame surface to render onto.
         """
-        # Get the position and angle from the pymunk body
-        pos = self.body.position
-        angle = self.body.angle
-        # Calculate the vertices of the rectangle in world coordinates
-        vertices = self.shape.get_vertices()
-        vertices = [v.rotated(angle) + pos for v in vertices]
-        # Convert pymunk Vec2d vertices to pygame coordinates
-        vertices = [(int(v.x), int(v.y)) for v in vertices]
         # Draw the polygon onto the screen
-        pygame.draw.polygon(screen, (0, 255, 0), vertices, 0)
+        pygame.draw.polygon(surface=screen, color=(0, 255, 0), point=self.get_vertices(self), radius=0)
