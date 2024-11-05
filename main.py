@@ -33,7 +33,7 @@ from src.NEATnetwork import NEATNetwork
 def create_creatures(amount, space):
     creatures = []
     for i in range(amount):
-        creature = Creature(space)
+        creature: Creature = Creature(space)
         # Add limbs to the creature, placing them above the ground
         limb1 = creature.add_limb(100, 60, (300, 100), mass=1)  
         limb2 = creature.add_limb(100, 20, (350, 100), mass=1)  
@@ -45,13 +45,13 @@ def create_creatures(amount, space):
             limb2, 
             (50, 0), 
             (-25, 0), 
-            rate=-2, tolerance=30)
+            rate=0, tolerance=30)
         creature.add_motor(
             limb2, 
             limb3, 
             (37, 0), 
             (-23, 0), 
-            rate=2, 
+            rate=0, 
             tolerance=50)
         
         creatures.append(creature)
@@ -73,31 +73,22 @@ def create_population(population_size, creature: Creature):
     return population 
 
 def main():
-
-    genetic_algorithm = GeneticAlgorithm()
-
-    # Initialize Pygame and Pymunk
-    
     pygame.init()
     screen_width, screen_height = SCREEN_WIDTH, SCREEN_HEIGHT
     screen = pygame.display.set_mode((screen_width, screen_height))
     pygame.display.set_caption("Pymunk Rectangle Physics")
     interface = Interface()
     
-    # Track whether physics is on or off
-    physics_on = False
-    physics_value = 0
-    
     # Set up the Pymunk space
     space = pymunk.Space()
     space.gravity = (0, 981)  # Gravity pointing downward
 
-    environment = Environment(screen, space)
+    environment: Environment = Environment(screen, space)
     environment.ground_type = GroundType.BASIC_GROUND
 
     population_size = 10
-    creatures = create_creatures(population_size, space)
-    creature_instance = creatures[0]
+    creatures: list[Creature] = create_creatures(population_size, space)
+    creature_instance: Creature = creatures[0]
     population = create_population(population_size, creature_instance)
     neat_networks: list[NEATNetwork] = []
     for genome in population:
@@ -117,24 +108,13 @@ def main():
                     print("Left arrow pressed")
                 if event.key == pygame.K_RIGHT:
                     print("Right arrow pressed")
-                if event.key == pygame.K_SPACE:
-                    handle_physics()
 
-        space.step(physics_value)   
+        space.step(1/60.0)
         screen.fill((135, 206, 235))
         environment.update()
         environment.render()
-
-        #creature.set_joint_rates([random.random()*2, random.random()*2])
-        # Render the creature
-        creature.render(screen)
         
-        if not physics_on: 
-            interface.add_button(limb_button)
-        else: 
-            interface.remove_button(limb_button)
-        interface.render(screen)
-
+        
         # TODO: vision should be part of a creature, and not environment
         inputs = np.array([environment.vision.get_near_periphery().x, 
                            environment.vision.get_near_periphery().y,
@@ -151,7 +131,7 @@ def main():
                 inputs = np.append(inputs, limb.body.position.y)
 
             outputs = neat_networks[index].forward(inputs)
-            creature.set_joint_rates(outputs)
+            #creature.set_joint_rates(outputs)
 
         vision_y = round(creature_instance.limbs[0].body.position.y)
         vision_x = round(creature_instance.limbs[0].body.position.x)

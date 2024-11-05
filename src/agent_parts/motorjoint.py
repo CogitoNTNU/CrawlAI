@@ -22,7 +22,7 @@ class MotorJoint:
         # Draw a line connecting the two bodies
         pygame.draw.circle(
             surface=screen, 
-            color=(255, 0, 0),
+            color=(255, 0, 0), 
             center=(int(pos_a_world.x),
             int(pos_a_world.y)),
             radius=3)

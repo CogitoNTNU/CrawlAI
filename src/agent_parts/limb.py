@@ -3,7 +3,7 @@ import pygame
 
 
 class Limb:
-    def __init__(self, space, width, height, position, mass=1, color=(0, 255, 0)):
+    def __init__(self, space, width, height, position, mass=3, color=(0, 255, 0)):
         """Initialize a limb as a rectangular body."""
         self.width = width
         self.height = height

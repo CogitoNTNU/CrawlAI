@@ -121,6 +121,11 @@ class BasicSegment():
         scroll_offset = self.start_x-self.poly.body.position[0]
         return (points[0][0] - scroll_offset, points[0][1])
 
+    def init_pymunk_polygon(self, space) -> None:
+        body = pymunk.Body(0, 0, 1)
+        poly = pymunk.Poly(body, self.points, radius=0.0)
+        space.add(body, poly)
+
 class BasicGround(RenderObject, Ground, BasicSegment):
     def __init__(self, screen: pg.display, space: pymunk.space, segment_width: int) -> None:
         self.screen = screen
