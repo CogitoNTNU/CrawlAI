@@ -48,6 +48,11 @@ class Creature:
             print("false")
             return None
         
+    def local_to_global(self, limb: Limb, anchor: tuple[float,float]) -> tuple[float,float]:
+        """Convert a local anchor point to a global anchor point."""
+        return limb.body.local_to_world(anchor)
+    
+        
 
     def add_motor(self, limb_a: Limb, limb_b: Limb, anchor_a: tuple[float,float], anchor_b: tuple[float,float], rate = 0.0, tolerance = 30) -> MotorJoint|None:
         """Add a motor connecting two limbs."""
