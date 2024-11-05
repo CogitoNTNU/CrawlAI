@@ -117,24 +117,13 @@ def main():
                     print("Left arrow pressed")
                 if event.key == pygame.K_RIGHT:
                     print("Right arrow pressed")
-                if event.key == pygame.K_SPACE:
-                    handle_physics()
 
         space.step(physics_value)   
         screen.fill((135, 206, 235))
         environment.update()
         environment.render()
-
-        #creature.set_joint_rates([random.random()*2, random.random()*2])
-        # Render the creature
         creature.render(screen)
         
-        if not physics_on: 
-            interface.add_button(limb_button)
-        else: 
-            interface.remove_button(limb_button)
-        interface.render(screen)
-
         # TODO: vision should be part of a creature, and not environment
         inputs = np.array([environment.vision.get_near_periphery().x, 
                            environment.vision.get_near_periphery().y,
