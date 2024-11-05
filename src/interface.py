@@ -48,8 +48,9 @@ class Interface:
         return button
     
     def remove_button(self, button: Button) -> Button: 
-        self.elements.remove(button)
-        return button
+        if button in self.elements:
+            self.elements.remove(button)
+            return button
     
     def render(self, screen):
         """Render all UI elements."""
