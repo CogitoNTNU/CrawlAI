@@ -82,8 +82,6 @@ def main():
     environment = Environment(screen, space)
     environment.ground_type = GroundType.BASIC_GROUND
 
-    for environment_segment in environment.ground.terrain_segments:
-        environment_segment.init_pymunk_polygon(space)
 
     creature = Creature(space)
 

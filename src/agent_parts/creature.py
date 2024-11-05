@@ -58,7 +58,13 @@ class Creature:
             self.motors.append(motor)
             print("add_motor: true")
             return motor
+        
+    def local_to_global(self, limb: Limb, point: tuple[float, float]) -> tuple[float, float]|None:
+        return limb.local_to_global(point)
 
+    def global_to_local(self, limb: Limb, point: tuple[float, float]) -> tuple[float, float]|None:
+        return limb.global_to_local(point)
+    
     def render(self, screen: pygame.display):
         """Render the entire creature by rendering all limbs."""
         for limb in self.limbs:
