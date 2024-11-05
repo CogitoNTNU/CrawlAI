@@ -73,11 +73,6 @@ def create_population(population_size, creature: Creature):
     return population 
 
 def main():
-
-    genetic_algorithm = GeneticAlgorithm()
-
-    # Initialize Pygame and Pymunk
-    
     pygame.init()
     screen_width, screen_height = SCREEN_WIDTH, SCREEN_HEIGHT
     screen = pygame.display.set_mode((screen_width, screen_height))
@@ -96,8 +91,8 @@ def main():
     environment.ground_type = GroundType.BASIC_GROUND
 
     population_size = 10
-    creatures = create_creatures(population_size, space)
-    creature_instance = creatures[0]
+    creatures: list[Creature] = create_creatures(population_size, space)
+    creature_instance: Creature = creatures[0]
     population = create_population(population_size, creature_instance)
     neat_networks: list[NEATNetwork] = []
     for genome in population:
@@ -122,7 +117,7 @@ def main():
         screen.fill((135, 206, 235))
         environment.update()
         environment.render()
-        creature.render(screen)
+        creature_instance.render(screen)
         
         # TODO: vision should be part of a creature, and not environment
         inputs = np.array([environment.vision.get_near_periphery().x, 

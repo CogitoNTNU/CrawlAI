@@ -5,7 +5,9 @@ from src.agent_parts.motorjoint import MotorJoint
 
 
 class Creature:
-
+    limbs: list[Limb]
+    motors: list[MotorJoint]
+    
     def __init__(self, space):
         """Initialize a creature with an empty list of limbs and motors."""
         self.space = space
