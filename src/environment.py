@@ -4,10 +4,10 @@ import random
 import itertools
 from enum import Enum
 
-from ground import Ground, BasicGround, InterpolationType, PerlinNoise
-from render_object import RenderObject
-from agent_parts.rectangle import Point
-from globals import (
+from src.ground import Ground, BasicGround, InterpolationType, PerlinNoise
+from src.render_object import RenderObject
+from src.agent_parts.rectangle import Point
+from src.globals import (
     SCREEN_WIDTH,
     SCREEN_HEIGHT,
     FONT_SIZE,

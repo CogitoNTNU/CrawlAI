@@ -131,7 +131,8 @@ def main():
                 inputs = np.append(inputs, limb.body.position.y)
 
             outputs = neat_networks[index].forward(inputs)
-            #creature.set_joint_rates(outputs)
+            print(outputs)
+            creature.set_joint_rates(outputs)
 
         vision_y = round(creature_instance.limbs[0].body.position.y)
         vision_x = round(creature_instance.limbs[0].body.position.x)
