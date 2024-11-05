@@ -4,10 +4,10 @@ import random
 import itertools
 from enum import Enum
 
-from src.ground import Ground, BasicGround, InterpolationType, PerlinNoise
-from src.render_object import RenderObject
-from src.agent_parts.rectangle import Point
-from src.globals import (
+from ground import Ground, BasicGround, InterpolationType, PerlinNoise
+from render_object import RenderObject
+from agent_parts.rectangle import Point
+from globals import (
     SCREEN_WIDTH,
     SCREEN_HEIGHT,
     FONT_SIZE,
@@ -130,8 +130,14 @@ class Vision:
         self.eye_position = eye_position
         x1 = eye_position.x + self.x_offset
         x2 = x1 + self.sight_width
-        y1=ground.get_y(x1+scroll_offset)
-        y2=ground.get_y(x2+scroll_offset)
+        try:
+            y1=ground.get_y(x1+scroll_offset)
+        except:
+            pass
+        try:
+            y2=ground.get_y(x2+scroll_offset)
+        except:
+            pass
         if not y1 is None:
             self.near_periphery = Point(x1, y1)
         if not y2 is None:

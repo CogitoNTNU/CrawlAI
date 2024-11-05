@@ -1,11 +1,13 @@
 import pymunk
 import pygame
-from src.agent_parts.limb import Limb
-from src.agent_parts.motorjoint import MotorJoint  
+from agent_parts.limb import Limb
+from agent_parts.motorjoint import MotorJoint  
 
 
 class Creature:
-
+    limbs: list[Limb]
+    motors: list[MotorJoint]
+    
     def __init__(self, space):
         """Initialize a creature with an empty list of limbs and motors."""
         self.space = space
@@ -46,6 +48,11 @@ class Creature:
             print("false")
             return None
         
+    def local_to_global(self, limb: Limb, anchor: tuple[float,float]) -> tuple[float,float]:
+        """Convert a local anchor point to a global anchor point."""
+        return limb.body.local_to_world(anchor)
+    
+        
 
     def add_motor(self, limb_a: Limb, limb_b: Limb, anchor_a: tuple[float,float], anchor_b: tuple[float,float], rate = 0.0, tolerance = 30) -> MotorJoint|None:
         """Add a motor connecting two limbs."""
@@ -58,7 +65,13 @@ class Creature:
             self.motors.append(motor)
             print("add_motor: true")
             return motor
+        
+    def local_to_global(self, limb: Limb, point: tuple[float, float]) -> tuple[float, float]|None:
+        return limb.local_to_global(point)
 
+    def global_to_local(self, limb: Limb, point: tuple[float, float]) -> tuple[float, float]|None:
+        return limb.global_to_local(point)
+    
     def render(self, screen: pygame.display):
         """Render the entire creature by rendering all limbs."""
         for limb in self.limbs:

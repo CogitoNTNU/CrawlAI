@@ -3,7 +3,7 @@ import pygame
 
 
 class Limb:
-    def __init__(self, space, width, height, position, mass=1, color=(0, 255, 0)):
+    def __init__(self, space, width, height, position, mass=3, color=(0, 255, 0)):
         """Initialize a limb as a rectangular body."""
         self.width = width
         self.height = height
@@ -37,3 +37,43 @@ class Limb:
         vertices = [(float(v.x), float(v.y)) for v in vertices]
         # Draw the polygon onto the screen
         pygame.draw.polygon(surface=screen, color=(0, 255, 0), points=vertices, width=0)
+
+    def contains_point(self, point: tuple[float,float]) -> bool:
+        """
+        Check if a given point is inside the limb.
+        
+        Args:
+        - point: A tuple representing the x and y coordinates of the point.
+        
+        Returns:
+        - True if the point is inside the limb, False otherwise.
+        """
+        x, y = point
+        point_vec = pymunk.Vec2d(x, y)
+        
+        # Perform a point query to check if the point is within the shape
+        return self.shape.point_query(point_vec).distance <= 0
+    
+    def global_to_local(self, position: tuple[float, float]) -> tuple[float,float]|None:
+        if not isinstance(position, (tuple, list)) or len(position) != 2:
+            raise ValueError("Position must be a tuple or list with two elements: (x, y)")
+        
+        # Convert position to Vec2d
+        global_position = pymunk.Vec2d(position[0], position[1])
+        
+        # Transform from global to local coordinates
+        local_position = self.body.world_to_local(global_position)
+        
+        return float(local_position.x), float(local_position.y)
+
+    def local_to_global(self, position: tuple[float, float]) -> tuple[float, float]|None:
+        if not isinstance(position, (tuple, list)) or len(position) != 2:
+            raise ValueError("Position must be a tuple or list with two elements: (x, y)")
+        
+        # Convert position to Vec2d
+        local_position = pymunk.Vec2d(position[0], position[1])
+        
+        # Transform from local to global coordinates
+        global_position = self.body.local_to_world(local_position)
+        
+        return float(global_position.x), float(global_position.y)

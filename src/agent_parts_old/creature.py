@@ -46,6 +46,7 @@ class Creature:
         self.limblist = limblist
         #self.jointlist = jointlist
         self.position = [200, 200]
+        self.relative_vectors = []
         
     # def act(self, actions: list) -> None:
     #     """_summary_ Act on the environment based on the actions. This will rotate the joints. Creature physics must handle the rest.
