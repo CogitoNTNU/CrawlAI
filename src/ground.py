@@ -398,11 +398,10 @@ class PerlinNoise():
             x-coordinate
         """
     
-        norma = SCREEN_WIDTH / PERLIN_SEGMENTS
-        real_x = (x + self.offset) / norma
-        y = self.generate_y(real_x)
-        pix_y = SCREEN_HEIGHT / 2 + y
-        return pix_y
+        for i, point in enumerate(self.render_points):
+            if point[0] <= x <= self.render_points[i+1][0]:
+                return int((point[1]+self.render_points[i+1][1])/2)
+        return None  
 
     def generate_y(self, x: int) -> int:
         """_summary_ Calculate the y value of the Perlin noise at the given x

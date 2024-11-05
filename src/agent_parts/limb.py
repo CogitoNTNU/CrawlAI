@@ -36,4 +36,4 @@ class Limb:
         # Convert pymunk Vec2d vertices to pygame coordinates
         vertices = [(float(v.x), float(v.y)) for v in vertices]
         # Draw the polygon onto the screen
-        pygame.draw.polygon(surface=screen, color=(0, 255, 0), vertices=vertices, width=0)
+        pygame.draw.polygon(surface=screen, color=(0, 255, 0), points=vertices, width=0)
