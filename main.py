@@ -72,12 +72,46 @@ def create_population(population_size, creature: Creature):
 
     return population 
 
+
+
+def apply_mutations(self):
+    """
+    Apply mutations to the genome based on defined mutation rates.
+    """
+
+    MUTATION_RATE_WEIGHT = 0.8  # 80% chance to mutate weights
+    MUTATION_RATE_CONNECTION = 0.05  # 5% chance to add a new connection
+    MUTATION_RATE_NODE = 0.03  # 3% chance to add a new node
+
+
+    # Mutate weights with a certain probability
+    if random.random() < MUTATION_RATE_WEIGHT:
+        self.mutate_weights(delta=0.1)  # Adjust delta as needed
+
+    # Mutate connections with a certain probability
+    if random.random() < MUTATION_RATE_CONNECTION:
+        self.mutate_connections()
+
+    # Mutate nodes with a certain probability
+    if random.random() < MUTATION_RATE_NODE:
+        self.mutate_nodes()
+
+
+
+
 def main():
+
+
+    # Initialize Pygame and Pymunk
     pygame.init()
     screen_width, screen_height = SCREEN_WIDTH, SCREEN_HEIGHT
     screen = pygame.display.set_mode((screen_width, screen_height))
     pygame.display.set_caption("Pymunk Rectangle Physics")
     interface = Interface()
+    
+    # Track whether physics is on or off
+    physics_on = False
+    physics_value = 0
     
     # Set up the Pymunk space
     space = pymunk.Space()
@@ -86,6 +120,7 @@ def main():
     environment: Environment = Environment(screen, space)
     environment.ground_type = GroundType.BASIC_GROUND
 
+    #Population and creatures
     population_size = 10
     creatures: list[Creature] = create_creatures(population_size, space)
     creature_instance: Creature = creatures[0]
@@ -103,11 +138,6 @@ def main():
             if event.type == pygame.QUIT:
                 running = False
             interface.handle_events(event)
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_LEFT:
-                    print("Left arrow pressed")
-                if event.key == pygame.K_RIGHT:
-                    print("Right arrow pressed")
 
         space.step(1/60.0)
         screen.fill((135, 206, 235))
@@ -131,7 +161,6 @@ def main():
                 inputs = np.append(inputs, limb.body.position.y)
 
             outputs = neat_networks[index].forward(inputs)
-            print(outputs)
             creature.set_joint_rates(outputs)
 
         vision_y = round(creature_instance.limbs[0].body.position.y)
@@ -152,7 +181,9 @@ def main():
                     environment.ground,
                     0)
    
-        creature_instance.render(screen)
+        #creature_instance.render(screen)
+        for creature in creatures:
+            creature.render(screen)
             
         clock.tick(60)
 
@@ -166,3 +197,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+    
+
