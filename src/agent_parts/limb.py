@@ -1,9 +1,10 @@
 import pymunk
 import pygame
+from src.globals import LIMB_FRICTION, DEFAULT_MASS
 
 
 class Limb:
-    def __init__(self, space, width, height, position, mass=1, color=(0, 255, 0)):
+    def __init__(self, space, width, height, position, mass=DEFAULT_MASS, color=(0, 255, 0)):
         """Initialize a limb as a rectangular body."""
         self.width = width
         self.height = height
@@ -16,7 +17,7 @@ class Limb:
         # Create a box shape for the limb
         self.shape = pymunk.Poly.create_box(self.body, (width, height))
         
-        self.shape.friction = 1
+        self.shape.friction = LIMB_FRICTION
         self.shape.filter = pymunk.ShapeFilter(categories=0b1, mask=pymunk.ShapeFilter.ALL_MASKS() ^ 0b1)
    
         space.add(self.body, self.shape)

@@ -13,7 +13,8 @@ from src.globals import (SCREEN_WIDTH,
                      SEGMENT_WIDTH,
                      FLOOR_HEIGHT,
                      AMPLITUDE,
-                     FREQUENCY
+                     FREQUENCY,
+                     GROUND_FRICTION
                      )
 
 pg.init()
@@ -68,25 +69,26 @@ class Ground(Protocol):
 
 class BasicSegment():
     
-    def __init__(self, start_x: int, end_x: int, space: pymunk.space) -> None:
+    def __init__(self, start_x: int, end_x: int, pos_x:int, space: pymunk.space) -> None:
         self.start_x = start_x
         self.end_x = end_x
         self.points = []
+        
 
-        self.add_points(start_x, end_x)
+        self.add_points(start_x, end_x, pos_x)
 
         self.body = pymunk.Body(0, 0, 1)
         self.poly = pymunk.Poly(self.body, self.points, radius=0.0)
-        self.poly.friction = 0.5
+        self.poly.friction = GROUND_FRICTION
         space.add(self.body, self.poly)
 
-    def add_points(self, start_x: int, end_x: int) -> None:
+    def add_points(self, start_x: int, end_x: int, pos_x: int) -> None:
         for x in range(start_x, end_x + 1, 1):
             y = int(
                 SCREEN_HEIGHT - FLOOR_HEIGHT + AMPLITUDE * math.sin(
-                    FREQUENCY * x)
+                    FREQUENCY * (x))
                 )
-            self.points.append((x, y))
+            self.points.append((pos_x+x-start_x, y))
 
     def get_points(self) -> list[tuple[int, int]]:
         points=self.poly.get_vertices()
@@ -109,11 +111,12 @@ class BasicSegment():
 
     def get_last_shifted_point(self) -> tuple[int, int]:
         points = self.get_points()
-        scroll_offset = self.start_x-self.poly.body.position[0]
+        scroll_offset = -self.poly.body.position[0]
         return (points[-1][0] - scroll_offset, points[-1][1])
     
     def get_first_shifted_point(self) -> tuple[int, int]:
         points = self.get_points()
+        
         scroll_offset = self.start_x-self.poly.body.position[0]
         return (points[0][0] - scroll_offset, points[0][1])
 
@@ -123,11 +126,12 @@ class BasicGround(RenderObject, Ground, BasicSegment):
         self.space = space
         self.segment_width = segment_width
         self.terrain_segments: BasicSegment = []
+        self.scroll_offset = 0
 
         self.terrain_segments.append(
-            self.generate_floor_segment(0))
-        self.terrain_segments.append(
-            self.generate_floor_segment(self.segment_width))
+            self.generate_floor_segment(0, 0))
+        # self.terrain_segments.append(
+        #     self.generate_floor_segment(self.segment_width))
         
     def get_current_segment(self, x: int) -> int:
         """
@@ -171,7 +175,7 @@ class BasicGround(RenderObject, Ground, BasicSegment):
         self.generate_new_floor_segment()
         self.remove_old_floor_segment()
 
-    def generate_floor_segment(self, start_x: int) -> list:
+    def generate_floor_segment(self, start_x: int, pos_x) -> list:
         """
         Generates a segment of the floor
         
@@ -182,8 +186,14 @@ class BasicGround(RenderObject, Ground, BasicSegment):
             list: A list of points representing the floor segment
         """
 
-        segment = BasicSegment(start_x, start_x + SEGMENT_WIDTH, self.space)
+        segment = BasicSegment(start_x, start_x + SEGMENT_WIDTH, pos_x, self.space)
         return segment
+    
+    def get_terrain_points(self):
+        points = []
+        for segment in self.terrain_segments:
+            points.extend(segment.get_points())
+        return points
 
     def generate_new_floor_segment(self) -> None:
         """_summary_ Generate a new floor segment
@@ -191,19 +201,23 @@ class BasicGround(RenderObject, Ground, BasicSegment):
         Args:
             scroll_offset (int): _description_
         """
+        first_segment = self.terrain_segments[0]
         last_segment = self.terrain_segments[-1]
-        if last_segment.get_last_shifted_point()[0] < SCREEN_WIDTH:
+        xy = last_segment.get_last_shifted_point()
+        x = xy[0]
+        if x < SCREEN_WIDTH:
             # Generate a new segment at the rightmost part of the terrain
-            last_x = last_segment.get_points()[-1][0]
-            self.terrain_segments.append(self.generate_floor_segment(last_x))
+            self.terrain_segments.append(self.generate_floor_segment(last_segment.end_x, x))
 
     def remove_old_floor_segment(self) -> None:
         # Remove old segments that are off-
         first_segment = self.terrain_segments[0]
-        # if first_segment.get_last_shifted_point()[0] < 0:
-        #     print(first_segment.get_last_shifted_point())
-        #     self.terrain_segments.pop(0)
-        #     first_segment.remove_pymunk_polygon(self.space)
+        x = first_segment.get_last_shifted_point()[0]
+
+        if x < 0:
+            self.terrain_segments.pop(0)
+
+            first_segment.remove_pymunk_polygon(self.space)
     
     def swap_floor_segments(self, scroll_offset: float) -> None:
         """_summary_ Swap the floor segments"""
@@ -232,6 +246,7 @@ class BasicGround(RenderObject, Ground, BasicSegment):
             # shifted_points.append((shifted_points[0][0], SCREEN_HEIGHT))
     
     def move_segments(self, scroll_offset: float) -> None:  
+        
         for segment in self.terrain_segments:
             segment.body.position = (segment.body.position[0] - scroll_offset, segment.body.position[1])
             

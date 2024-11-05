@@ -15,9 +15,13 @@ SCREEN_WIDTH = 700
 SCREEN_HEIGHT = 500
 FLOOR_HEIGHT = 100
 
+DEFAULT_MASS = 2
+GROUND_FRICTION = 0.8
+LIMB_FRICTION = 0.6
+
 
 AMPLITUDE = 30  # Max height of hills
-FREQUENCY = 0.01  # Max frequency of hills
+FREQUENCY = 0.006  # Max frequency of hills
 SEGMENT_WIDTH = 200  # Width of each terrain segment
 
 

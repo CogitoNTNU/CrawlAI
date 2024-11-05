@@ -1,6 +1,6 @@
 from typing import Protocol
 from enum import Enum
-import numpy
+import numpy as np
 import random
 
 import pygame
@@ -29,9 +29,9 @@ def create_creatures(amount, space):
     for i in range(amount):
         creature = Creature(space)
         # Add limbs to the creature, placing them above the ground
-        limb1 = creature.add_limb(100, 60, (300, 100), mass=1)  
-        limb2 = creature.add_limb(100, 20, (350, 100), mass=1)  
-        limb3 = creature.add_limb(110, 60, (400, 100), mass=5)
+        limb1 = creature.add_limb(100, 30, (300, 100))  
+        limb2 = creature.add_limb(70, 20, (350, 100))  
+        limb3 = creature.add_limb(100, 30, (400, 100), mass= 6)
 
         # Add a motor between limbs
         creature.add_motor(
@@ -122,41 +122,45 @@ def main():
         environment.update()
         environment.render()
         
-        import numpy as np
-        # TODO: vision should be part of a creature, and not environment
-        inputs = np.array([environment.vision.near_periphery.x, 
-                           environment.vision.near_periphery.y, 
-                           environment.vision.far_periphery.x, 
-                           environment.vision.far_periphery.y])
-        for index, creature in enumerate(creatures):
-            network = population[index]
-            for joint_rate in creature.get_joint_rates():
-                inputs = np.append(inputs, joint_rate)
+        
+        # # TODO: vision should be part of a creature, and not environment
+        # if (environment.vision.near_periphery and environment.vision.far_periphery):
+
+        #     inputs = np.array([environment.vision.near_periphery.x, 
+        #                     environment.vision.near_periphery.y, 
+        #                     environment.vision.far_periphery.x, 
+        #                     environment.vision.far_periphery.y])
+        # else:
+        #     inputs = np.array([-1, -1, -1, -1])
+        # for index, creature in enumerate(creatures):
+        #     network = population[index]
+        #     for joint_rate in creature.get_joint_rates():
+        #         inputs = np.append(inputs, joint_rate)
             
-            for limb in creature.limbs:
-                inputs = np.append(inputs, limb.body.position.x)
-                inputs = np.append(inputs, limb.body.position.y)
+        #     for limb in creature.limbs:
+        #         inputs = np.append(inputs, limb.body.position.x)
+        #         inputs = np.append(inputs, limb.body.position.y)
 
-            outputs = neat_networks[index].forward(inputs)
+        #     outputs = neat_networks[index].forward(inputs)
             
 
-        vision_y = round(creature_instance.limbs[0].body.position.y)
-        vision_x = round(creature_instance.limbs[0].body.position.x)
+        # vision_y = round(creature_instance.limbs[0].body.position.y)
+        # vision_x = round(creature_instance.limbs[0].body.position.x)
 
-        match environment.ground_type:
-            case GroundType.BASIC_GROUND:
-                environment.vision.update(
-                    environment.screen,
-                    Point(vision_x, vision_y),
-                    environment.ground,
-                    environment.offset)
+        # match environment.ground_type:
+        #     case GroundType.BASIC_GROUND:
+        #         environment.vision.update(
+        #             environment.screen,
+        #             Point(vision_x, vision_y),
+        #             environment.ground,
+        #             environment.offset)
 
-            case GroundType.PERLIN:
-                environment.vision.update(
-                    environment.screen,
-                    Point(vision_x, vision_y),
-                    environment.ground,
-                    0)
+        #     case GroundType.PERLIN:
+        #         environment.vision.update(
+        #             environment.screen,
+        #             Point(vision_x, vision_y),
+        #             environment.ground,
+        #             0)
    
         creature_instance.render(screen)
             
