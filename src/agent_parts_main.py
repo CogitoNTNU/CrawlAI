@@ -7,15 +7,15 @@ import pygame
 import pymunk
 from pygame.locals import *
 
-from src.genome import Genome
-from src.globals import SCREEN_WIDTH, SCREEN_HEIGHT
-from src.environment import Environment, GroundType
-from src.render_object import RenderObject
-from src.interface import Button, Interface
-from src.agent_parts.limb import Limb
+from genome import Genome
+from globals import SCREEN_WIDTH, SCREEN_HEIGHT
+from environment import Environment, GroundType
+from render_object import RenderObject
+from interface import Button, Interface
+from agent_parts.limb import Limb
+from ground import *
 
-
-from src.agent_parts.creature import Creature
+from agent_parts.creature import Creature
 
 def main():
     # Initialize Pygame and Pymunk
@@ -74,12 +74,13 @@ def main():
     interface.add_button(pause_button)
 
 
-    environment = Environment(screen)
-    environment.ground_type = GroundType.BASIC_GROUND
 
     # Set up the Pymunk space
     space = pymunk.Space()
     space.gravity = (0, 981)  # Gravity pointing downward
+
+    environment = Environment(screen, space)
+    environment.ground_type = GroundType.BASIC_GROUND
 
     for environment_segment in environment.ground.terrain_segments:
         environment_segment.init_pymunk_polygon(space)

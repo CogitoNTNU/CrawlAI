@@ -1,7 +1,7 @@
 import pymunk
 import pygame
-from src.agent_parts.limb import Limb
-from src.agent_parts.motorjoint import MotorJoint  
+from agent_parts.limb import Limb
+from agent_parts.motorjoint import MotorJoint  
 
 
 class Creature:

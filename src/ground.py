@@ -5,8 +5,8 @@ import math
 from enum import Enum
 import pymunk
 
-from src.render_object import RenderObject
-from src.globals import (SCREEN_WIDTH,
+from render_object import RenderObject
+from globals import (SCREEN_WIDTH,
                      SCREEN_HEIGHT,
                      PERLIN_SEGMENTS,
                      RED,
