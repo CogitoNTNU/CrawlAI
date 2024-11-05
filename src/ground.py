@@ -64,6 +64,10 @@ class Ground(Protocol):
     @property
     def update(self):
         pass
+    
+    @property
+    def init_pymunk_polygon(self, space):
+        pass
 
 
 class BasicSegment():
@@ -235,6 +239,9 @@ class BasicGround(RenderObject, Ground, BasicSegment):
         for segment in self.terrain_segments:
             segment.body.position = (segment.body.position[0] - scroll_offset, segment.body.position[1])
             
+    def init_pymunk_polygon(self, space) -> None:
+        for segment in self.terrain_segments:
+            segment.init_pymunk_polygon(space)
 
 class PerlinSegment():
     def __init__(self, start_x: int, end_x: int) -> None:
@@ -252,7 +259,6 @@ class PerlinSegment():
         body = pymunk.Body(0, 0, 1)
         poly = pymunk.Poly(body, self.points, radius=0.0)
         space.add(body, poly)
-
 
 class PerlinNoise():
 
