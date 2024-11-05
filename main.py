@@ -152,7 +152,9 @@ def main():
                     environment.ground,
                     0)
    
-        creature_instance.render(screen)
+        #creature_instance.render(screen)
+        for creature in creatures:
+            creature.render(screen)
             
         clock.tick(60)
 

@@ -93,7 +93,7 @@ class NEATNetwork():
                 in_node = conn.in_node
                 weight = conn.weight
                 node_sum += node_outputs[in_node] * weight
-                node_sum = node_sum/10 # Random shit because sum is not normalized
+                node_sum = node_sum/50 # Random shit because sum is not normalized
             # Apply activation (sigmoid for hidden and output nodes)
             node_outputs[node_id] = self.ReLU(node_sum)
 
