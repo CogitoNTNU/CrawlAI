@@ -12,21 +12,28 @@ class GeneticAlgorithm:
 
     @staticmethod
     def initialize_population(pop_size: int, num_inputs: int, num_outputs: int) -> List[Genome]:
-        """Initialize a population of genomes."""
+        """Initialize a population of genomes and assign them to species."""
         population = []
         for genome_id in range(pop_size):
             genome = Genome(genome_id, num_inputs, num_outputs)
             population.append(genome)
 
-            # Initialize the speciation with a key for the genome
-            species_id = GeneticAlgorithm.determine_species(genome)
-
-            if species_id not in GeneticAlgorithm.speciation:
-                GeneticAlgorithm.speciation[species_id] = []
-
-            GeneticAlgorithm.speciation[species_id].append(genome)
+            # Assign the genome to a species during initialization
+            GeneticAlgorithm.assign_to_species(genome)
 
         return population
+
+    @staticmethod
+    def assign_to_species(genome: Genome, speciation_threshold: float = 3.0):
+        """Assign a genome to an existing species or create a new species if none match."""
+        species_id = GeneticAlgorithm.determine_species(genome, speciation_threshold)
+
+        # If the species ID is new, initialize its entry
+        if species_id not in GeneticAlgorithm.speciation:
+            GeneticAlgorithm.speciation[species_id] = []
+
+        # Add the genome to the determined species
+        GeneticAlgorithm.speciation[species_id].append(genome)
 
     @staticmethod
     def determine_species(genome: Genome, speciation_threshold: float = 3.0) -> int:
@@ -37,7 +44,7 @@ class GeneticAlgorithm:
                 return species_id
 
         # If no existing species matches, create a new species
-        new_species_id = len(GeneticAlgorithm.speciation) + 1
+        new_species_id = len(GeneticAlgorithm.species_representatives) + 1
         GeneticAlgorithm.species_representatives[new_species_id] = genome
         return new_species_id
 
@@ -73,7 +80,20 @@ class GeneticAlgorithm:
         average_weight_difference = (weight_difference_sum / matching_genes) if matching_genes > 0 else 0
         delta = (c1 * excess_genes / N) + (c2 * disjoint_genes / N) + (c3 * average_weight_difference)
         return delta
+    
 
+
+
+    @staticmethod
+    def reassign_species(population: List[Genome], speciation_threshold: float = 3.0):
+        """Reassign genomes to species after a generation."""
+        # Clear current species assignments
+        GeneticAlgorithm.speciation.clear()
+        GeneticAlgorithm.species_representatives.clear()
+
+        # Re-evaluate each genome and assign it to the correct species
+        for genome in population:
+            GeneticAlgorithm.assign_to_species(genome, speciation_threshold)
 
 
     def eval_population(self, population: List[Genome]) -> float:
