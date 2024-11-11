@@ -18,7 +18,8 @@ from src.agent_parts.vision import Vision
 from src.agent_parts.rectangle import Point
 from src.agent_parts.creature import Creature
 
-#NOTE_TO_MYSELF: When add limb is clicked it doesn't go away when unpaused 
+#To do : make it only possible to create limb or create joint
+
 def main():
     # Initialize Pygame and Pymunk
     pygame.init()
@@ -94,8 +95,8 @@ def main():
     )
 
     interface.add_button(pause_button)
-    interface.add_button(limb_button)
-    interface.add_button(motorjoint_button)
+    interface.add_only_one_simultaneously_buttons(limb_button)
+    interface.add_only_one_simultaneously_buttons(motorjoint_button)
 
 
 
@@ -147,6 +148,7 @@ def main():
             if event.type == QUIT:
                 running = False
             interface.handle_events(event)
+            
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_LEFT:
                     print("Left arrow pressed")
@@ -155,7 +157,17 @@ def main():
                 if event.key == pygame.K_SPACE:
                     handle_physics()
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                if not physics_on:
+                active_button = interface.handle_only_one_function(event)
+                
+                if not physics_on and active_button:
+                    if active_button.text == "Add limb":
+                        active_button.is_clicked(event)
+                        print("Limb creation mode activated and motor joint creation mode deactivated")
+                    elif active_button.text == "Add joint":
+                        active_button.is_clicked(event)
+                        print("Motor joint creation mode activated and limb creation mode deactivated")
+
+                if not active_button and not physics_on:
                     mouse_x, mouse_y = event.pos
                     mouse_pos = (mouse_x, mouse_y)
                     # List of limbs to make motorjoint on
@@ -187,6 +199,8 @@ def main():
                             creature.add_motor_on_limbs(limb_1, limb_2, mouse_pos)
                             print("Motor joint created between limbs!")
                             limbs_hovered.clear()  
+                        else:
+                            limbs_hovered.clear()
 
             elif event.type == MOUSEMOTION and make_limb_mode:
                 mouse_x, mouse_y = event.pos
