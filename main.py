@@ -4,11 +4,11 @@ import numpy
 import random
 import numpy as np
 import pygame
-from src.agent_parts.vision import Vision
-from src.genetic_algoritm import GeneticAlgorithm
 import pymunk
 from pygame.locals import *
 
+from src.agent_parts.vision import Vision
+from src.genetic_algoritm import GeneticAlgorithm
 from src.agent_parts.limb import Limb
 from src.genome import Genome
 from src.globals import SCREEN_WIDTH, SCREEN_HEIGHT
@@ -17,8 +17,6 @@ from src.render_object import RenderObject
 from src.interface import Button, Interface
 from src.agent_parts.limb import Limb
 from src.agent_parts.rectangle import Point
-
-
 from src.agent_parts.rectangle import Point
 from src.genetic_algoritm import GeneticAlgorithm
 from src.globals import FONT_SIZE, SEGMENT_WIDTH, BLACK, RED
