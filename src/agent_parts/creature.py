@@ -2,13 +2,18 @@ import pymunk
 import pygame
 from src.agent_parts.limb import Limb
 from src.agent_parts.motorjoint import MotorJoint  
+from src.agent_parts.vision import Vision
+from src.ground import Ground
+from src.agent_parts.rectangle import Point
+
 
 
 class Creature:
     limbs: list[Limb]
     motors: list[MotorJoint]
+    vision: Vision
     
-    def __init__(self, space):
+    def __init__(self, space, vision: Vision):
         """
         Initialize a creature with an empty list of limbs and motors.
         
@@ -18,6 +23,7 @@ class Creature:
         self.limbs = []
         self.motors = []
         self.relative_vectors = []
+        self.vision = vision
 
     def add_limb(self, width: float, height: float, position: tuple[float,float], mass=1, color=(0, 255, 0)) -> Limb:
         """
@@ -33,6 +39,15 @@ class Creature:
         limb = Limb(self.space, width, height, position, mass, color)
         self.limbs.append(limb)
         return limb
+    
+    def update_vision(self, x: int, y: int):
+        """
+        Update the vision position of the creature
+        Args:
+            x (int): x coordinate
+            y (int): y coordinate
+        """
+        self.vision.update(x, y)
     
     def start_dragging(self, dragged_limb: Limb):
         for limb in self.limbs:
@@ -91,7 +106,7 @@ class Creature:
             limb.render(screen)
         for motor in self.motors:
             motor.render(screen, motor.pivot.a, motor.pivot.b)    # Render motor joints
-    
+        self.vision.render_vision(screen)
     def get_joint_rates(self) -> list[float]:
         """Return the current rates of all motor joints."""
         return [motor.motor.rate for motor in self.motors]
@@ -122,4 +137,4 @@ class Creature:
     def get_limb_positions(self) -> list[tuple[float,float]]:
         return [(limb.body.position.x, limb.body.position.y) for limb in self.limbs]
     
-    
+

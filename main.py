@@ -4,6 +4,7 @@ import numpy
 import random
 import numpy as np
 import pygame
+from src.agent_parts.vision import Vision
 from src.genetic_algoritm import GeneticAlgorithm
 import pymunk
 from pygame.locals import *
@@ -33,7 +34,8 @@ from src.NEATnetwork import NEATNetwork
 def create_creatures(amount, space):
     creatures = []
     for i in range(amount):
-        creature: Creature = Creature(space)
+        vision = Vision(Point(0, 0))
+        creature: Creature = Creature(space, vision)
         # Add limbs to the creature, placing them above the ground
         limb1 = creature.add_limb(100, 60, (300, 100), mass=1)  
         limb2 = creature.add_limb(100, 20, (350, 100), mass=1)  
@@ -55,6 +57,7 @@ def create_creatures(amount, space):
             tolerance=50)
         
         creatures.append(creature)
+        
         
     return creatures
 
@@ -144,14 +147,11 @@ def main():
         environment.update()
         environment.render()
         
-        
-        # TODO: vision should be part of a creature, and not environment
-        inputs = np.array([environment.vision.get_near_periphery().x, 
-                           environment.vision.get_near_periphery().y,
-                           environment.vision.get_far_periphery().x,
-                           environment.vision.get_far_periphery().y])
-
         for index, creature in enumerate(creatures):
+            inputs = np.array([creature.vision.get_near_periphery().x, 
+                           creature.vision.get_near_periphery().y,
+                           creature.vision.get_far_periphery().x,
+                           creature.vision.get_far_periphery().y])
             network = population[index]
             for joint_rate in creature.get_joint_rates():
                 inputs = np.append(inputs, joint_rate)
@@ -163,23 +163,14 @@ def main():
             outputs = neat_networks[index].forward(inputs)
             creature.set_joint_rates(outputs)
 
-        vision_y = round(creature_instance.limbs[0].body.position.y)
-        vision_x = round(creature_instance.limbs[0].body.position.x)
+            vision_y = round(creature.limbs[0].body.position.y)
+            vision_x = round(creature.limbs[0].body.position.x)
+            creature.vision.update(
+                Point(vision_x, vision_y),
+                environment.ground,
+                environment.offset) # if perlin, offset = 0, if basic, offset = environment.offset
 
-        match environment.ground_type:
-            case GroundType.BASIC_GROUND:
-                environment.vision.update(
-                    environment.screen,
-                    Point(vision_x, vision_y),
-                    environment.ground,
-                    environment.offset)
-
-            case GroundType.PERLIN:
-                environment.vision.update(
-                    environment.screen,
-                    Point(vision_x, vision_y),
-                    environment.ground,
-                    0)
+        
    
         #creature_instance.render(screen)
         for creature in creatures:
