@@ -81,10 +81,8 @@ class Creature:
         if limb_a.contains_point(position) and limb_b.contains_point(position):
             anchor1 = limb_a.global_to_local(position)
             anchor2 = limb_b.global_to_local(position)
-            print("true")
-            return self.add_motor(limb_a, limb_b, anchor1, anchor2, 2.0)
-        else:
-            print("false")
+            return self.add_motor(limb_a, limb_b, anchor1, anchor2, rate = -10)
+        else: 
             return None
 
     def local_to_global(
