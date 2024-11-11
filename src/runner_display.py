@@ -108,6 +108,14 @@ def display_genome_run(genome: Genome):
         draw_neural_network(
             genome, screen, position=network_position, size=network_size
         )
+        # Add text with the fitness value and current x position
+        font = pygame.font.Font(None, FONT_SIZE)
+        fitness_text = font.render(f"Fitness: {genome.fitness:.2f}", True, BLACK)
+        x_pos_text = font.render(
+            f"X Position: {creature.limbs[0].body.position.x:.2f}", True, BLACK
+        )
+        screen.blit(fitness_text, (10, 10))
+        screen.blit(x_pos_text, (10, 30))
 
         pygame.display.flip()
         clock.tick(60)
