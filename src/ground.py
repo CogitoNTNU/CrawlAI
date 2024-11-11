@@ -200,9 +200,10 @@ class BasicGround(RenderObject, Ground, BasicSegment):
             scroll_offset (int): _description_
         """
         last_segment = self.terrain_segments[-1]
-        if last_segment.get_last_shifted_point()[0] < SCREEN_WIDTH:
-            # Generate a new segment at the rightmost part of the terrain
-            last_x = last_segment.get_points()[-1][0]
+        last_point = last_segment.get_points()[-1]
+        if last_point[0] - self.scroll_offset < SCREEN_WIDTH:
+            # Start new segment where the last one ends
+            last_x = last_point[0]
             self.terrain_segments.append(self.generate_floor_segment(last_x))
 
     def remove_old_floor_segment(self) -> None:
