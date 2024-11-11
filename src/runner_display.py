@@ -35,6 +35,49 @@ def display_genome_run(genome: Genome):
     space.gravity = (0, 981)
     environment = Environment(screen, space)
     environment.ground_type = GroundType.BASIC_GROUND
+    font = pygame.font.Font(None, 20)
+    train_enabled = False
+    
+    load_button = Button(
+        pos=(10, SCREEN_HEIGHT - 50),
+        width=80,
+        height=40,
+        color=(0, 200, 0),
+        text="Load",
+        text_color=(255, 255, 255),
+        hover_color=(0, 255, 0),
+        active_color=(0, 100, 0),
+        font=font,
+        callback=lambda: print("Load button clicked")
+    )
+    save_button = Button(
+        pos=(10, SCREEN_HEIGHT - 100),
+        width=80,
+        height=40,
+        color=(0, 200, 0),
+        text="Save",
+        text_color=(255, 255, 255),
+        hover_color=(0, 255, 0),
+        active_color=(0, 100, 0),
+        font = font,
+        callback=lambda: print("Load button clicked")
+    )
+    
+    train_button = Button(
+        pos=(10, SCREEN_HEIGHT - 150),
+        width=80,
+        height=40,
+        color=(0, 200, 0),
+        text="Train",
+        text_color=(255, 255, 255),
+        hover_color=(0, 255, 0),
+        active_color=(0, 100, 0),
+        font=font,
+        callback=lambda: (train_enabled := True)
+    )
+    interface.add_button(load_button)
+    interface.add_button(save_button)
+    interface.add_button(train_button)
 
     if genome:
         network = NEATNetwork(genome)
@@ -100,6 +143,7 @@ def display_genome_run(genome: Genome):
         screen.fill((135, 206, 235))
         environment.update()
         environment.render()
+        interface.render(screen)
         if genome:
             creature.render(screen)
 
