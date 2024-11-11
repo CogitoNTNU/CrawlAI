@@ -91,7 +91,6 @@ class Creature:
         if abs(global_a[0] - global_b[0]) < tolerance and abs(global_a[1] - global_b[1]) < tolerance:
             motor = MotorJoint(self.space, limb_a.body, limb_b.body, anchor_a, anchor_b, rate)
             self.motors.append(motor)
-            print("add_motor: true")
             return motor
         
     def local_to_global(self, limb: Limb, point: tuple[float, float]) -> tuple[float, float]|None:
