@@ -14,7 +14,8 @@ from src.render_object import RenderObject
 from src.interface import Button, Interface
 from src.agent_parts.limb import Limb
 from src.ground import *
-
+from src.agent_parts.vision import Vision
+from src.agent_parts.rectangle import Point
 from src.agent_parts.creature import Creature
 
 #NOTE_TO_MYSELF: When add limb is clicked it doesn't go away when unpaused 
@@ -105,8 +106,8 @@ def main():
     environment = Environment(screen, space)
     environment.ground_type = GroundType.BASIC_GROUND
 
-
-    creature = Creature(space)
+    vision: Vision = Vision(Point(0,0))
+    creature = Creature(space, vision)
 
     # Add limbs to the creature, placing them above the ground
     #limb1 = creature.add_limb(100, 20, (300, 100), mass=1)  # Positioned above the ground
