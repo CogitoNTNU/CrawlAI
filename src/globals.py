@@ -19,10 +19,3 @@ FLOOR_HEIGHT = 100
 AMPLITUDE = 30  # Max height of hills
 FREQUENCY = 0.01  # Max frequency of hills
 SEGMENT_WIDTH = 200  # Width of each terrain segment
-
-
-
-
-
-
-

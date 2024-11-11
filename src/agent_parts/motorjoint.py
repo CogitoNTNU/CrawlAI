@@ -8,7 +8,7 @@ class MotorJoint:
         """Initialize a motor joint between two limbs."""
         self.pivot = pymunk.PivotJoint(body_a, body_b, anchor_a, anchor_b)
         self.motor = pymunk.SimpleMotor(body_a, body_b, rate)
-        
+
         space.add(self.pivot, self.motor)
 
     def set_motor_rate(self, rate):
@@ -21,13 +21,12 @@ class MotorJoint:
         pos_a_world = body_a.local_to_world(self.pivot.anchor_a)
         # Draw a red circle connecting the two bodies
         pygame.draw.circle(
-            surface=screen, 
-            color=(255, 0, 0), 
-            center=(float(pos_a_world.x),
-            float(pos_a_world.y)),
-            radius=3)
+            surface=screen,
+            color=(255, 0, 0),
+            center=(float(pos_a_world.x), float(pos_a_world.y)),
+            radius=3,
+        )
 
     def get_angle(self):
         """Get the angle of the motor joint."""
         return self.pivot.angle
-        

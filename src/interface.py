@@ -1,9 +1,22 @@
-import pygame 
-  
-class Button: 
+import pygame
+
+
+class Button:
     """General button functions"""
 
-    def __init__(self, text, pos, width, height, font, color, hover_color, text_color, active_color = None, callback=None):
+    def __init__(
+        self,
+        text,
+        pos,
+        width,
+        height,
+        font,
+        color,
+        hover_color,
+        text_color,
+        active_color=None,
+        callback=None,
+    ):
         """Initializes a button with the function name as input"""
         self.text = text
         self.pos = pos
@@ -15,7 +28,7 @@ class Button:
         self.text_color = text_color
         self.active_color = active_color if active_color else color
         self.rect = pygame.Rect(pos[0], pos[1], width, height)
-        self.callback = callback 
+        self.callback = callback
         self.toggled = False
 
     def render(self, screen):
@@ -36,12 +49,12 @@ class Button:
                     self.callback()  # Call the button's callback function
                 return True
         return False
-    
+
     def deactivate(self):
         self.toggled = False
-    
 
-class Interface: 
+
+class Interface:
     def __init__(self):
         """Initializes the elements in the interface"""
         self.buttons = []
@@ -49,12 +62,12 @@ class Interface:
     def add_button(self, button: Button) -> Button:
         self.buttons.append(button)
         return button
-    
-    def remove_button(self, button: Button) -> Button: 
+
+    def remove_button(self, button: Button) -> Button:
         if button in self.buttons:
             self.buttons.remove(button)
             return button
-    
+
     def render(self, screen):
         """Render all UI elements."""
         for button in self.buttons:
@@ -69,15 +82,13 @@ class Interface:
     def handle_only_one_function(self, event, active_button: Button):
         for button in self.buttons:
             if button != active_button:
-                button.deactivate() 
-        active_button.is_clicked(event)  # This will call the callback if the button is clicked
+                button.deactivate()
+        active_button.is_clicked(
+            event
+        )  # This will call the callback if the button is clicked
 
     def is_any_button_clicked(self, event) -> bool:
-        for button in self.buttons: 
+        for button in self.buttons:
             if button.is_clicked(event):  # If any button is clicked
                 return True  # Return True immediately
-        return False 
-
-        
-  
-    
+        return False
