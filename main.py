@@ -111,7 +111,8 @@ def main():
 
     # Population and creatures
     population_size = 5
-    creatures: list[Creature] = create_creatures(population_size, space)
+    creature_population: list[Creature] = create_creatures(population_size, space)
+    creatures = creature_population.copy()
     creature_instance: Creature = creatures[0]
     population = create_population(population_size, creature_instance)
     neat_networks: list[NEATNetwork] = []
