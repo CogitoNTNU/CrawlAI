@@ -29,6 +29,7 @@ from src.globals import (
     POPULATION_SIZE,
     SPECIATION_THRESHOLD,
     NUM_GENERATIONS,
+    SIMULATION_STEPS,
 )
 
 
@@ -125,8 +126,7 @@ def evaluate_genome(genome: Genome) -> float:
     creature.add_motor_on_limbs(limb2, limb3, (375, 300))
 
     # Run simulation for a certain number of steps
-    simulation_steps = 300  # Adjust as needed
-    for _ in range(simulation_steps):
+    for _ in range(SIMULATION_STEPS):
         inputs = []
         # Prepare inputs
         inputs.extend(
