@@ -132,16 +132,15 @@ class Vision:
         x2 = x1 + self.sight_width
         try:
             y1=ground.get_y(x1+scroll_offset)
+            self.near_periphery = Point(x1, y1)
         except:
             pass
         try:
             y2=ground.get_y(x2+scroll_offset)
+            self.far_periphery = Point(x2, y2)
         except:
             pass
-        if not y1 is None:
-            self.near_periphery = Point(x1, y1)
-        if not y2 is None:
-            self.far_periphery = Point(x2, y2)
+     
         self.render_vision(screen)
 
     def render_vision(self, screen):

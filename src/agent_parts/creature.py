@@ -9,14 +9,27 @@ class Creature:
     motors: list[MotorJoint]
     
     def __init__(self, space):
-        """Initialize a creature with an empty list of limbs and motors."""
+        """
+        Initialize a creature with an empty list of limbs and motors.
+        
+        """
+        
         self.space = space
         self.limbs = []
         self.motors = []
         self.relative_vectors = []
 
     def add_limb(self, width: float, height: float, position: tuple[float,float], mass=1, color=(0, 255, 0)) -> Limb:
-        """Add a limb to the creature."""
+        """
+        Add a limb to the creature.
+        Args:
+        - width: The width of the limb.
+        - height: The height of the limb.
+        - position: The position of the limb.
+        - mass: The mass of the limb
+        - color: The color of the limb.
+        
+        """
         limb = Limb(self.space, width, height, position, mass, color)
         self.limbs.append(limb)
         return limb
@@ -54,7 +67,7 @@ class Creature:
     
         
 
-    def add_motor(self, limb_a: Limb, limb_b: Limb, anchor_a: tuple[float,float], anchor_b: tuple[float,float], rate = 0.0, tolerance = 30) -> MotorJoint|None:
+    def add_motor(self, limb_a: Limb, limb_b: Limb, anchor_a: tuple[float,float], anchor_b: tuple[float,float], rate = 0.0, tolerance = 10) -> MotorJoint|None:
         """Add a motor connecting two limbs."""
         global_a = self.local_to_global(limb_a, anchor_a)
         global_b = self.local_to_global(limb_b, anchor_b)
