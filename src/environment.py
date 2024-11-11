@@ -30,7 +30,6 @@ class Environment(RenderObject):
         self.ground_type = GroundType.BASIC_GROUND
         self.ground: Ground = self.ground_factory(self.ground_type)
         self.starting_xx = 50
-        self.point = Point(self.starting_xx, 100)
         self.offset = 0
         self.offset_speed = 1
         self.death_ray = None

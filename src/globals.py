@@ -16,8 +16,8 @@ SCREEN_HEIGHT = 500
 FLOOR_HEIGHT = 100
 
 
-AMPLITUDE = 30  # Max height of hills
-FREQUENCY = 0.01  # Max frequency of hills
+AMPLITUDE = 3  # Max height of hills
+FREQUENCY = 0.001  # Max frequency of hills
 SEGMENT_WIDTH = 800  # Width of each terrain segment
 
 
@@ -27,7 +27,7 @@ MUTATION_RATE_CONNECTION = 0.5
 MUTATION_RATE_NODE = 0.3
 
 POPULATION_SIZE = 100
-NUM_GENERATIONS = 30
+NUM_GENERATIONS = 10
 SPECIATION_THRESHOLD = 3.0
 
 SIMULATION_STEPS = 300

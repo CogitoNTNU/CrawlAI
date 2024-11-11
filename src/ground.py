@@ -77,7 +77,6 @@ class BasicSegment:
         self.start_x = start_x
         self.end_x = end_x
         self.points = []
-
         self.add_points(start_x, end_x)
 
         self.body = pymunk.Body(0, 0, 1)
@@ -91,8 +90,10 @@ class BasicSegment:
             self.points.append((x, y))
 
     def get_points(self) -> list[tuple[int, int]]:
+        # Get the points in world coordinates
         points = self.poly.get_vertices()
-        points = [(int(p.x), int(p.y)) for p in points]
+        world_points = [self.poly.body.local_to_world(p) for p in points]
+        points = [(p.x, p.y) for p in world_points]
         points.sort(key=lambda x: x[0])
         return points
 
@@ -131,6 +132,7 @@ class BasicGround(RenderObject, Ground, BasicSegment):
         self.space = space
         self.segment_width = segment_width
         self.terrain_segments: BasicSegment = []
+        self.scroll_offset = 0.0 
 
         self.terrain_segments.append(self.generate_floor_segment(0))
         self.terrain_segments.append(self.generate_floor_segment(self.segment_width))
@@ -173,7 +175,7 @@ class BasicGround(RenderObject, Ground, BasicSegment):
         raise ValueError("The x-coordinate is not in the terrain segments")
 
     def update(self, scroll_offset: float) -> None:
-        self.move_segments(scroll_offset)
+        self.scroll_offset += scroll_offset
         self.generate_new_floor_segment()
         self.remove_old_floor_segment()
 
