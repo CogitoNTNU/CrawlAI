@@ -17,13 +17,3 @@ class Species:
         for genome in self.members:
             genome.adjusted_fitness = genome.fitness / len(self.members)
         self.average_fitness = total_fitness / len(self.members)
-
-    def select_parent(self):
-        total_adjusted_fitness = sum(genome.adjusted_fitness for genome in self.members)
-        pick = random.uniform(0, total_adjusted_fitness)
-        current = 0
-        for genome in self.members:
-            current += genome.adjusted_fitness
-            if current > pick:
-                return genome
-        return random.choice(self.members)
