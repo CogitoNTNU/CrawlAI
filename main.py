@@ -91,8 +91,8 @@ def evaluate_genome(genome: Genome) -> float:
     return fitness
 
 
-def main():
-    # Initialize Pygame
+def train() -> Genome:
+
     pygame.init()
 
     # Initialize a temporary creature to determine number of inputs and outputs
@@ -153,6 +153,12 @@ def main():
     else:
         print("No genomes in population.")
 
+    return best_genome
+
+
+def main():
+
+    best_genome = train()
     display_genome_run(best_genome)
 
 
