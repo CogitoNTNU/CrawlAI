@@ -28,8 +28,11 @@ def main():
     interface = Interface()
 
     
-    # Track whether physics is on or off
+    # Track whether different modes are on or off
     physics_on = False
+    make_limb_mode = False
+    make_motorjoint_mode = False
+
     physics_value = 0
     
     def handle_physics():
@@ -54,11 +57,11 @@ def main():
         callback=handle_physics
     )
 
-    make_limb_mode = False
 
     def make_limb():
         nonlocal make_limb_mode
         make_limb_mode = not make_limb_mode
+        make_motorjoint_mode = False
 
     limb_button = Button(
         text="Add limb",
@@ -73,11 +76,11 @@ def main():
         callback=make_limb
     )
 
-    make_motorjoint_mode = False
 
     def add_motorjoint():
         nonlocal make_motorjoint_mode
         make_motorjoint_mode = not make_motorjoint_mode
+        make_limb_mode = False
     
     motorjoint_button = Button(
         text="Add joint",
@@ -93,6 +96,7 @@ def main():
     )
 
     interface.add_button(pause_button)
+    interface.add_button(limb_button)
     interface.add_button(motorjoint_button)
 
 
@@ -148,39 +152,46 @@ def main():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_LEFT:
                     print("Left arrow pressed")
-                if event.key == pygame.K_RIGHT:
+                elif event.key == pygame.K_RIGHT:
                     print("Right arrow pressed")
-                if event.key == pygame.K_SPACE:
+                elif event.key == pygame.K_SPACE:
                     handle_physics()
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                if not physics_on:
-                    mouse_x, mouse_y = event.pos
-                    mouse_pos = (mouse_x, mouse_y)
-                    # List of limbs to make motorjoint on
-                    limbs_hovered = []
-                    # For dragging creature: Check if the mouse is over any limb
-                    if not make_limb_mode:
-                        for limb in creature.limbs: 
-                            if limb.contains_point(mouse_pos):
-                                dragging = True 
-                                dragged_limb = limb 
-                                creature.start_dragging(dragged_limb)
-                                drag_offset = (limb.body.position.x - mouse_x, limb.body.position.y - mouse_y)
-                                limbs_hovered.append(limb)
-                    # For creating rectangles
-                    elif make_limb_mode:
-                        start_pos = mouse_pos
-                    # For creating motorjoint
-                    if make_motorjoint_mode and len(limbs_hovered) == 2:
-                        limb_1 = limbs_hovered[0]
-                        limb_2 = limbs_hovered[1]
-                        creature.add_motor_on_limbs(limb_1, limb_2, mouse_pos)
-                        limbs_hovered.clear()
+                mouse_x, mouse_y = event.pos
+                mouse_pos = (mouse_x, mouse_y)
+                # List of limbs to make motorjoint on
+                limbs_hovered = []
+                # For dragging creature: Check if the mouse is over any limb
+                if not physics_on and not make_limb_mode and not make_motorjoint_mode:
+                    for limb in creature.limbs: 
+                        if limb.contains_point(mouse_pos):
+                            dragging = True 
+                            dragged_limb = limb 
+                            creature.start_dragging(dragged_limb)
+                            drag_offset = (limb.body.position.x - mouse_x, limb.body.position.y - mouse_y)
+                            limbs_hovered.append(limb)
+                # For creating rectangles
+                elif make_limb_mode:
+                    start_pos = mouse_pos
+                # For creating motorjoint
+                elif make_motorjoint_mode and len(limbs_hovered) == 2:
+                    limb_1 = limbs_hovered[0]
+                    limb_2 = limbs_hovered[1]
+                    creature.add_motor_on_limbs(limb_1, limb_2, mouse_pos)
+                    limbs_hovered.clear()
+
+
+
 
             elif event.type == MOUSEMOTION and make_limb_mode:
                 mouse_x, mouse_y = event.pos
                 mouse_pos = (mouse_x, mouse_y)
                 end_pos = mouse_pos
+                if make_motorjoint_mode:
+                    limbs_hovered.clear()
+                    for limb in creature.limbs:
+                        if limb.contains_point(mouse_pos):
+                            limbs_hovered.append(limb)
 
             elif event.type == pygame.MOUSEBUTTONUP:
                 dragging = False
@@ -190,9 +201,9 @@ def main():
                     position = ((start_pos[0] + end_pos[0]) / 2, (start_pos[1] + end_pos[1]) / 2)
                     limb = creature.add_limb(width, height, position)
 
-                # Reset start and end positions
-                start_pos = None
-                end_pos = None
+                    # Reset start and end positions
+                    start_pos = None
+                    end_pos = None
 
 
         space.step(physics_value)   
