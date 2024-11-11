@@ -23,7 +23,14 @@ from src.interface import Interface
 from src.agent_parts.creature import Creature
 from src.NEATnetwork import NEATNetwork
 from src.genome import Genome
-from src.globals import SCREEN_WIDTH, SCREEN_HEIGHT
+from src.globals import (
+    SCREEN_WIDTH,
+    SCREEN_HEIGHT,
+    POPULATION_SIZE,
+    SPECIATION_THRESHOLD,
+    NUM_GENERATIONS,
+)
+
 
 def draw_neural_network(genome: Genome, screen, position=(0, 0), size=(300, 300)):
     """
@@ -38,9 +45,9 @@ def draw_neural_network(genome: Genome, screen, position=(0, 0), size=(300, 300)
     width, height = size
 
     # Get nodes by type
-    input_nodes = [node for node in genome.nodes if node.node_type == 'input']
-    hidden_nodes = [node for node in genome.nodes if node.node_type == 'hidden']
-    output_nodes = [node for node in genome.nodes if node.node_type == 'output']
+    input_nodes = [node for node in genome.nodes if node.node_type == "input"]
+    hidden_nodes = [node for node in genome.nodes if node.node_type == "hidden"]
+    output_nodes = [node for node in genome.nodes if node.node_type == "output"]
 
     # Assign positions to nodes
     node_positions = {}
@@ -81,14 +88,16 @@ def draw_neural_network(genome: Genome, screen, position=(0, 0), size=(300, 300)
     for node_id, pos in node_positions.items():
         node = next((n for n in genome.nodes if n.id == node_id), None)
         if node:
-            if node.node_type == 'input':
+            if node.node_type == "input":
                 color = (0, 255, 0)  # Green
-            elif node.node_type == 'output':
+            elif node.node_type == "output":
                 color = (255, 165, 0)  # Orange
             else:
                 color = (211, 211, 211)  # Light Gray
             pygame.draw.circle(screen, color, (int(pos[0]), int(pos[1])), node_radius)
-            pygame.draw.circle(screen, (0, 0, 0), (int(pos[0]), int(pos[1])), node_radius, 1)
+            pygame.draw.circle(
+                screen, (0, 0, 0), (int(pos[0]), int(pos[1])), node_radius, 1
+            )
 
 
 def evaluate_genome(genome: Genome) -> float:
@@ -190,11 +199,6 @@ def main():
     del temp_environment
     del temp_screen
 
-    # Genetic Algorithm Parameters
-    population_size = 100
-    num_generations = 20
-    speciation_threshold = 3.0
-
     # Initialize a new Creature to pass as initial_creature
     # Since GeneticAlgorithm uses initial_creature to determine inputs and outputs,
     # we'll create a dummy creature without needing to initialize a full simulation
@@ -202,7 +206,7 @@ def main():
     dummy_space.gravity = (0, 981)
     dummy_vision = Vision(Point(0, 0))
     initial_creature = Creature(dummy_space, dummy_vision)
-    
+
     limb1 = initial_creature.add_limb(100, 20, (300, 300), mass=1)
     limb2 = initial_creature.add_limb(100, 20, (350, 300), mass=3)
     limb3 = initial_creature.add_limb(80, 40, (400, 300), mass=5)
@@ -211,13 +215,13 @@ def main():
 
     # Initialize Genetic Algorithm with population size and initial creature
     ga = GeneticAlgorithm(
-        population_size=population_size,
+        population_size=POPULATION_SIZE,
         initial_creature=initial_creature,
-        speciation_threshold=speciation_threshold,
+        speciation_threshold=SPECIATION_THRESHOLD,
     )
 
     # Run Evolution
-    ga.evolve(generations=num_generations, evaluate_function=evaluate_genome)
+    ga.evolve(generations=NUM_GENERATIONS, evaluate_function=evaluate_genome)
 
     # After evolution, select the best genome
     best_genome = max(ga.population, key=lambda g: g.fitness, default=None)
@@ -239,11 +243,11 @@ def main():
     environment.ground_type = GroundType.BASIC_GROUND
 
     # Population and creatures
-    # population_size = 5
-    # creature_population: list[Creature] = create_creatures(population_size, space)
+    # POPULATION_SIZE = 5
+    # creature_population: list[Creature] = create_creatures(POPULATION_SIZE, space)
     # creatures = creature_population.copy()
     # creature_instance: Creature = creatures[0]
-    # population = create_population(population_size, creature_instance)
+    # population = create_population(POPULATION_SIZE, creature_instance)
     # neat_networks: list[NEATNetwork] = []
     # for genome in population:
     #     neat_networks.append(NEATNetwork(genome))
@@ -314,11 +318,13 @@ def main():
         environment.render()
         if best_genome:
             creature.render(screen)
-        
-        network_position = (SCREEN_WIDTH - 350, 50)  
-        network_size = (300, 300) 
-        draw_neural_network(best_genome, screen, position=network_position, size=network_size)
-        
+
+        network_position = (SCREEN_WIDTH - 350, 50)
+        network_size = (300, 300)
+        draw_neural_network(
+            best_genome, screen, position=network_position, size=network_size
+        )
+
         pygame.display.flip()
         clock.tick(60)
 
