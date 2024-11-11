@@ -85,7 +85,7 @@ class BasicSegment:
         space.add(self.body, self.poly)
 
     def add_points(self, start_x: int, end_x: int) -> None:
-        for x in range(start_x, end_x + 1, 1):
+        for x in range(int(start_x), int(end_x) + 1, 1):
             y = int(SCREEN_HEIGHT - FLOOR_HEIGHT + AMPLITUDE * math.sin(FREQUENCY * x))
             self.points.append((x, y))
 
@@ -132,7 +132,7 @@ class BasicGround(RenderObject, Ground, BasicSegment):
         self.space = space
         self.segment_width = segment_width
         self.terrain_segments: BasicSegment = []
-        self.scroll_offset = 0.0 
+        self.scroll_offset = 0.0
 
         self.terrain_segments.append(self.generate_floor_segment(0))
         self.terrain_segments.append(self.generate_floor_segment(self.segment_width))
