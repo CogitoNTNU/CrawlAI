@@ -36,6 +36,7 @@ class Environment(RenderObject):
 
         self.offset = 0
         self.offset_speed = 1
+        self.death_ray = DeathRay(20)
 
     def ground_factory(self, ground_type: GroundType) -> Ground:
 
@@ -61,9 +62,12 @@ class Environment(RenderObject):
         self.ground.update(self.offset)
         # self.ground.move_segments(self.offset/100)
         self.starting_xx += 1
+        self.death_ray.move(0.1)
+        
 
     def render(self):
         self.ground.render()
+        self.death_ray.render(self.screen)
 
     def run(self):
 
@@ -106,5 +110,25 @@ class Environment(RenderObject):
     def draw_mark(surface, color, coord):
         pg.draw.circle(surface, color, coord, 3)
 
+class DeathRay:
+    x: int
+    
+    def __init__(self, x: int):
+        self.x = x
+    
+    def update(self, x: int):
+        self.x = x
+        
+    def render(self, screen):
+        pg.draw.line(screen, RED, (self.x, 0), (self.x, SCREEN_HEIGHT), 2)
+        
+    def move(self, offset: int):
+        self.x += offset
+        
+    def get_x(self):
+        return self.x
+    
+    
+    
 
 

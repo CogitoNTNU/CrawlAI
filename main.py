@@ -170,8 +170,12 @@ def main():
                 environment.ground,
                 environment.offset) # if perlin, offset = 0, if basic, offset = environment.offset
 
-        #creature_instance.render(screen)
-        for creature in creatures:
+            if creature.limbs[0].body.position.y > SCREEN_HEIGHT:
+                # kill the creature
+                creatures.remove(creature)
+            if creature.limbs[0].body.position.x < environment.death_ray.get_x():
+                # kill the creature
+                creatures.remove(creature)
             creature.render(screen)
             
         clock.tick(60)
