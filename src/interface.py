@@ -63,8 +63,11 @@ class Interface:
     def handle_events(self, event):
         """Handle events for all UI elements."""
         for button in self.buttons:
-            if isinstance(button, Button) and button.is_clicked(event):
-                self.handle_only_one_function(event, button)
+            button.is_clicked(event)
+            #if isinstance(button, Button):
+                #button.is_clicked(event)
+                #self.handle_only_one_function(event, button)
+        
 
     def handle_only_one_function(self, event, active_button: Button):
         for button in self.buttons:
