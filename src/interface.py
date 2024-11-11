@@ -76,24 +76,21 @@ class Interface:
         """Handle events for all UI elements."""
         for button in self.buttons:
             button.is_clicked(event)
-        
-
-    def handle_only_one_function(self, event, active_button: Button):
-        for button in self.only_one_simultaneously_buttons:
-            if button != active_button:
-                button.deactivate() 
-        active_button.is_clicked(event)  # This will call the callback if the button is clicked
 
     def handle_only_one_function(self, event) -> Button|None:
         """Activates only one of the mutually exclusive buttons."""
         for button in self.only_one_simultaneously_buttons:
             if button.is_clicked(event):  # If this button was clicked
+                self.active_button = button
                 # Deactivate all other mutually exclusive buttons
                 for other_button in self.only_one_simultaneously_buttons:
                     if other_button != button:
                         other_button.deactivate()
                 return button  # Return the clicked (active) button
         return None  # No button was clicked
+    
+    def any_active_only_one_simultaneously_buttons_active(self) -> bool:
+        return any(button.toggled for button in self.only_one_simultaneously_buttons)
 
 
         

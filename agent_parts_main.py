@@ -18,7 +18,7 @@ from src.agent_parts.vision import Vision
 from src.agent_parts.rectangle import Point
 from src.agent_parts.creature import Creature
 
-#To do : make it only possible to create limb or create joint
+#To do : unclick the only_one_simultaneously_buttons when unpausing
 
 def main():
     # Initialize Pygame and Pymunk
@@ -34,6 +34,7 @@ def main():
     make_limb_mode = False
     make_motorjoint_mode = False
 
+    # Track the physics value 
     physics_value = 0
 
     def handle_physics():
@@ -110,23 +111,12 @@ def main():
     vision: Vision = Vision(Point(0,0))
     creature = Creature(space, vision)
 
-    # Add limbs to the creature, placing them above the ground
-    #limb1 = creature.add_limb(100, 20, (300, 100), mass=1)  # Positioned above the ground
-    #limb2 = creature.add_limb(100, 20, (350, 100), mass=1)  # Positioned above the ground
-    #limb3 = creature.add_limb(110, 20, (400, 100), mass=5)
-
-    # Add a motor between limbs
-    #creature.add_motor(limb1, limb2, (50, 0), (-25, 0), rate=2, tolerance=30)
-    #creature.add_motor(limb2, limb3, (37, 0), (-23, 0), rate=-2, tolerance=50)
-
     # Add limbs to the creature
     limb1 = creature.add_limb(100, 20, (300, 300), mass=1)
     limb2 = creature.add_limb(100, 20, (350, 300), mass=3)
     limb3 = creature.add_limb(80, 40, (400, 300), mass=5)
 
     # Add motors between limbs
-    #creature.add_motor(limb1, limb2, (25, 0), (-25, 0), rate=2)
-    #creature.add_motor(limb2, limb3, (37, 0), (-23, 0), rate=-2)
     creature.add_motor_on_limbs(limb1, limb2, (325, 300))
     creature.add_motor_on_limbs(limb2, limb3, (375, 300))
 
@@ -159,6 +149,7 @@ def main():
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 active_button = interface.handle_only_one_function(event)
                 
+                # To make it possible to only click one of the only_one_simultaneously_buttons
                 if not physics_on and active_button:
                     if active_button.text == "Add limb":
                         active_button.is_clicked(event)
@@ -166,8 +157,8 @@ def main():
                     elif active_button.text == "Add joint":
                         active_button.is_clicked(event)
                         print("Motor joint creation mode activated and limb creation mode deactivated")
-
-                if not active_button and not physics_on:
+                
+                elif not active_button and not physics_on:
                     mouse_x, mouse_y = event.pos
                     mouse_pos = (mouse_x, mouse_y)
                     # List of limbs to make motorjoint on
@@ -202,6 +193,12 @@ def main():
                         else:
                             limbs_hovered.clear()
 
+                # If Pause button is clicked and any only_one_simultaneously_buttons are active, deactivate the active button
+                elif not active_button:
+                    if interface.any_active_only_one_simultaneously_buttons_active():
+                        interface.active_button.deactivate()
+                        print("Deactivated all mutually exclusive buttons due to Pause")
+
             elif event.type == MOUSEMOTION and make_limb_mode:
                 mouse_x, mouse_y = event.pos
                 mouse_pos = (mouse_x, mouse_y)
@@ -234,12 +231,7 @@ def main():
 
         #creature.set_joint_rates([random.random()*2, random.random()*2])
         # Render the creature
-        creature.render(screen)
-
-        #if not physics_on: 
-            #interface.add_button(limb_button)
-        #else: 
-            #interface.remove_button(limb_button)
+        creature.render(screen) 
         interface.render(screen)
 
 
