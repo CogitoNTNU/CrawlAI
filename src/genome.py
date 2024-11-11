@@ -5,6 +5,12 @@ from dataclasses import dataclass
 from typing import List
 from copy import deepcopy
 
+from src.globals import (
+    MUTATION_RATE_WEIGHT,
+    MUTATION_RATE_CONNECTION,
+    MUTATION_RATE_NODE,
+)
+
 
 class Innovation:
     __instance = None
@@ -161,9 +167,6 @@ class Genome:
 
     def mutate(self):
         """Apply mutations to the genome."""
-        MUTATION_RATE_WEIGHT = 0.8
-        MUTATION_RATE_CONNECTION = 0.05
-        MUTATION_RATE_NODE = 0.03
 
         if random.random() < MUTATION_RATE_WEIGHT:
             self.mutate_weights(delta=0.1)
