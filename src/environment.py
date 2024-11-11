@@ -25,6 +25,7 @@ class GroundType(Enum):
 
 
 class Environment(RenderObject):
+    
     def __init__(self,  screen, space):
         self.screen = screen
         self.space = space
@@ -32,10 +33,11 @@ class Environment(RenderObject):
         self.ground: Ground = self.ground_factory(self.ground_type)
         self.starting_xx = 50
         self.point = Point(self.starting_xx, 100)
-        
-
         self.offset = 0
         self.offset_speed = 1
+        self.death_ray = None
+
+    def activate_death_ray(self):
         self.death_ray = DeathRay(20)
 
     def ground_factory(self, ground_type: GroundType) -> Ground:
@@ -62,12 +64,14 @@ class Environment(RenderObject):
         self.ground.update(self.offset)
         # self.ground.move_segments(self.offset/100)
         self.starting_xx += 1
-        self.death_ray.move(0.1)
+        if self.death_ray is not None:
+            self.death_ray.move(0.1)
         
 
     def render(self):
         self.ground.render()
-        self.death_ray.render(self.screen)
+        if self.death_ray is not None:
+            self.death_ray.render(self.screen)
 
     def run(self):
 

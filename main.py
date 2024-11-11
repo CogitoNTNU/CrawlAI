@@ -121,6 +121,7 @@ def main():
     space.gravity = (0, 981)  # Gravity pointing downward
 
     environment: Environment = Environment(screen, space)
+    environment.activate_death_ray()
     environment.ground_type = GroundType.BASIC_GROUND
 
     #Population and creatures
@@ -171,17 +172,15 @@ def main():
                 environment.offset) # if perlin, offset = 0, if basic, offset = environment.offset
 
             if creature.limbs[0].body.position.y > SCREEN_HEIGHT:
-                # kill the creature
                 creatures.remove(creature)
-            if creature.limbs[0].body.position.x < environment.death_ray.get_x():
-                # kill the creature
-                creatures.remove(creature)
+            if environment.death_ray is not None:
+                if creature.limbs[0].body.position.x < environment.death_ray.get_x():
+                    creatures.remove(creature)
             creature.render(screen)
             
         clock.tick(60)
 
         pygame.display.flip()
-
 
     pygame.quit()
 
