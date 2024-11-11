@@ -1,7 +1,7 @@
 import numpy as np
 import pygame
 import pymunk
-
+import os
 from src.genetic_algorithm import GeneticAlgorithm
 from src.agent_parts.vision import Vision
 from src.render_object import RenderObject
@@ -13,6 +13,9 @@ from src.environment import Environment, GroundType
 from src.agent_parts.creature import Creature
 from src.NEATnetwork import NEATNetwork
 from src.genome import Genome
+from src.interface import Button
+from pygame_widgets.dropdown import Dropdown
+import pygame_widgets
 from src.globals import (
     SCREEN_WIDTH,
     SCREEN_HEIGHT,
@@ -22,6 +25,12 @@ from src.globals import (
     SIMULATION_STEPS,
 )
 
+def get_saved_file_paths() -> list[str]:
+    """
+    Returns a list of paths to saved genome files.
+    """
+    return [os.path.join("models/", f) for f in os.listdir("models/") if f.endswith(".json")]
+    
 
 def display_genome_run(genome: Genome):
     # Initialize Pygame display for visualization
@@ -37,19 +46,9 @@ def display_genome_run(genome: Genome):
     environment.ground_type = GroundType.BASIC_GROUND
     font = pygame.font.Font(None, 20)
     train_enabled = False
+    display_dropdown = False
     
-    load_button = Button(
-        pos=(10, SCREEN_HEIGHT - 50),
-        width=80,
-        height=40,
-        color=(0, 200, 0),
-        text="Load",
-        text_color=(255, 255, 255),
-        hover_color=(0, 255, 0),
-        active_color=(0, 100, 0),
-        font=font,
-        callback=lambda: print("Load button clicked")
-    )
+    
     save_button = Button(
         pos=(10, SCREEN_HEIGHT - 100),
         width=80,
@@ -75,9 +74,15 @@ def display_genome_run(genome: Genome):
         font=font,
         callback=lambda: (train_enabled := True)
     )
-    interface.add_button(load_button)
     interface.add_button(save_button)
     interface.add_button(train_button)
+    
+    choices = get_saved_file_paths()
+    dropdown = Dropdown(
+        screen, 120, 10, 100, 50, name='Load Genome',
+        choices=choices,
+        borderRadius=3, colour=pygame.Color('green'), values=choices, direction='down', textHAlign='left'
+    )
 
     if genome:
         network = NEATNetwork(genome)
@@ -93,10 +98,13 @@ def display_genome_run(genome: Genome):
 
     running = True
     while running:
-        for event in pygame.event.get():
+        events = pygame.event.get()
+        for event in events:
             if event.type == pygame.QUIT:
                 running = False
             interface.handle_events(event)
+            
+        
 
         if genome:
             # Prepare inputs
@@ -144,6 +152,8 @@ def display_genome_run(genome: Genome):
         environment.update()
         environment.render()
         interface.render(screen)
+        pygame_widgets.update(events)
+        
         if genome:
             creature.render(screen)
 

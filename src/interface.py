@@ -53,11 +53,10 @@ class Button:
     def deactivate(self):
         self.toggled = False
 
-
 class Interface:
     def __init__(self):
         """Initializes the elements in the interface"""
-        self.buttons = []
+        self.buttons: list[Button] = []
 
     def add_button(self, button: Button) -> Button:
         self.buttons.append(button)
@@ -67,6 +66,8 @@ class Interface:
         if button in self.buttons:
             self.buttons.remove(button)
             return button
+        
+    
 
     def render(self, screen):
         """Render all UI elements."""
