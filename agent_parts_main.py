@@ -62,7 +62,7 @@ def main():
     def make_limb():
         nonlocal make_limb_mode
         make_limb_mode = not make_limb_mode
-        make_motorjoint_mode = False
+        
 
     limb_button = Button(
         text="Add limb",
@@ -81,7 +81,7 @@ def main():
     def add_motorjoint():
         nonlocal make_motorjoint_mode
         make_motorjoint_mode = not make_motorjoint_mode
-        make_limb_mode = False
+        
     
     motorjoint_button = Button(
         text="Add joint",
