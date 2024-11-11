@@ -1,6 +1,8 @@
 import numpy as np
 import pygame
 import pymunk
+import os  
+import json  
 
 from src.genetic_algorithm import GeneticAlgorithm
 from src.agent_parts.vision import Vision
@@ -14,6 +16,7 @@ from src.environment import Environment, GroundType
 from src.agent_parts.creature import Creature
 from src.NEATnetwork import NEATNetwork
 from src.genome import Genome
+from src.genome import Innovation
 from src.globals import (
     SCREEN_WIDTH,
     SCREEN_HEIGHT,
@@ -22,6 +25,34 @@ from src.globals import (
     NUM_GENERATIONS,
     SIMULATION_STEPS,
 )
+
+MODEL_FILE_PATH = "models/"
+def save_genome(genome: Genome, filename = 'saved_genome') -> str:
+    """Save a genome to a file."""
+    
+    filename += str(genome.fitness)
+    filename = filename.replace('.', '_')
+    filename += '.json'
+    data = genome.to_dict()
+    path = MODEL_FILE_PATH + filename
+    print(path)
+    with open(path, 'w') as f:
+        json.dump(data, f, indent=4)
+    return path
+
+def load_genome(filename: str) -> Genome:
+    """Load a genome from a file."""
+    
+    with open(filename, 'r') as f:
+        data = json.load(f)
+    # Ensure the Innovation singleton is updated
+    genome = Genome.from_dict(data)
+    Innovation.get_instance().from_dict({
+        '_global_innovation_counter': max(conn['innovation_number'] for conn in data['connections']),
+        '_innovation_history': { (conn['in_node'], conn['out_node']): conn['innovation_number'] for conn in data['connections'] }
+    })
+    return genome
+
 
 
 def evaluate_genome(genome: Genome) -> float:
@@ -158,8 +189,10 @@ def train() -> Genome:
 
 def main():
 
-    best_genome = train()
-    display_genome_run(best_genome)
+    #best_genome = train()
+    #path = save_genome(best_genome, 'best_genome')
+    genome = load_genome("models/best_genome2961_555819068663.json")
+    display_genome_run(genome)
 
 
 if __name__ == "__main__":

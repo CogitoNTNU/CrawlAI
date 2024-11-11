@@ -37,6 +37,18 @@ class Innovation:
             Innovation._global_innovation_counter += 1
             Innovation._innovation_history[key] = Innovation._global_innovation_counter
             return Innovation._innovation_history[key]
+    
+    def to_dict(self):
+        """Serialize the Innovation singleton."""
+        return {
+            '_global_innovation_counter': self._global_innovation_counter,
+            '_innovation_history': self._innovation_history
+        }
+
+    def from_dict(self, data):
+        """Deserialize the Innovation singleton."""
+        self._global_innovation_counter = data['_global_innovation_counter']
+        self._innovation_history = data['_innovation_history']
 
 
 @dataclass
@@ -281,3 +293,36 @@ class Genome:
 
     def __lt__(self, other):
         return self.fitness < other.fitness
+    
+    def to_dict(self):
+        """Serialize the Genome object to a dictionary."""
+        return {
+            'id': self.id,
+            'fitness': self.fitness,
+            'adjusted_fitness': self.adjusted_fitness,
+            'species': self.species,
+            'num_inputs': self.num_inputs,
+            'num_outputs': self.num_outputs,
+            'nodes': [node.__dict__ for node in self.nodes],
+            'connections': [conn.__dict__ for conn in self.connections],
+        }
+
+    @classmethod
+    def from_dict(cls, data):
+        """Deserialize a Genome object from a dictionary."""
+        genome = cls(
+            genome_id=data['id'],
+            num_inputs=data['num_inputs'],
+            num_outputs=data['num_outputs']
+        )
+        genome.fitness = data['fitness']
+        genome.adjusted_fitness = data['adjusted_fitness']
+        genome.species = data['species']
+
+        # Reconstruct nodes
+        genome.nodes = [Node(**node_data) for node_data in data['nodes']]
+
+        # Reconstruct connections
+        genome.connections = [Connection(**conn_data) for conn_data in data['connections']]
+
+        return genome
