@@ -112,4 +112,4 @@ class NEATNetwork:
 
         # Collect the outputs for final output nodes
         output = np.array([node_outputs.get(node.id, 0) for node in output_nodes])
-        return output
+        return output / 100  # Normalize the output
