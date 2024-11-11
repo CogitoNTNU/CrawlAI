@@ -54,7 +54,7 @@ class Environment(RenderObject):
                 )
 
     def update(self):
-        self.offset = 1
+        self.offset = 0
         self.ground.update(self.offset)
         # self.ground.move_segments(self.offset/100)
         self.starting_xx += 1

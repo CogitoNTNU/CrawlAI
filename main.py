@@ -1,25 +1,15 @@
-# main.py
-
 import numpy as np
 import pygame
-from src.agent_parts.vision import Vision
-from src.genetic_algorithm import GeneticAlgorithm
 import pymunk
 
+from src.genetic_algorithm import GeneticAlgorithm
 from src.agent_parts.vision import Vision
-from src.agent_parts.limb import Limb
-from src.genome import Genome
-from src.globals import SCREEN_WIDTH, SCREEN_HEIGHT
-from src.environment import Environment, GroundType
 from src.render_object import RenderObject
 from src.interface import Button, Interface
 from src.agent_parts.limb import Limb
-from src.agent_parts.rectangle import Point
-from src.agent_parts.rectangle import Point
 from src.globals import FONT_SIZE, SEGMENT_WIDTH, BLACK, RED
 from src.agent_parts.rectangle import Point
 from src.environment import Environment, GroundType
-from src.interface import Interface
 from src.agent_parts.creature import Creature
 from src.NEATnetwork import NEATNetwork
 from src.genome import Genome
