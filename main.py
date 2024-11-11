@@ -37,9 +37,13 @@ def create_creatures(amount, space):
         vision = Vision(Point(0, 0))
         creature: Creature = Creature(space, vision)
         # Add limbs to the creature, placing them above the ground
-        limb1 = creature.add_limb(100, 60, (300, 100), mass=1)  
-        limb2 = creature.add_limb(100, 20, (350, 100), mass=1)  
-        limb3 = creature.add_limb(110, 60, (400, 100), mass=5)
+        # limb1 = creature.add_limb(100, 60, (300, 100), mass=1)  
+        # limb2 = creature.add_limb(100, 20, (350, 100), mass=3)  
+        # limb3 = creature.add_limb(110, 60, (400, 100), mass=5)
+        
+        limb1 = creature.add_limb(100, 20, (300, 300), mass=1)
+        limb2 = creature.add_limb(100, 20, (350, 300), mass=3)
+        limb3 = creature.add_limb(80, 40, (400, 300), mass=5)
 
         # Add a motor between limbs
         creature.add_motor(
@@ -58,8 +62,8 @@ def create_creatures(amount, space):
         
         creatures.append(creature)
         
-        
     return creatures
+
 
 def create_population(population_size, creature: Creature):
     amount_of_joints = creature.get_amount_of_joints()
@@ -74,7 +78,6 @@ def create_population(population_size, creature: Creature):
     population = GeneticAlgorithm.initialize_population(population_size, amount_of_in_nodes, amount_of_out_nodes)
 
     return population 
-
 
 
 def apply_mutations(self):
@@ -100,10 +103,7 @@ def apply_mutations(self):
         self.mutate_nodes()
 
 
-
-
 def main():
-
 
     # Initialize Pygame and Pymunk
     pygame.init()
@@ -124,7 +124,7 @@ def main():
     environment.ground_type = GroundType.BASIC_GROUND
 
     #Population and creatures
-    population_size = 10
+    population_size = 5
     creatures: list[Creature] = create_creatures(population_size, space)
     creature_instance: Creature = creatures[0]
     population = create_population(population_size, creature_instance)
@@ -170,8 +170,6 @@ def main():
                 environment.ground,
                 environment.offset) # if perlin, offset = 0, if basic, offset = environment.offset
 
-        
-   
         #creature_instance.render(screen)
         for creature in creatures:
             creature.render(screen)
