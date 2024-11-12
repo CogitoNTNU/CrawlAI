@@ -23,6 +23,7 @@ class Creature:
         self.motors = []
         self.relative_vectors = []
         self.vision = vision
+        self.limbs_connected_by_motorjoint = [] # List of lists in the format : [motor, limb1, limb2]
 
     def add_limb(
         self,
@@ -56,13 +57,32 @@ class Creature:
         self.vision.update(x, y)
 
     def start_dragging(self, dragged_limb: Limb):
-        for limb in self.limbs:
+        for limb in self.get_list_of_connected_limbs(dragged_limb):
             if limb != dragged_limb:
                 vector = (
                     limb.body.position.x - dragged_limb.body.position.x,
                     limb.body.position.y - dragged_limb.body.position.y,
                 )
                 self.relative_vectors.append((limb, vector))
+
+    def get_list_of_connected_limbs(self, limb: Limb, visited = None ) -> list[Limb]: # which limbs are connected to a specific limb?
+        if visited is None:
+            visited = set()
+
+        # Avoid revisiting limbs by adding the current limb to the visited set
+        visited.add(limb)
+        connected_limbs = []
+
+        for motor, limb1, limb2 in self.limbs_connected_by_motorjoint:
+            # Identify the connected limb and continue recursively if not yet visited
+            if limb1 == limb and limb2 not in visited:
+                connected_limbs.append(limb2)
+                connected_limbs.extend(self.get_list_of_connected_limbs(limb2, visited))
+            elif limb2 == limb and limb1 not in visited:
+                connected_limbs.append(limb1)
+                connected_limbs.extend(self.get_list_of_connected_limbs(limb1, visited))
+
+        return connected_limbs
 
     def update_creature_position(
         self, dragged_limb: Limb, new_position: tuple[float, float]
@@ -81,7 +101,9 @@ class Creature:
         if limb_a.contains_point(position) and limb_b.contains_point(position):
             anchor1 = limb_a.global_to_local(position)
             anchor2 = limb_b.global_to_local(position)
-            return self.add_motor(limb_a, limb_b, anchor1, anchor2, rate = -10)
+            motor = self.add_motor(limb_a, limb_b, anchor1, anchor2, rate = -10)
+            self.limbs_connected_by_motorjoint.append([motor, limb_a, limb_b]) # To track the connected limbs
+            return motor
         else: 
             return None
 

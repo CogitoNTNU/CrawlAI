@@ -8,7 +8,7 @@ class MotorJoint:
         """Initialize a motor joint between two limbs."""
         self.pivot = pymunk.PivotJoint(body_a, body_b, anchor_a, anchor_b)
         self.motor = pymunk.SimpleMotor(body_a, body_b, rate)
-
+        self.world_loc = tuple[float]
         space.add(self.pivot, self.motor)
 
     def set_motor_rate(self, rate):
@@ -26,7 +26,11 @@ class MotorJoint:
             center=(float(pos_a_world.x), float(pos_a_world.y)),
             radius=3,
         )
+        self.world_loc = (float(pos_a_world.x), float(pos_a_world.y))
 
     def get_angle(self):
         """Get the angle of the motor joint."""
         return self.pivot.angle
+    
+    def get_world_loc(self) -> tuple[float]: 
+        return self.get_world_loc

@@ -18,7 +18,7 @@ from src.agent_parts.vision import Vision
 from src.agent_parts.rectangle import Point
 from src.agent_parts.creature import Creature
 
-#To do : unclick the only_one_simultaneously_buttons when unpausing
+#To do 1: Make it possible to move a single limb
 
 def main():
     # Initialize Pygame and Pymunk
@@ -137,7 +137,8 @@ def main():
         for event in pygame.event.get():
             if event.type == QUIT:
                 running = False
-            interface.handle_events(event)
+            #interface.handle_events(event)
+            interface.handle_pause_events(event)
             
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_LEFT:
@@ -152,17 +153,25 @@ def main():
                 # To make it possible to only click one of the only_one_simultaneously_buttons
                 if not physics_on and active_button:
                     if active_button.text == "Add limb":
-                        active_button.is_clicked(event)
+                        interface.handle_only_one_function(event)
+                        #active_button.is_clicked(event)
                         print("Limb creation mode activated and motor joint creation mode deactivated")
                     elif active_button.text == "Add joint":
-                        active_button.is_clicked(event)
+                        #active_button.is_clicked(event)
+                        interface.handle_only_one_function(event)
                         print("Motor joint creation mode activated and limb creation mode deactivated")
                 
-                elif not active_button and not physics_on:
+                elif not physics_on and not active_button:
                     mouse_x, mouse_y = event.pos
                     mouse_pos = (mouse_x, mouse_y)
                     # List of limbs to make motorjoint on
                     limbs_hovered = []
+
+                    #deactive all only_one_simultaneously_buttons
+                    if interface.any_active_only_one_simultaneously_buttons_active():
+                        interface.active_button.deactivate()
+                        print("Deactivated all mutually exclusive buttons due to Pause")
+
                     # For dragging creature: Check if the mouse is over any limb
                     if not make_limb_mode and not make_motorjoint_mode:
                         for limb in creature.limbs: 
@@ -171,7 +180,7 @@ def main():
                                 dragged_limb = limb 
                                 creature.start_dragging(dragged_limb)
                                 drag_offset = (limb.body.position.x - mouse_x, limb.body.position.y - mouse_y)
-                                #limbs_hovered.append(limb)
+                                
                                 break
                     # For creating rectangles
                     elif make_limb_mode:
@@ -193,11 +202,8 @@ def main():
                         else:
                             limbs_hovered.clear()
 
-                # If Pause button is clicked and any only_one_simultaneously_buttons are active, deactivate the active button
-                elif not active_button:
-                    if interface.any_active_only_one_simultaneously_buttons_active():
-                        interface.active_button.deactivate()
-                        print("Deactivated all mutually exclusive buttons due to Pause")
+                elif physics_on and active_button:
+                    interface.handle_pause_events(event)
 
             elif event.type == MOUSEMOTION and make_limb_mode:
                 mouse_x, mouse_y = event.pos
