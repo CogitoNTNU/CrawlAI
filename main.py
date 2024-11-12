@@ -1,8 +1,8 @@
 import numpy as np
 import pygame
 import pymunk
-import os  
-import json  
+import os
+import json
 
 from src.genetic_algorithm import GeneticAlgorithm
 from src.agent_parts.vision import Vision
@@ -33,8 +33,10 @@ def get_saved_file_paths() -> list[str]:
     """
     Returns a list of paths to saved genome files.
     """
-    return [os.path.join("models/", f) for f in os.listdir("models/") if f.endswith(".json")]
-    
+    return [
+        os.path.join("models/", f) for f in os.listdir("models/") if f.endswith(".json")
+    ]
+
 
 def display_genome_run(genome: Genome):
     # Initialize Pygame display for visualization
@@ -51,12 +53,13 @@ def display_genome_run(genome: Genome):
     font = pygame.font.Font(None, 20)
     train_enabled = False
     display_dropdown = False
-    
+
     save_enabled = False
+
     def enable_save():
         nonlocal save_enabled
         save_enabled = True
-    
+
     save_button = Button(
         pos=(10, SCREEN_HEIGHT - 100),
         width=80,
@@ -66,10 +69,10 @@ def display_genome_run(genome: Genome):
         text_color=(255, 255, 255),
         hover_color=(0, 255, 0),
         active_color=(0, 100, 0),
-        font = font,
-        callback=lambda: enable_save
+        font=font,
+        callback=lambda: enable_save,
     )
-    
+
     def enable_training():
         nonlocal train_enabled
         train_enabled = True
@@ -85,19 +88,28 @@ def display_genome_run(genome: Genome):
         active_color=(0, 100, 0),
         font=font,
         text_color=(255, 255, 255),
-        
     )
     choices = get_saved_file_paths()
     dropdown = Dropdown(
-        screen, 120, 10, 100, 50, name='Load Genome',
+        screen,
+        120,
+        10,
+        100,
+        50,
+        name="Load Genome",
         choices=choices,
-        borderRadius=3, colour=pygame.Color('green'), values=choices, direction='down', textHAlign='left'
+        borderRadius=3,
+        colour=pygame.Color("green"),
+        values=choices,
+        direction="down",
+        textHAlign="left",
     )
     load_selected = None
-    def set_selected ():
+
+    def set_selected():
         nonlocal load_selected
         load_selected = dropdown.getSelected()
-    
+
     display_loaded_button = Button(
         pos=(10, SCREEN_HEIGHT - 150),
         width=80,
@@ -109,12 +121,10 @@ def display_genome_run(genome: Genome):
         active_color=(0, 100, 0),
         font=font,
         text_color=(255, 255, 255),
-        
     )
     interface.add_button(save_button)
     interface.add_button(train_button)
     interface.add_button(display_loaded_button)
-    
 
     if genome:
         network = NEATNetwork(genome)
@@ -135,27 +145,27 @@ def display_genome_run(genome: Genome):
             if event.type == pygame.QUIT:
                 running = False
             interface.handle_events(event)
-        
+
         if train_enabled:
             print("Training...")
             train_enabled = False
             genome = train()
             display_genome_run(genome)
             break
-        
+
         if load_selected is not None:
             print("Loading...")
             genome = load_genome(load_selected)
             load_selected = None
             display_genome_run(genome)
             break
-        
+
         if save_enabled:
             print("Saving...")
             save_enabled = False
-            path = save_genome(genome, 'best_genome')
+            path = save_genome(genome, "best_genome")
             print(f"Genome saved to {path}")
-            
+
         if genome:
             # Prepare inputs
             inputs = []
@@ -197,13 +207,18 @@ def display_genome_run(genome: Genome):
         # Step the physics
         space.step(1 / 60.0)
 
+        # Move all the bodies in the space as much as the creature has moved
+        for body in space.bodies:
+            creature_offset = creature.limbs[0].body.position.x
+            body.position = (body.position.x - creature_offset / 100, body.position.y)
+
         # Render everything
         screen.fill((135, 206, 235))
         environment.update()
         environment.render()
         interface.render(screen)
         pygame_widgets.update(events)
-        
+
         if genome:
             creature.render(screen)
 
@@ -295,34 +310,42 @@ def draw_neural_network(genome: Genome, screen, position=(0, 0), size=(300, 300)
             )
 
 
-
 MODEL_FILE_PATH = "models/"
-def save_genome(genome: Genome, filename = 'saved_genome') -> str:
+
+
+def save_genome(genome: Genome, filename="saved_genome") -> str:
     """Save a genome to a file."""
-    
+
     filename += str(genome.fitness)
-    filename = filename.replace('.', '_')
-    filename += '.json'
+    filename = filename.replace(".", "_")
+    filename += ".json"
     data = genome.to_dict()
     path = MODEL_FILE_PATH + filename
     print(path)
-    with open(path, 'w') as f:
+    with open(path, "w") as f:
         json.dump(data, f, indent=4)
     return path
 
+
 def load_genome(filename: str) -> Genome:
     """Load a genome from a file."""
-    
-    with open(filename, 'r') as f:
+
+    with open(filename, "r") as f:
         data = json.load(f)
     # Ensure the Innovation singleton is updated
     genome = Genome.from_dict(data)
-    Innovation.get_instance().from_dict({
-        '_global_innovation_counter': max(conn['innovation_number'] for conn in data['connections']),
-        '_innovation_history': { (conn['in_node'], conn['out_node']): conn['innovation_number'] for conn in data['connections'] }
-    })
+    Innovation.get_instance().from_dict(
+        {
+            "_global_innovation_counter": max(
+                conn["innovation_number"] for conn in data["connections"]
+            ),
+            "_innovation_history": {
+                (conn["in_node"], conn["out_node"]): conn["innovation_number"]
+                for conn in data["connections"]
+            },
+        }
+    )
     return genome
-
 
 
 def evaluate_genome(genome: Genome) -> float:
@@ -459,8 +482,8 @@ def train() -> Genome:
 
 def main():
 
-    #best_genome = train()
-    #path = save_genome(best_genome, 'best_genome')
+    # best_genome = train()
+    # path = save_genome(best_genome, 'best_genome')
     genome = load_genome("models/best_genome2961_555819068663.json")
     display_genome_run(genome)
 
