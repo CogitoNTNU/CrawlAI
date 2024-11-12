@@ -1,7 +1,3 @@
-SCREEN_WIDTH = 700
-SCREEN_HEIGHT = 500
-FLOOR_HEIGHT = 100
-
 BLACK = (0, 0, 0)
 BLUE = (0, 0, 255)
 RED = (255, 0, 0)
@@ -11,14 +7,14 @@ WHITE = (255, 255, 255)
 PERLIN_SEGMENTS = 40
 
 FONT_SIZE = 14
-SCREEN_WIDTH = 700
-SCREEN_HEIGHT = 500
+SCREEN_WIDTH = 900
+SCREEN_HEIGHT = 600
 FLOOR_HEIGHT = 100
 
 
-AMPLITUDE = 3  # Max height of hills
-FREQUENCY = 0.001  # Max frequency of hills
-SEGMENT_WIDTH = 800  # Width of each terrain segment
+AMPLITUDE = 20  # Max height of hills
+FREQUENCY = 0.01  # Max frequency of hills
+SEGMENT_WIDTH = 600  # Width of each terrain segment
 
 
 ## Hyperparameters
@@ -27,7 +23,7 @@ MUTATION_RATE_CONNECTION = 0.05
 MUTATION_RATE_NODE = 0.03
 
 POPULATION_SIZE = 100
-NUM_GENERATIONS = 3
+NUM_GENERATIONS = 20
 SPECIATION_THRESHOLD = 3.0
 
 SIMULATION_STEPS = 400

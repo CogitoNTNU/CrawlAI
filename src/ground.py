@@ -190,7 +190,7 @@ class BasicGround(RenderObject, Ground, BasicSegment):
             list: A list of points representing the floor segment
         """
 
-        segment = BasicSegment(start_x, start_x + SEGMENT_WIDTH, self.space)
+        segment = BasicSegment(start_x, start_x + self.segment_width, self.space)
         return segment
 
     def generate_new_floor_segment(self) -> None:
@@ -207,10 +207,9 @@ class BasicGround(RenderObject, Ground, BasicSegment):
             self.terrain_segments.append(self.generate_floor_segment(last_x))
 
     def remove_old_floor_segment(self) -> None:
-        # Remove old segments that are off-
         first_segment = self.terrain_segments[0]
-        # if first_segment.get_last_shifted_point()[0] < 0:
-        #     print(first_segment.get_last_shifted_point())
+        first_point = first_segment.get_points()[0]
+        # if first_point[0] - self.scroll_offset < -self.segment_width:
         #     self.terrain_segments.pop(0)
         #     first_segment.remove_pymunk_polygon(self.space)
 
@@ -233,11 +232,11 @@ class BasicGround(RenderObject, Ground, BasicSegment):
             scroll_offset (_type_): _description_
         """
         for segment in self.terrain_segments:
-            segment.render(self.screen)
-
-            # # Add points to close the polygon and fill the bottom of the screen
-            # shifted_points.append((shifted_points[-1][0], SCREEN_HEIGHT))
-            # shifted_points.append((shifted_points[0][0], SCREEN_HEIGHT))
+            points = segment.get_points()
+            shifted_points = [(x - self.scroll_offset, y) for (x, y) in points]
+            shifted_points.append((shifted_points[-1][0], SCREEN_HEIGHT))
+            shifted_points.append((shifted_points[0][0], SCREEN_HEIGHT))
+            pg.draw.polygon(self.screen, (34, 139, 34), shifted_points)
 
     def move_segments(self, scroll_offset: float) -> None:
         for segment in self.terrain_segments:
