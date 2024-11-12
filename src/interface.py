@@ -56,18 +56,25 @@ class Button:
 class Interface:
     def __init__(self):
         """Initializes the elements in the interface"""
-        self.buttons: list[Button] = []
+
+        self.buttons: list[Button] = [] #for all buttons in the interface 
+        self.active_button = Button
+        self.only_one_simultaneously_buttons = [] #buttons that can't be active simultaneously 
+
 
     def add_button(self, button: Button) -> Button:
         self.buttons.append(button)
         return button
 
-    def remove_button(self, button: Button) -> Button:
         if button in self.buttons:
             self.buttons.remove(button)
             return button
         
-    
+
+    def remove_only_one_simultaneously_buttons(self, button: Button) -> Button: 
+        if button in self.only_one_simultaneously_buttons:
+            self.buttons.remove(button)
+            return button
 
     def render(self, screen):
         """Render all UI elements."""
@@ -77,19 +84,32 @@ class Interface:
     def handle_events(self, event):
         """Handle events for all UI elements."""
         for button in self.buttons:
-            if isinstance(button, Button) and button.is_clicked(event):
-                self.handle_only_one_function(event, button)
+            button.is_clicked(event)
 
-    def handle_only_one_function(self, event, active_button: Button):
-        for button in self.buttons:
-            if button != active_button:
-                button.deactivate()
-        active_button.is_clicked(
-            event
-        )  # This will call the callback if the button is clicked
 
     def is_any_button_clicked(self, event) -> bool:
         for button in self.buttons:
             if button.is_clicked(event):  # If any button is clicked
                 return True  # Return True immediately
         return False
+
+    def handle_only_one_function(self, event) -> Button|None:
+        """Activates only one of the mutually exclusive buttons."""
+        for button in self.only_one_simultaneously_buttons:
+            if button.is_clicked(event):  # If this button was clicked
+                self.active_button = button
+                # Deactivate all other mutually exclusive buttons
+                for other_button in self.only_one_simultaneously_buttons:
+                    if other_button != button:
+                        other_button.deactivate()
+                return button  # Return the clicked (active) button
+        return None  # No button was clicked
+    
+    def any_active_only_one_simultaneously_buttons_active(self) -> bool:
+        return any(button.toggled for button in self.only_one_simultaneously_buttons)
+
+
+        
+  
+    
+
