@@ -70,7 +70,7 @@ def display_genome_run(genome: Genome):
         hover_color=(0, 255, 0),
         active_color=(0, 100, 0),
         font=font,
-        callback=lambda: enable_save,
+        callback=lambda: enable_save(),
     )
 
     def enable_training():
