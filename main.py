@@ -4,6 +4,7 @@ import pymunk
 import os
 import json
 
+from src.upload_agent import UploadAgent
 from src.genetic_algorithm import GeneticAlgorithm
 from src.agent_parts.vision import Vision
 from src.render_object import RenderObject
@@ -38,7 +39,7 @@ def get_saved_file_paths() -> list[str]:
     ]
 
 
-def display_genome_run(genome: Genome):
+def display_genome_run(agent: UploadAgent):
     # Initialize Pygame display for visualization
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     pygame.display.set_caption("NEAT Simulation")
@@ -53,6 +54,11 @@ def display_genome_run(genome: Genome):
     font = pygame.font.Font(None, 20)
     train_enabled = False
     display_dropdown = False
+    
+    # Initialize the genome and creature
+    genome = agent.genome
+    creature_data = agent.creature_data
+    
 
     save_enabled = False
 
@@ -125,18 +131,13 @@ def display_genome_run(genome: Genome):
     interface.add_button(save_button)
     interface.add_button(train_button)
     interface.add_button(display_loaded_button)
+    
+    
 
     if genome:
         network = NEATNetwork(genome)
         vision = Vision(Point(0, 0))
-        creature = Creature(space, vision)
-        limb1 = creature.add_limb(100, 20, (300, 300), mass=1)
-        limb2 = creature.add_limb(100, 20, (350, 300), mass=3)
-        limb3 = creature.add_limb(80, 40, (400, 300), mass=5)
-
-        # Add motors between limbs
-        creature.add_motor_on_limbs(limb1, limb2, (325, 300))
-        creature.add_motor_on_limbs(limb2, limb3, (375, 300))
+        creature = Creature.from_dict(agent.creature_data, space, vision)
 
     running = True
     while running:
@@ -155,16 +156,23 @@ def display_genome_run(genome: Genome):
 
         if load_selected is not None:
             print("Loading...")
-            genome = load_genome(load_selected)
+            agent = load_agent(load_selected)
+            genome = agent.genome
+            # Update the network and creature
+            network = NEATNetwork(genome)
+          
+            # Create new creature from data
+            creature = Creature.from_dict(agent.creature_data, space, vision)
             load_selected = None
-            display_genome_run(genome)
+            display_genome_run(agent)
             break
 
         if save_enabled:
             print("Saving...")
             save_enabled = False
-            path = save_genome(genome, "best_genome")
-            print(f"Genome saved to {path}")
+            agent = UploadAgent(genome, creature.to_dict())
+            path = save_agent(agent, "saved_agent")
+            print(f"Agent saved to {path}")
 
         if genome:
             # Prepare inputs
@@ -326,6 +334,39 @@ def save_genome(genome: Genome, filename="saved_genome") -> str:
         json.dump(data, f, indent=4)
     return path
 
+def save_agent(agent: UploadAgent, filename="saved_agent") -> str:
+    """Save an agent to a file."""
+
+    filename += str(agent.genome.fitness)
+    filename = filename.replace(".", "_")
+    filename += ".json"
+    data = agent.to_dict()
+    path = os.path.join(MODEL_FILE_PATH, filename)
+    print(f"Saving agent to {path}")
+    with open(path, "w") as f:
+        json.dump(data, f, indent=4)
+    return path
+
+def load_agent(filename: str) -> UploadAgent:
+    """Load an agent from a file."""
+
+    with open(filename, "r") as f:
+        data = json.load(f)
+    # Ensure the Innovation singleton is updated
+    genome_data = data['genome']
+    Innovation.get_instance().from_dict(
+        {
+            "_global_innovation_counter": max(
+                conn["innovation_number"] for conn in genome_data["connections"]
+            ),
+            "_innovation_history": {
+                (conn["in_node"], conn["out_node"]): conn["innovation_number"]
+                for conn in genome_data["connections"]
+            },
+        }
+    )
+    agent = UploadAgent.from_dict(data)
+    return agent
 
 def load_genome(filename: str) -> Genome:
     """Load a genome from a file."""
@@ -415,8 +456,62 @@ def evaluate_genome(genome: Genome) -> float:
     return fitness
 
 
-def train() -> Genome:
+def evaluate_genome_with_data(genome: Genome, creature_data: dict) -> float:
+    # Initialize Pymunk space
+    space = pymunk.Space()
+    space.gravity = (0, 981)
 
+    # Minimal screen for Pymunk (no rendering during evaluation)
+    screen = pygame.Surface((1, 1))
+
+    # Initialize environment
+    environment = Environment(screen, space)
+    environment.ground_type = GroundType.BASIC_GROUND
+
+    # Instantiate NEATNetwork and Creature
+    network = NEATNetwork(genome)
+    vision = Vision(Point(0, 0))
+    creature = Creature.from_dict(creature_data, space, vision)
+
+    # Run simulation for a certain number of steps
+    for _ in range(SIMULATION_STEPS):
+        # Prepare inputs
+        inputs = []
+        inputs.extend([
+            creature.vision.get_near_periphery().x,
+            creature.vision.get_near_periphery().y,
+            creature.vision.get_far_periphery().x,
+            creature.vision.get_far_periphery().y,
+        ])
+        inputs.extend(creature.get_joint_rates())
+        for limb in creature.limbs:
+            inputs.extend([limb.body.position.x, limb.body.position.y])
+
+        # Ensure inputs match the expected number
+        inputs = np.array(inputs)
+        if len(inputs) != genome.num_inputs:
+            # Handle input size mismatch
+            if len(inputs) < genome.num_inputs:
+                inputs = np.pad(inputs, (0, genome.num_inputs - len(inputs)), "constant")
+            else:
+                inputs = inputs[: genome.num_inputs]
+
+        outputs = network.forward(inputs)
+        creature.set_joint_rates(outputs)
+
+        creature.vision.update(
+            Point(creature.limbs[0].body.position.x, creature.limbs[0].body.position.y),
+            environment.ground,
+            environment.offset,
+        )
+        space.step(1 / 60.0)
+
+    # Evaluate fitness (e.g., distance traveled)
+    fitness = creature.limbs[0].body.position.x
+    return fitness
+
+
+def train() -> UploadAgent:
     pygame.init()
 
     # Initialize a temporary creature to determine number of inputs and outputs
@@ -440,36 +535,28 @@ def train() -> Genome:
     num_inputs = 4 + amount_of_joints + (amount_of_limb * 2)
     num_outputs = amount_of_joints
 
+    # Get creature data
+    creature_data = temp_creature.to_dict()
+    creature = Creature.from_dict(creature_data, temp_space, vision)
+    
+
     # Clean up temporary simulation
     del temp_creature
     del temp_space
     del temp_environment
     del temp_screen
 
-    # Initialize a new Creature to pass as initial_creature
-    # Since GeneticAlgorithm uses initial_creature to determine inputs and outputs,
-    # we'll create a dummy creature without needing to initialize a full simulation
-    dummy_space = pymunk.Space()
-    dummy_space.gravity = (0, 981)
-    dummy_vision = Vision(Point(0, 0))
-    initial_creature = Creature(dummy_space, dummy_vision)
-
-    limb1 = initial_creature.add_limb(100, 20, (300, 300), mass=1)
-    limb2 = initial_creature.add_limb(100, 20, (350, 300), mass=3)
-    limb3 = initial_creature.add_limb(80, 40, (400, 300), mass=5)
-    initial_creature.add_motor_on_limbs(limb1, limb2, (325, 300))
-    initial_creature.add_motor_on_limbs(limb2, limb3, (375, 300))
-
-    # Initialize Genetic Algorithm with population size and initial creature
+    # Initialize Genetic Algorithm
     ga = GeneticAlgorithm(
         population_size=POPULATION_SIZE,
-        initial_creature=initial_creature,
+        initial_creature = creature,
+        creature_data=creature_data,
         speciation_threshold=SPECIATION_THRESHOLD,
     )
 
     # Run Evolution
-    ga.evolve(generations=NUM_GENERATIONS, evaluate_function=evaluate_genome)
-
+    ga.evolve(generations=NUM_GENERATIONS, evaluate_function=evaluate_genome_with_data)
+    #ga.evolve(generations=NUM_GENERATIONS, evaluate_function=evaluate_genome)
     # After evolution, select the best genome
     best_genome = max(ga.population, key=lambda g: g.fitness, default=None)
     if best_genome:
@@ -477,15 +564,19 @@ def train() -> Genome:
     else:
         print("No genomes in population.")
 
-    return best_genome
+    # Return the Agent
+    agent = UploadAgent(best_genome, creature_data)
+    return agent
 
 
 def main():
 
-    # best_genome = train()
-    # path = save_genome(best_genome, 'best_genome')
-    genome = load_genome("models/best_genome2961_555819068663.json")
-    display_genome_run(genome)
+    best_genome = train()
+    path = save_agent(best_genome, 'best_genome')
+    # genome = load_genome("models/best_genome2961_555819068663.json")
+    # display_genome_run(genome)
+    agent = load_agent(path)
+    display_genome_run(agent)
 
 
 if __name__ == "__main__":

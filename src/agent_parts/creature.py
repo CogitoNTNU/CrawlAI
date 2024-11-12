@@ -110,7 +110,7 @@ class Creature:
             and abs(global_a[1] - global_b[1]) < tolerance
         ):
             motor = MotorJoint(
-                self.space, limb_a.body, limb_b.body, anchor_a, anchor_b, rate
+                self.space, limb_a, limb_b, anchor_a, anchor_b, rate
             )
             self.motors.append(motor)
             return motor
@@ -162,3 +162,68 @@ class Creature:
 
     def get_limb_positions(self) -> list[tuple[float, float]]:
         return [(limb.body.position.x, limb.body.position.y) for limb in self.limbs]
+    
+    def to_dict(self):
+        """Serialize the Creature object to a dictionary."""
+        # Serialize limbs
+        limbs_data = []
+        for limb in self.limbs:
+            limb_data = {
+                'width': limb.width,
+                'height': limb.height,
+                'position': (limb.body.position.x, limb.body.position.y),
+                'mass': limb.mass,
+                'color': limb.color,
+            }
+            limbs_data.append(limb_data)
+
+        # Serialize motors
+        motors_data = []
+        for motor in self.motors:
+            motor_data = {
+                'limb_a_index': self.limbs.index(motor.limb_a),  # Index of Limb instance
+                'limb_b_index': self.limbs.index(motor.limb_b),  # Index of Limb instance
+                'anchor_a': motor.anchor_a,
+                'anchor_b': motor.anchor_b,
+                'rate': motor.motor.rate,
+                'tolerance': motor.tolerance if hasattr(motor, 'tolerance') else 10,
+            }
+            motors_data.append(motor_data)
+
+        return {
+            'limbs': limbs_data,
+            'motors': motors_data,
+        }
+
+
+    
+    @classmethod
+    def from_dict(cls, data, space, vision):
+        """Deserialize a Creature object from a dictionary."""
+        creature = cls(space, vision)
+        limb_list = []
+        # Reconstruct limbs
+        for limb_data in data['limbs']:
+            limb = creature.add_limb(
+                width=limb_data['width'],
+                height=limb_data['height'],
+                position=limb_data['position'],
+                mass=limb_data['mass'],
+                color=tuple(limb_data['color']),
+            )
+            limb_list.append(limb)
+        
+        # Reconstruct motors
+        for motor_data in data['motors']:
+            limb_a = limb_list[motor_data['limb_a_index']]
+            limb_b = limb_list[motor_data['limb_b_index']]
+            creature.add_motor(
+                limb_a=limb_a,
+                limb_b=limb_b,
+                anchor_a=tuple(motor_data['anchor_a']),
+                anchor_b=tuple(motor_data['anchor_b']),
+                rate=motor_data['rate'],
+                tolerance=motor_data.get('tolerance', 10),
+            )
+        return creature
+    

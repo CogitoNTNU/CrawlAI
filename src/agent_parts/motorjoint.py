@@ -4,11 +4,17 @@ import math
 
 
 class MotorJoint:
-    def __init__(self, space, body_a, body_b, anchor_a, anchor_b, rate):
+    def __init__(self, space, limb_a, limb_b, anchor_a, anchor_b, rate):
         """Initialize a motor joint between two limbs."""
+        body_a = limb_a.body
+        body_b = limb_b.body
         self.pivot = pymunk.PivotJoint(body_a, body_b, anchor_a, anchor_b)
         self.motor = pymunk.SimpleMotor(body_a, body_b, rate)
-
+        self.anchor_a = anchor_a
+        self.anchor_b = anchor_b
+        self.limb_a = limb_a
+        self.limb_b = limb_b
+        
         space.add(self.pivot, self.motor)
 
     def set_motor_rate(self, rate):
