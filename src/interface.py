@@ -70,7 +70,11 @@ class Interface:
             self.buttons.remove(button)
             return button
         
-
+    def add_only_one_simultaneously_buttons(self, button: Button) -> Button:
+        self.only_one_simultaneously_buttons.append(button)
+        self.buttons.append(button) #don't have to append on both lists manually
+        return button
+    
     def remove_only_one_simultaneously_buttons(self, button: Button) -> Button: 
         if button in self.only_one_simultaneously_buttons:
             self.buttons.remove(button)
