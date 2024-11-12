@@ -79,13 +79,13 @@ class BasicSegment:
         self.points = []
         self.add_points(start_x, end_x)
 
-        self.body = pymunk.Body(0, 0, 1)
+        self.body = pymunk.Body(body_type=pymunk.Body.KINEMATIC)
         self.poly = pymunk.Poly(self.body, self.points, radius=0.0)
         self.poly.friction = 0.5
         space.add(self.body, self.poly)
 
     def add_points(self, start_x: int, end_x: int) -> None:
-        for x in range(int(start_x), int(end_x) + 1, 1):
+        for x in range(int(self.start_x), int(self.end_x) + 1, 1):
             y = int(SCREEN_HEIGHT - FLOOR_HEIGHT + AMPLITUDE * math.sin(FREQUENCY * x))
             self.points.append((x, y))
 
@@ -191,7 +191,7 @@ class BasicGround(RenderObject, Ground, BasicSegment):
         """
 
         segment = BasicSegment(start_x, start_x + self.segment_width, self.space)
-        return segment
+        return segment        
 
     def generate_new_floor_segment(self) -> None:
         """_summary_ Generate a new floor segment
@@ -237,13 +237,14 @@ class BasicGround(RenderObject, Ground, BasicSegment):
             shifted_points.append((shifted_points[-1][0], SCREEN_HEIGHT))
             shifted_points.append((shifted_points[0][0], SCREEN_HEIGHT))
             pg.draw.polygon(self.screen, (34, 139, 34), shifted_points)
-
+            
     def move_segments(self, scroll_offset: float) -> None:
         for segment in self.terrain_segments:
             segment.body.position = (
                 segment.body.position[0] - scroll_offset,
                 segment.body.position[1],
             )
+            self.space.reindex_shapes_for_body(segment.body)
 
     def init_pymunk_polygon(self, space) -> None:
         for segment in self.terrain_segments:
