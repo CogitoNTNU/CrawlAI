@@ -3,14 +3,16 @@
 from typing import List
 from src.genome import Genome
 import random
+from src.agent_parts.creature import Creature
 
 
 class GeneticAlgorithm:
     def __init__(
         self,
         population_size: int,
-        initial_creature: "Creature",
-        speciation_threshold: float = 3.0,
+        initial_creature: Creature,
+        creature_data: dict,
+        speciation_threshold: float = 3.0
     ):
         """
         Initialize the Genetic Algorithm with a given population size and initial creature.
@@ -28,6 +30,9 @@ class GeneticAlgorithm:
         self.population: List[Genome] = []
         self.innovation = None
         self.genome_id_counter = 0
+        self.creature_data = creature_data
+        
+        
 
         # Determine number of inputs and outputs based on initial creature
         self.num_inputs, self.num_outputs = self.determine_io()
@@ -120,7 +125,7 @@ class GeneticAlgorithm:
         """
         total_fitness = 0.0
         for genome in self.population:
-            genome.fitness = evaluate_function(genome)
+            genome.fitness = evaluate_function(genome, self.creature_data)
             total_fitness += genome.fitness
         average_fitness = total_fitness / len(self.population) if self.population else 0
         return average_fitness

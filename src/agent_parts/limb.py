@@ -8,6 +8,7 @@ class Limb:
         self.width = width
         self.height = height
         self.color = color
+        self.mass = mass
 
         # Create a dynamic body with mass
         self.body = pymunk.Body(mass, pymunk.moment_for_box(mass, (width, height)))
