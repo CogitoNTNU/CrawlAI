@@ -14,7 +14,7 @@ class MotorJoint:
         self.anchor_b = anchor_b
         self.limb_a = limb_a
         self.limb_b = limb_b
-        
+        self.world_loc = tuple[float]
         space.add(self.pivot, self.motor)
 
     def set_motor_rate(self, rate):
@@ -34,7 +34,11 @@ class MotorJoint:
             center=(float(pos_a_world.x), float(pos_a_world.y)),
             radius=3,
         )
+        self.world_loc = (float(pos_a_world.x), float(pos_a_world.y))
 
     def get_angle(self):
         """Get the angle of the motor joint."""
         return self.pivot.angle
+    
+    def get_world_loc(self) -> tuple[float]: 
+        return self.get_world_loc
