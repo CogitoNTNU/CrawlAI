@@ -573,7 +573,7 @@ def main():
 
     # best_genome = train()
     # path = save_agent(best_genome, 'best_genome')
-    agent = load_agent("models/saved_agent1797_9110736663542.json")
+    agent = load_agent("models/saved_agent3022_077965276266.json")
     display_genome_run(agent)
 
 

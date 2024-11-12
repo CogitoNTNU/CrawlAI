@@ -215,6 +215,7 @@ class Creature:
         for motor_data in data['motors']:
             limb_a = limb_list[motor_data['limb_a_index']]
             limb_b = limb_list[motor_data['limb_b_index']]
+            print(type( motor_data["anchor_a"]))
             creature.add_motor(
                 limb_a=limb_a,
                 limb_b=limb_b,
