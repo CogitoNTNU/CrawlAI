@@ -25,6 +25,8 @@ class MotorJoint:
         """Render the motor joint as a small red circle between the two bodies."""
         # Get the positions of the two bodies
         pos_a_world = body_a.local_to_world(self.pivot.anchor_a)
+        self.position = pos_a_world
+        
         # Draw a red circle connecting the two bodies
         pygame.draw.circle(
             surface=screen,

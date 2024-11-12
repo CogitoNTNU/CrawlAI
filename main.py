@@ -137,7 +137,7 @@ def display_genome_run(agent: UploadAgent):
     if genome:
         network = NEATNetwork(genome)
         vision = Vision(Point(0, 0))
-        creature = Creature.from_dict(agent.creature_data, space, vision)
+        creature = Creature.from_dict(agent.creature_data, space=space, vision=vision)
 
     running = True
     while running:
@@ -162,7 +162,7 @@ def display_genome_run(agent: UploadAgent):
             network = NEATNetwork(genome)
           
             # Create new creature from data
-            creature = Creature.from_dict(agent.creature_data, space, vision)
+            creature = Creature.from_dict(agent.creature_data,space= space, vision=vision)
             load_selected = None
             display_genome_run(agent)
             break
@@ -170,7 +170,7 @@ def display_genome_run(agent: UploadAgent):
         if save_enabled:
             print("Saving...")
             save_enabled = False
-            agent = UploadAgent(genome, creature.to_dict())
+            agent = UploadAgent(genome, creature)
             path = save_agent(agent, "saved_agent")
             print(f"Agent saved to {path}")
 
@@ -471,7 +471,7 @@ def evaluate_genome_with_data(genome: Genome, creature_data: dict) -> float:
     # Instantiate NEATNetwork and Creature
     network = NEATNetwork(genome)
     vision = Vision(Point(0, 0))
-    creature = Creature.from_dict(creature_data, space, vision)
+    creature = Creature.from_dict(creature_data, space=space, vision=vision)
 
     # Run simulation for a certain number of steps
     for _ in range(SIMULATION_STEPS):
@@ -537,7 +537,7 @@ def train() -> UploadAgent:
 
     # Get creature data
     creature_data = temp_creature.to_dict()
-    creature = Creature.from_dict(creature_data, temp_space, vision)
+    creature = Creature.from_dict(creature_data, space=temp_space, vision=vision)
     
 
     # Clean up temporary simulation
@@ -565,17 +565,15 @@ def train() -> UploadAgent:
         print("No genomes in population.")
 
     # Return the Agent
-    agent = UploadAgent(best_genome, creature_data)
+    agent = UploadAgent(best_genome, creature)
     return agent
 
 
 def main():
 
-    best_genome = train()
-    path = save_agent(best_genome, 'best_genome')
-    # genome = load_genome("models/best_genome2961_555819068663.json")
-    # display_genome_run(genome)
-    agent = load_agent(path)
+    # best_genome = train()
+    # path = save_agent(best_genome, 'best_genome')
+    agent = load_agent("models/saved_agent1797_9110736663542.json")
     display_genome_run(agent)
 
 

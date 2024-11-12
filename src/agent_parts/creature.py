@@ -183,8 +183,8 @@ class Creature:
             motor_data = {
                 'limb_a_index': self.limbs.index(motor.limb_a),  # Index of Limb instance
                 'limb_b_index': self.limbs.index(motor.limb_b),  # Index of Limb instance
-                'anchor_a': motor.anchor_a,
-                'anchor_b': motor.anchor_b,
+                'anchor_a': motor.pivot.a,
+                'anchor_b': motor.pivot.b,
                 'rate': motor.motor.rate,
                 'tolerance': motor.tolerance if hasattr(motor, 'tolerance') else 10,
             }
@@ -194,11 +194,9 @@ class Creature:
             'limbs': limbs_data,
             'motors': motors_data,
         }
-
-
     
     @classmethod
-    def from_dict(cls, data, space, vision):
+    def from_dict(cls, data, space = pymunk.Space(), vision = Vision(Point(0, 0))):
         """Deserialize a Creature object from a dictionary."""
         creature = cls(space, vision)
         limb_list = []
@@ -226,4 +224,3 @@ class Creature:
                 tolerance=motor_data.get('tolerance', 10),
             )
         return creature
-    
