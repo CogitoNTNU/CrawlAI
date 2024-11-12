@@ -3,6 +3,7 @@ import pymunk
 from creature import Creature
 import random
 
+
 def create_ground(space, width, height, position=(0, 0)):
     """Create a static ground body to interact with the creature."""
     ground_body = pymunk.Body(body_type=pymunk.Body.STATIC)
@@ -12,6 +13,7 @@ def create_ground(space, width, height, position=(0, 0)):
     space.add(ground_body, ground_shape)
     return ground_shape
 
+
 def setup_pygame():
     """Initialize Pygame screen and clock."""
     pygame.init()
@@ -19,11 +21,13 @@ def setup_pygame():
     clock = pygame.time.Clock()
     return screen, clock
 
+
 def setup_pymunk():
     """Initialize a Pymunk space with Earth-like gravity."""
     space = pymunk.Space()
     space.gravity = (0, 981)
     return space
+
 
 def create_simulation(space):
     """Initialize the creature and its environment in the space."""
@@ -42,6 +46,7 @@ def create_simulation(space):
     create_ground(space, width=800, height=10, position=(0, 550))
     return creature
 
+
 def main_loop(screen, clock, space, creature, fps=60):
     """Runs the main simulation loop for rendering and updating the creature."""
     running = True
@@ -53,7 +58,9 @@ def main_loop(screen, clock, space, creature, fps=60):
         space.step(1 / fps)
 
         # Render the ground as a line
-        pygame.draw.line(screen, (0, 0, 0), (0, ground_position[1]), (800, ground_position[1]), 10)
+        pygame.draw.line(
+            screen, (0, 0, 0), (0, ground_position[1]), (800, ground_position[1]), 10
+        )
 
         current_joint_rates = creature.get_joint_rates()
         creature.set_joint_rates([random.uniform(0, 2) for _ in current_joint_rates])
@@ -68,6 +75,7 @@ def main_loop(screen, clock, space, creature, fps=60):
                 running = False
 
     pygame.quit()
+
 
 def run_simulation(simulation_id, frames=600):
     """Run a single simulation of the creature for a set number of frames."""
@@ -87,7 +95,9 @@ def run_simulation(simulation_id, frames=600):
 
         screen.fill((255, 255, 255))
         space.step(1 / 60.0)  # Update physics
-        creature.set_joint_rates([random.uniform(0, 2) for _ in creature.get_joint_rates()])
+        creature.set_joint_rates(
+            [random.uniform(0, 2) for _ in creature.get_joint_rates()]
+        )
         creature.render(screen)
         pygame.display.flip()
         clock.tick(60)
@@ -103,6 +113,7 @@ def run_multiple_simulations(num_simulations=100, frames_per_simulation=200):
         result = run_simulation(i, frames_per_simulation)
         results.append(result)
     return results
+
 
 # Execute simulations
 if __name__ == "__main__":
