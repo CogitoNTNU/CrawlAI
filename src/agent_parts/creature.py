@@ -24,7 +24,7 @@ class Creature:
         self.relative_vectors = []
         self.vision = vision
         self.limbs_connected_by_motorjoint = [] # List of lists in the format : [motor, limb1, limb2]
-
+        self.original_creature = self
     def add_limb(
         self,
         width: float,
@@ -188,7 +188,7 @@ class Creature:
     def to_dict(self):
         """Serialize the Creature object to a dictionary."""
         limbs_data = []
-        for limb in self.limbs:
+        for limb in self.original_creature.limbs:
             limb_data = {
                 'width': limb.width,
                 'height': limb.height,
@@ -199,7 +199,7 @@ class Creature:
             limbs_data.append(limb_data)
         
         motors_data = []
-        for motor in self.motors:
+        for motor in self.original_creature.motors:
             motor_data = {
                 'limb_a_index': self.limbs.index(motor.limb_a),
                 'limb_b_index': self.limbs.index(motor.limb_b),

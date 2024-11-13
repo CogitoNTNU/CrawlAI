@@ -17,8 +17,9 @@ from src.agent_parts.creature import Creature
 from src.NEATnetwork import NEATNetwork
 from src.genome import Genome
 from src.genome import Innovation
-from src.interface import Button
+
 from pygame_widgets.dropdown import Dropdown
+from pygame_widgets.button import Button
 import pygame_widgets
 from src.globals import (
     SCREEN_WIDTH,
@@ -59,41 +60,30 @@ def display_genome_run(agent: UploadAgent):
     genome = agent.genome
     creature_data = agent.creature_data
     
-
     save_enabled = False
 
     def enable_save():
         nonlocal save_enabled
         save_enabled = True
-
+        print("Save enabled:", save_enabled)
+    
     save_button = Button(
-        pos=(10, SCREEN_HEIGHT - 100),
-        width=80,
-        height=40,
-        color=(0, 200, 0),
-        text="Save",
-        text_color=(255, 255, 255),
-        hover_color=(0, 255, 0),
-        active_color=(0, 100, 0),
-        font=font,
-        callback=lambda: enable_save(),
+        screen, 10, 160, 100, 50, text='Save', fontSize=30,
+        margin=20, inactiveColour=(255, 0, 0), pressedColour=(0, 255, 0),
+        radius=5, onClick=enable_save, font=pygame.font.SysFont('calibri', 10),
+        textVAlign='bottom'
     )
 
     def enable_training():
         nonlocal train_enabled
         train_enabled = True
+        print("Train enabled:", train_enabled)
 
     train_button = Button(
-        pos=(10, SCREEN_HEIGHT - 50),
-        width=80,
-        height=40,
-        color=(0, 200, 0),
-        text="Train",
-        callback=enable_training,
-        hover_color=(0, 255, 0),
-        active_color=(0, 100, 0),
-        font=font,
-        text_color=(255, 255, 255),
+        screen, 10, 260, 100, 50, text='Train', fontSize=30,
+        margin=20, inactiveColour=(255, 0, 0), pressedColour=(0, 255, 0),
+        radius=5, onClick=enable_training, font=pygame.font.SysFont('calibri', 10),
+        textVAlign='bottom'
     )
     choices = get_saved_file_paths()
     dropdown = Dropdown(
@@ -115,24 +105,14 @@ def display_genome_run(agent: UploadAgent):
     def set_selected():
         nonlocal load_selected
         load_selected = dropdown.getSelected()
+        print("Selected:", load_selected)
 
-    display_loaded_button = Button(
-        pos=(10, SCREEN_HEIGHT - 150),
-        width=80,
-        height=40,
-        color=(0, 200, 0),
-        text="Display loaded genome",
-        callback=set_selected,
-        hover_color=(0, 255, 0),
-        active_color=(0, 100, 0),
-        font=font,
-        text_color=(255, 255, 255),
+    display_button = Button(
+        screen, 10, 360, 100, 50, text='Run', fontSize=30,
+        margin=20, inactiveColour=(255, 0, 0), pressedColour=(0, 255, 0),
+        radius=5, onClick=set_selected, font=pygame.font.SysFont('calibri', 10),
+        textVAlign='bottom'
     )
-    interface.add_button(save_button)
-    interface.add_button(train_button)
-    interface.add_button(display_loaded_button)
-    
-    
 
     if genome:
         network = NEATNetwork(genome)
@@ -142,15 +122,27 @@ def display_genome_run(agent: UploadAgent):
     running = True
     while running:
         events = pygame.event.get()
-        for event in events:
+        for event in events.copy(): # copy list so that pygame_widgets dont consume the events
             if event.type == pygame.QUIT:
                 running = False
             interface.handle_events(event)
 
         if train_enabled:
             print("Training...")
+            vision = Vision(Point(0, 0))
+            space = pymunk.Space()
+            space.gravity = (0, 981)
+            creature = Creature(space, vision)
+            # Initialize creature's limbs and motors
+            limb1 = creature.add_limb(100, 20, (300, 300), mass=1)
+            limb2 = creature.add_limb(100, 20, (350, 300), mass=3)
+            limb3 = creature.add_limb(80, 40, (400, 300), mass=5)
+            limb4 = creature.add_limb(80, 40, (450, 300), mass=5)
+            creature.add_motor_on_limbs(limb1, limb2, (325, 300))
+            creature.add_motor_on_limbs(limb2, limb3, (375, 300))
+            creature.add_motor_on_limbs(limb3, limb4, (425, 300))
             train_enabled = False
-            genome = train()
+            genome = train(creature=creature)
             display_genome_run(genome)
             break
 
@@ -225,6 +217,7 @@ def display_genome_run(agent: UploadAgent):
         environment.update()
         environment.render()
         interface.render(screen)
+        
         pygame_widgets.update(events)
 
         if genome:
@@ -389,7 +382,7 @@ def load_genome(filename: str) -> Genome:
     return genome
 
 
-def evaluate_genome(genome: Genome) -> float:
+def evaluate_genome(genome: Genome, creature: Creature) -> float:
     """Evaluate a genome by running a simulation and returning its fitness."""
     # Initialize Pymunk space
     space = pymunk.Space()
@@ -404,14 +397,14 @@ def evaluate_genome(genome: Genome) -> float:
 
     # Instantiate NEATNetwork and Creature
     network = NEATNetwork(genome)
-    vision = Vision(Point(0, 0))
-    creature = Creature(space, vision)
-    # Initialize creature's limbs and motors
-    limb1 = creature.add_limb(100, 20, (300, 300), mass=1)
-    limb2 = creature.add_limb(100, 20, (350, 300), mass=3)
-    limb3 = creature.add_limb(80, 40, (400, 300), mass=5)
-    creature.add_motor_on_limbs(limb1, limb2, (325, 300))
-    creature.add_motor_on_limbs(limb2, limb3, (375, 300))
+    # vision = Vision(Point(0, 0))
+    # creature = Creature(space, vision)
+    # # Initialize creature's limbs and motors
+    # limb1 = creature.add_limb(100, 20, (300, 300), mass=1)
+    # limb2 = creature.add_limb(100, 20, (350, 300), mass=3)
+    # limb3 = creature.add_limb(80, 40, (400, 300), mass=5)
+    # creature.add_motor_on_limbs(limb1, limb2, (325, 300))
+    # creature.add_motor_on_limbs(limb2, limb3, (375, 300))
 
     # Run simulation for a certain number of steps
     for _ in range(SIMULATION_STEPS):
@@ -511,7 +504,7 @@ def evaluate_genome_with_data(genome: Genome, creature_data: dict) -> float:
     return fitness
 
 
-def train() -> UploadAgent:
+def train(creature) -> UploadAgent:
     pygame.init()
 
     # Initialize a temporary creature to determine number of inputs and outputs
@@ -520,14 +513,14 @@ def train() -> UploadAgent:
     temp_screen = pygame.Surface((1, 1))
     temp_environment = Environment(temp_screen, temp_space)
     temp_environment.ground_type = GroundType.BASIC_GROUND
-
+    temp_creature = creature
     vision = Vision(Point(0, 0))
-    temp_creature = Creature(space=temp_space, vision=vision)
-    limb1 = temp_creature.add_limb(100, 20, (300, 300), mass=1)
-    limb2 = temp_creature.add_limb(100, 20, (350, 300), mass=3)
-    limb3 = temp_creature.add_limb(80, 40, (400, 300), mass=5)
-    temp_creature.add_motor_on_limbs(limb1, limb2, (325, 300))
-    temp_creature.add_motor_on_limbs(limb2, limb3, (375, 300))
+    # temp_creature = Creature(space=temp_space, vision=vision)
+    # limb1 = temp_creature.add_limb(100, 20, (300, 300), mass=1)
+    # limb2 = temp_creature.add_limb(100, 20, (350, 300), mass=3)
+    # limb3 = temp_creature.add_limb(80, 40, (400, 300), mass=5)
+    # temp_creature.add_motor_on_limbs(limb1, limb2, (325, 300))
+    # temp_creature.add_motor_on_limbs(limb2, limb3, (375, 300))
 
     # Determine number of inputs and outputs
     amount_of_joints = temp_creature.get_amount_of_joints()
@@ -570,11 +563,24 @@ def train() -> UploadAgent:
 
 
 def main():
+    
+    vision = Vision(Point(0, 0))
+    space = pymunk.Space()
+    space.gravity = (0, 981)
+    creature = Creature(space, vision)
+    # Initialize creature's limbs and motors
+    limb1 = creature.add_limb(100, 20, (300, 300), mass=1)
+    limb2 = creature.add_limb(100, 20, (350, 300), mass=3)
+    limb3 = creature.add_limb(80, 40, (400, 300), mass=5)
+    limb4 = creature.add_limb(80, 40, (450, 300), mass=5)
+    creature.add_motor_on_limbs(limb1, limb2, (325, 300))
+    creature.add_motor_on_limbs(limb2, limb3, (375, 300))
+    creature.add_motor_on_limbs(limb3, limb4, (425, 300))
 
-    #best_genome = train()
+    #best_genome = train(creature=creature)
     #path = save_agent(best_genome, 'best_genome')
     #agent = load_agent(path)
-    agent = load_agent("models/best_genome2359_452679613092.json")
+    agent = load_agent("models/best_genome5192_6545863955835.json")
     display_genome_run(agent)
 
 

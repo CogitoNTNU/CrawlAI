@@ -44,6 +44,16 @@ class Button:
     def is_clicked(self, event) -> bool:
         return event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and self.rect.collidepoint(event.pos)
     
+    def handle_events(self, events):
+        for event in events:
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if self.rect.collidepoint(event.pos):
+                    self.is_active = True
+                    if self.callback:
+                        self.callback()
+            elif event.type == pygame.MOUSEBUTTONUP:
+                self.is_active = False
+    
     def is_paused_clicked(self, event) -> bool: 
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             if self.rect.collidepoint(event.pos):
