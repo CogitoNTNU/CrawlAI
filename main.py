@@ -484,7 +484,7 @@ def main():
 
     # best_genome = train()
     # path = save_genome(best_genome, 'best_genome')
-    genome = load_genome("models/best_genome2961_555819068663.json")
+    genome = load_genome("models/best_genome3159_670865969072.json")
     display_genome_run(genome)
 
 
