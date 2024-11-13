@@ -4,7 +4,7 @@ import math
 
 
 class MotorJoint:
-    def __init__(self, space, limb_a, limb_b, anchor_a, anchor_b, rate):
+    def __init__(self, space, limb_a, limb_b, anchor_a, anchor_b, rate, tolerance=30):
         """Initialize a motor joint between two limbs."""
         body_a = limb_a.body
         body_b = limb_b.body
@@ -14,6 +14,8 @@ class MotorJoint:
         self.anchor_b = anchor_b
         self.limb_a = limb_a
         self.limb_b = limb_b
+        self.rate = rate
+        self.tolerance = tolerance
         self.world_loc = tuple[float]
         space.add(self.pivot, self.motor)
 
@@ -36,9 +38,5 @@ class MotorJoint:
         )
         self.world_loc = (float(pos_a_world.x), float(pos_a_world.y))
 
-    def get_angle(self):
-        """Get the angle of the motor joint."""
-        return self.pivot.angle
-    
     def get_world_loc(self) -> tuple[float]: 
         return self.get_world_loc

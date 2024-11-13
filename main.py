@@ -571,9 +571,10 @@ def train() -> UploadAgent:
 
 def main():
 
-    # best_genome = train()
-    # path = save_agent(best_genome, 'best_genome')
-    agent = load_agent("models/saved_agent3022_077965276266.json")
+    #best_genome = train()
+    #path = save_agent(best_genome, 'best_genome')
+    #agent = load_agent(path)
+    agent = load_agent("models/best_genome2359_452679613092.json")
     display_genome_run(agent)
 
 

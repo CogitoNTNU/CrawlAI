@@ -187,7 +187,6 @@ class Creature:
     
     def to_dict(self):
         """Serialize the Creature object to a dictionary."""
-        # Serialize limbs
         limbs_data = []
         for limb in self.limbs:
             limb_data = {
@@ -198,20 +197,19 @@ class Creature:
                 'color': limb.color,
             }
             limbs_data.append(limb_data)
-
-        # Serialize motors
+        
         motors_data = []
         for motor in self.motors:
             motor_data = {
-                'limb_a_index': self.limbs.index(motor.limb_a),  # Index of Limb instance
-                'limb_b_index': self.limbs.index(motor.limb_b),  # Index of Limb instance
-                'anchor_a': motor.pivot.a,
-                'anchor_b': motor.pivot.b,
-                'rate': motor.motor.rate,
-                'tolerance': motor.tolerance if hasattr(motor, 'tolerance') else 10,
+                'limb_a_index': self.limbs.index(motor.limb_a),
+                'limb_b_index': self.limbs.index(motor.limb_b),
+                'anchor_a': list(motor.anchor_a),
+                'anchor_b': list(motor.anchor_b),
+                'rate': motor.rate,
+                'tolerance': motor.tolerance,
             }
             motors_data.append(motor_data)
-
+        
         return {
             'limbs': limbs_data,
             'motors': motors_data,
@@ -219,7 +217,13 @@ class Creature:
     
     @classmethod
     def from_dict(cls, data, space = pymunk.Space(), vision = Vision(Point(0, 0))):
-        """Deserialize a Creature object from a dictionary."""
+        """
+        Deserialize a Creature object from a dictionary.
+        Args:
+        - data (dict): The serialized data.
+        - space (pymunk.Space): The pymunk space to add the creature to.
+        - vision (Vision): The vision object of the creature.
+        """
         creature = cls(space, vision)
         limb_list = []
         # Reconstruct limbs
@@ -227,7 +231,7 @@ class Creature:
             limb = creature.add_limb(
                 width=limb_data['width'],
                 height=limb_data['height'],
-                position=limb_data['position'],
+                position=tuple(limb_data['position']),
                 mass=limb_data['mass'],
                 color=tuple(limb_data['color']),
             )
@@ -237,7 +241,6 @@ class Creature:
         for motor_data in data['motors']:
             limb_a = limb_list[motor_data['limb_a_index']]
             limb_b = limb_list[motor_data['limb_b_index']]
-            print(type( motor_data["anchor_a"]))
             creature.add_motor(
                 limb_a=limb_a,
                 limb_b=limb_b,
