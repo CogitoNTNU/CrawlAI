@@ -40,3 +40,6 @@ class MotorJoint:
 
     def get_world_loc(self) -> tuple[float]: 
         return self.get_world_loc
+
+    def to_string(self) -> str:
+        return f"MotorJoint: {self.world_loc}"

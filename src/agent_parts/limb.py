@@ -88,3 +88,6 @@ class Limb:
         global_position = self.body.local_to_world(local_position)
 
         return float(global_position.x), float(global_position.y)
+
+    def to_string(self) -> str:
+        return f"Limb: width={self.width}, height={self.height}, mass={self.mass}, position={self.body.position}"

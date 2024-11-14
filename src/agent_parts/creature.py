@@ -25,6 +25,8 @@ class Creature:
         self.vision = vision
         self.limbs_connected_by_motorjoint = [] # List of lists in the format : [motor, limb1, limb2]
         self.original_creature = self
+        print(self.original_creature.to_string())
+        
     def add_limb(
         self,
         width: float,
@@ -185,8 +187,18 @@ class Creature:
     def get_limb_positions(self) -> list[tuple[float, float]]:
         return [(limb.body.position.x, limb.body.position.y) for limb in self.limbs]
     
+    def to_string(self):
+        string = "Creature: \n"
+        for limb in self.limbs:
+            string += limb.to_string() + "\n"
+        for motor in self.motors:
+            string += motor.to_string() + "\n"
+        return string
+    
+    
     def to_dict(self):
         """Serialize the Creature object to a dictionary."""
+        print(self.original_creature.to_string())   
         limbs_data = []
         for limb in self.original_creature.limbs:
             limb_data = {
